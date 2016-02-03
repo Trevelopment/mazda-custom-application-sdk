@@ -1386,6 +1386,17 @@ systemApp.prototype._selectCallbackHomeScreen = function(mainMenuCtrlObj, appDat
  */
 systemApp.prototype._menuItemSelectCallback = function(listCtrlObj, appData, params)
 {
+    // CustomApplication Support
+    if(appData.mmuiEvent == "ExecuteCustomApplication") {
+
+        if(typeof(CustomApplicationsHandler) != "undefined") {
+            CustomApplicationsHandler.execute(appData);
+        }
+
+        return;
+    } 
+
+    // continue normal
     framework.sendEventToMmui(this.uiaId, appData.mmuiEvent, {}, params.fromVui);
 };
 
