@@ -25,14 +25,30 @@
  */
 
 /**
- * (CustomApplications)
+ * (CustomApplication)
  *
- * This array registers all applications you want to install and run on your Mazda Connect Infotainment System
- *
- * The name corresponds to to the folder name of the application
- */ 
+ * The main class for applications
+ */
 
-var CustomApplications = [
-	
-	"app.helloworld"
-];
+var CustomApplication = (function(){
+
+	function CustomApplication(application) {
+
+		this.application = application;
+		
+		this.__initialize();
+	};
+
+	CustomApplication.prototype = {
+
+		storages: {},
+		
+		/* (initialize) */
+		__initialize: function() {
+		
+		},
+		
+	}
+
+	return CustomApplication;
+})();

@@ -25,14 +25,5 @@
  */
 
 /**
- * (CustomApplications)
- *
- * This array registers all applications you want to install and run on your Mazda Connect Infotainment System
- *
- * The name corresponds to to the folder name of the application
- */ 
-
-var CustomApplications = [
-	
-	"app.helloworld"
-];
+ * This is the main mini framework file that contains everything to run the custom application environment
+ */

@@ -1,10 +1,10 @@
 /**
- * Enhanced Applications for Mazda Connect Infotainment
+ * Custom Applications SDK for Mazda Connect Infotainment System
  * 
- * A helper to bring custom applications into the Mazda Connect Infotainment System without
- * writing custom on screen functionality.
+ * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
+ * that includes an easy to use abstraction layer to the JCI system.
  *
- * Written by Andreas Schwarz (http://github.com/flyandi/mazda-enhanced-applications)
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
  * Copyright (c) 2016. All rights reserved.
  * 
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
@@ -24,13 +24,28 @@
  *
  */
 
+/**
+ * (CustomApplicationsHandler)
+ *
+ * This is the custom handler that manages the application between the JCI system and the mini framewor
+ */
+
 var CustomApplicationsHandler = {
 
 	/**
-	 * (Items) storage for new items
+	 * (Applications) storage for applications
 	 */
 
-	items: [],
+	applications: [],
+
+	/**
+	 * (Paths)
+	 */
+
+	paths: {
+		applications: 'apps/system/custom/apps/', 
+	},
+
 
 	/**
 	 * (Retrieve) loads the current application list and returns the additional items
@@ -39,22 +54,25 @@ var CustomApplicationsHandler = {
 	retrieve: function(callback) {
 
 		try {
-			 utility.loadScript("apps/system/custom/apps/apps.js", null, function() {
+			 CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
 
 			 	// this has been completed
 			 	if(typeof(CustomApplications) != "undefined") {
 
-			 		this.register(CustomApplications);
-
-			 		if(typeof(callback) == "function") {
-			 			callback(this.items);
-			 		}
+			 		// load applications
+			 		CustomApplicationResourceLoader.loadJavascript(
+			 			CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
+			 			this.paths.applications,
+			 			function() {
+			 				callback(this.getMenuItems());
+			 			}.bind(this)
+			 		);
 			 	}
 
 			 }.bind(this));
 		} catch(e) {
 			// make sure that we notify otherwise we don't get any applications
-			callback(this.items);
+			callback(this.getMenuItems());
 		}
 	},
 
@@ -64,17 +82,29 @@ var CustomApplicationsHandler = {
 
 	register: function(applications) {
 
-		applications.forEach(function(application) {
+		
+
+	},
 
 
-			this.items.push({
+	/**
+	 * (getMenuItems) returns the items for the main application menu
+	 */
+
+	getMenuItems: function() {
+
+		var items = [];
+
+		this.applications.forEach(function(application) {
+
+			items.push({
 				appData : { 
 					appName : application.getName(), 
 					isVisible : true, 
 					mmuiEvent : 'ExecuteCustomApplication',
 					appId: application.getId(),         
 				}, 
-				text1Id : application.getName()
+				text1Id : application.getName(),
 				disabled : false,  
 				itemStyle : 'style01', 
 				hasCaret : false 
@@ -82,10 +112,10 @@ var CustomApplicationsHandler = {
 
 		}.bind(this));
 
-	}
-
+		return items;
+	},
 
 };
 
 //{ appData : { appName : 'hdtrafficimage', isVisible : false, mmuiEvent : 'SelectHDTrafficImage'         }, text1Id : 'HDTrafficItem',               disabled : true,  itemStyle : 'style01', hasCaret : false },
-        
+

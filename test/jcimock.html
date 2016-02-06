@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="jcimock.js"></script>
+	<script src="apps/system/custom/framework/bootstrap.js"></script>
+	<link rel="stylesheet" href="jcimock.css" />
+</head>
+<body>
+	<div id="mock">
+		<div id="header">
+			<label></label>
+			<div id="clock"></div>
+		</div>	
+		<div id="view">
+			<div id="surface">
+			</div>
+		</div>
+	</div>
+
+	<script>
+
+		mock.init();
+
+		CustomApplicationsHandler.retrieve(function(items) {
+
+			mock.menu(items);
+
+        }.bind(this));
+
+	</script>
+
+</body>
+</html>

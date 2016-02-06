@@ -1,0 +1,23 @@
+{
+  "name": "ASP.NET",
+  "version": "0.0.0",
+  "devDependencies": {
+    "gulp": "3.8.11",
+    "gulp-concat": "2.5.2",
+    "gulp-jshint": "1.11.0",
+    "gulp-less": "3.0.3",
+    "gulp-cssnano": "2.1.0",
+    "gulp-rename": "1.2.2",
+    "gulp-rimraf": "0.1.1",
+    "gulp-minify": "0.0.5",
+    "rimraf": "2.2.8",
+    "del": "1.2.0",
+    "merge-stream": "0.1.7",
+    "connect": "3.3.5",
+    "serve-static": "1.9.3",
+    "run-sequence": "1.1.1"
+  },
+  "dependencies": {
+    "gulp-header": "^1.7.1"
+  }
+}
