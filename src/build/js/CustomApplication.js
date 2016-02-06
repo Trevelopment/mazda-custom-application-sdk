@@ -47,6 +47,32 @@ var CustomApplication = (function(){
 		__initialize: function() {
 		
 		},
+
+		/**
+		 * (settings)
+		 */
+
+		getSetting: function(name, _default)
+		{
+			return this.application.settings[name] ? this.application.settings[name] : _default;
+		},
+
+
+		/**
+		 * (attributes)
+		 */
+
+		getId: function() {
+			return this.id;
+		},
+
+		getTitle: function() {
+			return this.getSetting('title');
+		},
+
+		getNeedsStatusbar: function()  {
+			return this.getSetting('statusbar');
+		}
 		
 	}
 

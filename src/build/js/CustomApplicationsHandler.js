@@ -32,11 +32,13 @@
 
 var CustomApplicationsHandler = {
 
+	__name: 'ApplicationsHandler',
+
 	/**
 	 * (Applications) storage for applications
 	 */
 
-	applications: [],
+	applications: {},
 
 	/**
 	 * (Paths)
@@ -80,10 +82,15 @@ var CustomApplicationsHandler = {
 	 * (Register) registers all the custom applications
 	 */
 
-	register: function(applications) {
+	register: function(id, application) {
 
+		CustomApplicationLog.info(this.__name, {id:id}, "Registering application");
+
+		application.id = id;
+
+		this.applications[id] = application;
 		
-
+		return true;
 	},
 
 
@@ -95,19 +102,23 @@ var CustomApplicationsHandler = {
 
 		var items = [];
 
-		this.applications.forEach(function(application) {
+		CustomApplicationHelpers.iterate(this.applications, function(id, application) {
 
 			items.push({
 				appData : { 
-					appName : application.getName(), 
+					appName : application.getTitle(), 
 					isVisible : true, 
 					mmuiEvent : 'ExecuteCustomApplication',
 					appId: application.getId(),         
 				}, 
-				text1Id : application.getName(),
+				text1Id : application.getTitle(),
 				disabled : false,  
 				itemStyle : 'style01', 
 				hasCaret : false 
+			});
+
+			CustomApplicationLog.info(this.__name, {id:id}, "Adding application to menu", {
+				title: application.getTitle(),
 			});
 
 		}.bind(this));

@@ -130,7 +130,7 @@ var CustomApplicationHelpers = {
 	iterate: function(o, item) {
 
 		if(this.is().object(o)) {
-			Object.keys(obj).map(function(key) {
+			Object.keys(o).map(function(key) {
 				item(key, o[key], true);
 			});
 		} else if (this.is().array(o)) {

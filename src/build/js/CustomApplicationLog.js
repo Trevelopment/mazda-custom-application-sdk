@@ -80,7 +80,7 @@ var CustomApplicationLog = {
 
 							CustomApplicationHelpers.iterate(value, function(key, value, obj) {
 
-								msg.push(obj ? CustomApplicationHelper.sprintr("[{0}={1}]", key, value) : CustomApplicationHelper.sprintr("[{0}]", value));
+								msg.push(obj ? CustomApplicationHelpers.sprintr("[{0}={1}]", key, value) : CustomApplicationHelpers.sprintr("[{0}]", value));
 
 							});
 							break;

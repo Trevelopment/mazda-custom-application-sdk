@@ -83,7 +83,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * (statusbar) Defines if the statusbar should be shown
 		 */
 
-		showstatus: false,
+		statusbar: false,
 
 		/**
 		 * (backgroundColor) Defines the background color of the application
