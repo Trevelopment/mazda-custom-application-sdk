@@ -45,6 +45,7 @@ var CustomApplicationsHandler = {
 	 */
 
 	paths: {
+		framework: 'apps/system/custom/framework/',
 		applications: 'apps/system/custom/apps/', 
 	},
 
@@ -56,7 +57,9 @@ var CustomApplicationsHandler = {
 	retrieve: function(callback) {
 
 		try {
-			 CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
+			CustomApplicationResourceLoader.loadCSS("bootstrap.css", this.paths.framework);
+
+			CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
 
 			 	// this has been completed
 			 	if(typeof(CustomApplications) != "undefined") {

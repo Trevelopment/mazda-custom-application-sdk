@@ -30,28 +30,19 @@
 
 var
     gulp = require('gulp'),
-    cssmin = require('gulp-cssnano'),
-    jshint = require('gulp-jshint'),
     less = require('gulp-less'),
     concat = require('gulp-concat'),
-    minify = require('gulp-minify'),
-    rename = require('gulp-rename'),
-    rimraf = require('gulp-rimraf');
-    del = require('del'),
-    fs = require('fs'),
-    path = require('path'),
-    merge = require('merge-stream'),
     runSequence = require('run-sequence');
 
 /**
  * ::configuration
  */
 
-var js = [
+var jsPath = [
     'js/*'
 ];
 
-var less = [
+var lessPath = [
     'less/*'
 ];
 
@@ -59,40 +50,14 @@ var output = "../system/framework/";
 
 
 /**
- * ::helpers
- */
-
-var Helpers = {
-
-    getFolders: function (dir) {
-            return fs.readdirSync(dir).filter(function (file) {
-                    return fs.statSync(path.join(dir, file)).isDirectory();
-            });
-    }
-
-};
-
-/**
  * ::tasks
  */
 
-// (clean)
-gulp.task('clean:build', function (cb) {
-        return gulp.src([Paths.output + '**'], { read: false })
-        .pipe(rimraf());
-});
-
-// (lint)
-gulp.task('dist-lint', function () {
-        return gulp.src(Paths.buildjs + '*.js')
-        .pipe(jshint())
-        .pipe(jshint.reporter('default'));
-});
 
 // (less)
 gulp.task('dist-less', function () {
 
-    return gulp.src(less)
+    return gulp.src(lessPath)
         .pipe(concat('bootstrap.css'))
         .pipe(less())
         .pipe(gulp.dest(output));
@@ -102,9 +67,8 @@ gulp.task('dist-less', function () {
 // (Concatenate & Minify)
 gulp.task('dist-js', function () {
 
-    return gulp.src(js)
+    return gulp.src(jsPath)
         .pipe(concat('bootstrap.js'))
-        //.pipe(minify())
         .pipe(gulp.dest(output));
 });
 
@@ -113,20 +77,13 @@ gulp.task('dist-js', function () {
  * ::Commands
  */
 
-// Clean
-gulp.task('clean', [
-    'clean:build'
-]);
-
 
 // Default Task
 gulp.task('default', function (callback) {
 
-        runSequence(
-        // 'clean', 
-        //'lint', 
+    runSequence(
         'dist-js',
-        //'dist-less'
+        'dist-less',
         callback
     );
 

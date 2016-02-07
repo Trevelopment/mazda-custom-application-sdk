@@ -45,7 +45,17 @@ var CustomApplication = (function(){
 		
 		/* (initialize) */
 		__initialize: function() {
-		
+			
+			this.canvas = document.createElement("div");
+			this.canvas.classList.add("CustomApplicationCanvas");
+
+			if(backgroundColor = this.getSetting("backgroundColor"))
+				this.canvas.style.backgroundColor = backgroundColor;
+
+			if(textColor = this.getSetting("textColor"))
+				this.canvas.style.color = textColor;
+
+			document.body.appendChild(this.canvas);
 		},
 
 		/**
@@ -54,7 +64,7 @@ var CustomApplication = (function(){
 
 		getSetting: function(name, _default)
 		{
-			return this.application.settings[name] ? this.application.settings[name] : _default;
+			return this.application.settings[name] ? this.application.settings[name] : (_default ? _default : false);
 		},
 
 
@@ -70,7 +80,7 @@ var CustomApplication = (function(){
 			return this.getSetting('title');
 		},
 
-		getNeedsStatusbar: function()  {
+		getStatusbar: function()  {
 			return this.getSetting('statusbar');
 		}
 		
