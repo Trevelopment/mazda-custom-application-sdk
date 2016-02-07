@@ -46,24 +46,36 @@ var CustomApplication = (function(){
 		/* (initialize) */
 		__initialize: function() {
 
+			this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
+
 			this.is = CustomApplicationHelpers.is();
 			
-			this.canvas = document.createElement("div");
-			this.canvas.classList.add("CustomApplicationCanvas");
-			this.canvas.style.display = "none";
+			this.surface = document.createElement("div");
+			this.surface.classList.add("CustomApplicationSurface");
+			this.surface.style.display = "none";
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
-				this.canvas.style.backgroundColor = backgroundColor;
+				this.surface.style.backgroundColor = backgroundColor;
 
 			if(textColor = this.getSetting("textColor"))
-				this.canvas.style.color = textColor;
+				this.surface.style.color = textColor;
 
 			if(this.getSetting('statusbar'))
 				this.setStatusbar(true);
 
-			document.body.appendChild(this.canvas);
+			document.body.appendChild(this.surface);
+
+			this.canvas = document.createElement("div");
+			this.canvas.classList.add("CustomApplicationCanvas");
+			this.surface.appendChild(this.canvas);
+
+			this.__extendApplication();
 
 			this.__created = true;
+
+			if(this.is.fn(this.application.created)) {
+				this.application.created();
+			}
 		},
 
 		/** 
@@ -81,8 +93,12 @@ var CustomApplication = (function(){
 				this.__initialized = false;
 			}
 
-			this.canvas.style.display = "block";
-			this.canvas.classList.add("visible");
+			if(this.is.fn(this.application.render)) {
+				this.application.render();
+			}
+
+			this.surface.style.display = "block";
+			this.surface.classList.add("visible");
 
 		},
 
@@ -147,6 +163,71 @@ var CustomApplication = (function(){
 				this.canvas.classList.remove("withStatusBar");
 			}
 		},
+
+		/**
+		 * handleControllerEvent
+		 */
+
+		handleControllerEvent: function(eventId) {
+
+	        var response = "ignored"; // consumed
+
+	        CustomApplicationLog.debug(this.application.id, "Controller event received", {event: eventId});
+
+	        if(this.is.fn(this.application.controllerEvent)) {
+	        	this.application.controllerEvent(eventId);
+	        }
+
+	        /*
+
+            switch(eventId) {
+                case "select":
+                case "left":
+                case "right":
+                case "down":
+                case "up":
+                case "cw":
+                case "ccw":
+                case "lostFocus":
+        		case "acceptFocusInit":
+		        case "leftStart":
+        		case "left":
+     		    case "rightStart":
+        		case "right":
+        		case "selectStart":
+            };*/
+	        
+	        return response;
+	    },
+
+
+	    /**
+	     * element
+	     */
+
+	    __extendApplication: function() {
+
+	    	var that = this;
+
+	    	this.application.element = function(tag, id, classNames, styles) {
+
+		    	var el = document.createElement(tag);
+		    	el.setAttribute("ID", id);
+		    	el.setAttribute("CLASS", classNames);
+
+		    	if(that.is.object(styles)) {
+
+		    		CustomApplicationHelpers.iterate(styles, function(key, value) {
+		    			el.style[key] = value;
+		    		});
+		    	}
+
+		    	that.canvas.appendChild(el);
+
+		    	return el;
+		    };
+
+	    },
 		
 	}
 

@@ -69,7 +69,7 @@
  * Main class
  */
 
-.CustomApplicationCanvas {
+.CustomApplicationSurface {
 	font-family: "Tipperary", Arial, Helvetica, sans-serif;
 	text-align: left;
 	position: absolute;
@@ -86,15 +86,20 @@
    	animation: CustomApplicationFadeOut @animationSpeed;
 }
 
+	.CustomApplicationSurface.visible {
+	   -webkit-animation: CustomApplicationFadeIn @animationSpeed;
+	   -moz-animation: CustomApplicationFadeIn @animationSpeed;
+	   -o-animation: CustomApplicationFadeIn @animationSpeed;
+	   animation: CustomApplicationFadeIn @animationSpeed;
+	}
 
-.CustomApplicationCanvas.visible {
-   -webkit-animation: CustomApplicationFadeIn @animationSpeed;
-   -moz-animation: CustomApplicationFadeIn @animationSpeed;
-   -o-animation: CustomApplicationFadeIn @animationSpeed;
-   animation: CustomApplicationFadeIn @animationSpeed;
-}
+	.CustomApplicationSurface.withStatusBar {
+		top:60px;
+		height:420px;
+	}
 
-.CustomApplicationCanvas.withStatusBar {
-	top:60px;
-	height:420px;
-}
+	.CustomApplicationSurface .CustomApplicationCanvas {
+		position:relative;
+		width:100%;
+		height:100%;
+	}
