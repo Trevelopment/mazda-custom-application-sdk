@@ -2,6 +2,7 @@
 <html>
 <head>
 	<script src="jcimock.js"></script>
+	<script src="jquery.js"></script>
 	<script src="apps/system/custom/framework/bootstrap.js"></script>
 	<link rel="stylesheet" href="jcimock.css" />
 </head>
@@ -13,21 +14,13 @@
 		</div>	
 		<div id="view">
 			<div id="surface">
+				<div id="menu">
+				</div>
 			</div>
 		</div>
 	</div>
-
 	<script>
-
 		mock.init();
-
-		CustomApplicationsHandler.retrieve(function(items) {
-
-			mock.menu(items);
-
-        }.bind(this));
-
 	</script>
-
 </body>
 </html>

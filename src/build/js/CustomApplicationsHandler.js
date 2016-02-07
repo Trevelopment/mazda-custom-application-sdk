@@ -61,20 +61,21 @@ var CustomApplicationsHandler = {
 
 			CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
 
-			 	// this has been completed
-			 	if(typeof(CustomApplications) != "undefined") {
+				// this has been completed
+				if(typeof(CustomApplications) != "undefined") {
 
-			 		// load applications
-			 		CustomApplicationResourceLoader.loadJavascript(
-			 			CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
-			 			this.paths.applications,
-			 			function() {
-			 				callback(this.getMenuItems());
-			 			}.bind(this)
-			 		);
-			 	}
+					// load applications
+					CustomApplicationResourceLoader.loadJavascript(
+						CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
+						this.paths.applications,
+						function() {
+							callback(this.getMenuItems());
+						}.bind(this)
+					);
+				}
 
-			 }.bind(this));
+			}.bind(this));
+
 		} catch(e) {
 			// make sure that we notify otherwise we don't get any applications
 			callback(this.getMenuItems());
@@ -98,35 +99,102 @@ var CustomApplicationsHandler = {
 
 
 	/**
+	 * (Show) shows the applicaton with the id
+	 */
+
+	show: function(id) {
+
+		if(!id) return false;
+
+		this.hide(this.currentApplicationId);
+
+		CustomApplicationLog.debug(this.__name, "Request to show application", {id: id});
+
+		if(this.applications[id]) {	
+
+			this.currentApplicationId = id;
+
+			this.applications[id].wakeup();
+
+		} else {
+			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+		}
+
+	},
+
+	/**
+	 * (Hide) hides the application with the id
+	 */
+
+	hide: function(id) {
+
+		if(!id) return false;
+
+		CustomApplicationLog.debug(this.__name, "Request to hide application", {id: id});
+
+		if(this.applications[id]) {	
+
+			this.applications[id].sleep();
+
+			if(this.currentApplicationId == id) {
+				this.currentApplicationId = false;
+			}
+
+		} else {
+			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+		}
+	},
+
+	/**
+	 * (Destroy) destroys the application
+	 */
+
+	destroy: function(id) {
+
+		if(!id) return false;
+
+		CustomApplicationLog.debug(this.__name, "Request to destroy application", {id: id});
+
+		if(this.applications[id]) {	
+
+			this.applications[id].terminate();
+
+			if(this.currentApplicationId == id) {
+				this.currentApplicationId = false;
+			}
+
+		} else {
+			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+		}
+	},
+
+	/**
 	 * (getMenuItems) returns the items for the main application menu
 	 */
 
-	getMenuItems: function() {
+	getMenuItems: function(callback) {
 
-		var items = [];
+		return CustomApplicationHelpers.iterate(this.applications, function(id, application) {
 
-		CustomApplicationHelpers.iterate(this.applications, function(id, application) {
+			CustomApplicationLog.info(this.__name, {id:id}, "Adding application to menu", {
+				title: application.getTitle(),
+			});
 
-			items.push({
+			return {
 				appData : { 
 					appName : application.getTitle(), 
 					isVisible : true, 
 					mmuiEvent : 'ExecuteCustomApplication',
 					appId: application.getId(),         
 				}, 
+				title: application.getTitle(),
 				text1Id : application.getTitle(),
 				disabled : false,  
 				itemStyle : 'style01', 
 				hasCaret : false 
-			});
-
-			CustomApplicationLog.info(this.__name, {id:id}, "Adding application to menu", {
-				title: application.getTitle(),
-			});
+			};
 
 		}.bind(this));
-
-		return items;
 	},
 
 };

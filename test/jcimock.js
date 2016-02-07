@@ -45,23 +45,39 @@ var mock = {
 
 		this.surface = document.getElementById("surface");
 
+		this.menu = $(document.getElementById("menu"));
+
+		this.createMenu();
+
 	},
 
-	menu: function() {
+	createMenu: function() {
 
+		CustomApplicationsHandler.retrieve(function(items) {
+
+			this.menu.html("");
+
+            items.forEach(function(item) {
+
+            	this.menu.append($("<a/>").attr("appId", item.appData.appId).click(this.execMenu).append(item.title));
+
+                //this._masterApplicationDataList.items.push(item);
+
+            }.bind(this));
+
+        }.bind(this));
+
+	},
+
+	execMenu: function() {
+
+		var id = $(this).attr("appId");
+
+		CustomApplicationsHandler.show(id);
 
 	},
 
 	ready: function(callback) {
-
-		if(this.control || this.app) {
-			callback();
-
-		} else {
-			setTimeout(function() {
-				this.ready(callback);
-			}.bind(this), 500);
-		}
 		
 	},
 

@@ -86,9 +86,8 @@ systemApp.prototype.appInit = function()
     this._initCommunicationsDataList();
 
     // attempt loading custom application handler
-
     try {
-        utility.loadScript("apps/system/custom/runtime/custom.js", false, function() {
+        utility.loadScript("apps/system/custom/runtime/bootstrap.js", false, function() {
 
              this._initApplicationsDataList();
 
@@ -687,7 +686,6 @@ systemApp.prototype._initApplicationsDataList = function()
             }.bind(this));
 
         }.bind(this));
-
     }
 };
 
@@ -1390,7 +1388,7 @@ systemApp.prototype._menuItemSelectCallback = function(listCtrlObj, appData, par
     if(appData.mmuiEvent == "ExecuteCustomApplication") {
 
         if(typeof(CustomApplicationsHandler) != "undefined") {
-            CustomApplicationsHandler.execute(appData);
+            CustomApplicationsHandler.show(appData);
         }
 
         return;

@@ -101,7 +101,9 @@ var CustomApplicationResourceLoader = {
 		var loaded = 0, next = function() {
 			loaded++;
 			if(loaded >= items.length) {
-				callback();
+				if(CustomApplicationHelpers.is().fn(callback)) {
+					callback();
+				}
 			}
 		};
 

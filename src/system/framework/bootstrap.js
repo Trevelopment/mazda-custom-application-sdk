@@ -45,9 +45,12 @@ var CustomApplication = (function(){
 		
 		/* (initialize) */
 		__initialize: function() {
+
+			this.is = CustomApplicationHelpers.is();
 			
 			this.canvas = document.createElement("div");
 			this.canvas.classList.add("CustomApplicationCanvas");
+			this.canvas.style.display = "none";
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
 				this.canvas.style.backgroundColor = backgroundColor;
@@ -55,21 +58,74 @@ var CustomApplication = (function(){
 			if(textColor = this.getSetting("textColor"))
 				this.canvas.style.color = textColor;
 
+			if(this.getSetting('statusbar'))
+				this.setStatusbar(true);
+
 			document.body.appendChild(this.canvas);
+
+			this.__created = true;
+		},
+
+		/** 
+		 * (wakeup)
+		 */
+
+		wakeup: function() {
+
+			if(!this.__initialized) {
+
+				if(this.is.fn(this.application.initialize)) {
+					this.application.initialize();
+				}
+
+				this.__initialized = false;
+			}
+
+			this.canvas.style.display = "block";
+			this.canvas.classList.add("visible");
+
+		},
+
+
+		/**
+		 * (sleep)
+		 */
+
+		sleep: function() {
+
+			this.canvas.classList.remove("visible");
+
+			setTimeout(function() {
+				this.canvas.style.display = "none";
+			}.bind(this), 950);
+		},
+
+
+		/**
+		 * (terminate)
+		 */
+
+		terminate: function() {
+
+			this.sleep();
+
+			document.body.removeChild(this.canvas);
+
+			this.__initialized = false;
+
+			this.__created = false;
 		},
 
 		/**
 		 * (settings)
 		 */
 
-		getSetting: function(name, _default)
-		{
+		getSetting: function(name, _default) {
 			return this.application.settings[name] ? this.application.settings[name] : (_default ? _default : false);
 		},
 
-
 		/**
-		 * (attributes)
+		 * (getters)
 		 */
 
 		getId: function() {
@@ -80,9 +136,17 @@ var CustomApplication = (function(){
 			return this.getSetting('title');
 		},
 
-		getStatusbar: function()  {
-			return this.getSetting('statusbar');
-		}
+		/**
+		 * (setters)
+		 */
+
+		setStatusbar: function(visible)  {
+			if(visible) {
+				this.canvas.classList.add("withStatusBar");
+			} else {
+				this.canvas.classList.remove("withStatusBar");
+			}
+		},
 		
 	}
 
@@ -220,12 +284,12 @@ var CustomApplicationHelpers = {
 	iterate: function(o, item) {
 
 		if(this.is().object(o)) {
-			Object.keys(o).map(function(key) {
-				item(key, o[key], true);
+			return Object.keys(o).map(function(key) {
+				return item(key, o[key], true);
 			});
 		} else if (this.is().array(o)) {
-			o.map(function(value, key) {
-				item(key, value);
+			return o.map(function(value, key) {
+				return item(key, value);
 			});
 		}
 	},
@@ -466,7 +530,9 @@ var CustomApplicationResourceLoader = {
 		var loaded = 0, next = function() {
 			loaded++;
 			if(loaded >= items.length) {
-				callback();
+				if(CustomApplicationHelpers.is().fn(callback)) {
+					callback();
+				}
 			}
 		};
 
@@ -555,20 +621,21 @@ var CustomApplicationsHandler = {
 
 			CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
 
-			 	// this has been completed
-			 	if(typeof(CustomApplications) != "undefined") {
+				// this has been completed
+				if(typeof(CustomApplications) != "undefined") {
 
-			 		// load applications
-			 		CustomApplicationResourceLoader.loadJavascript(
-			 			CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
-			 			this.paths.applications,
-			 			function() {
-			 				callback(this.getMenuItems());
-			 			}.bind(this)
-			 		);
-			 	}
+					// load applications
+					CustomApplicationResourceLoader.loadJavascript(
+						CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
+						this.paths.applications,
+						function() {
+							callback(this.getMenuItems());
+						}.bind(this)
+					);
+				}
 
-			 }.bind(this));
+			}.bind(this));
+
 		} catch(e) {
 			// make sure that we notify otherwise we don't get any applications
 			callback(this.getMenuItems());
@@ -592,35 +659,102 @@ var CustomApplicationsHandler = {
 
 
 	/**
+	 * (Show) shows the applicaton with the id
+	 */
+
+	show: function(id) {
+
+		if(!id) return false;
+
+		this.hide(this.currentApplicationId);
+
+		CustomApplicationLog.debug(this.__name, "Request to show application", {id: id});
+
+		if(this.applications[id]) {	
+
+			this.currentApplicationId = id;
+
+			this.applications[id].wakeup();
+
+		} else {
+			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+		}
+
+	},
+
+	/**
+	 * (Hide) hides the application with the id
+	 */
+
+	hide: function(id) {
+
+		if(!id) return false;
+
+		CustomApplicationLog.debug(this.__name, "Request to hide application", {id: id});
+
+		if(this.applications[id]) {	
+
+			this.applications[id].sleep();
+
+			if(this.currentApplicationId == id) {
+				this.currentApplicationId = false;
+			}
+
+		} else {
+			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+		}
+	},
+
+	/**
+	 * (Destroy) destroys the application
+	 */
+
+	destroy: function(id) {
+
+		if(!id) return false;
+
+		CustomApplicationLog.debug(this.__name, "Request to destroy application", {id: id});
+
+		if(this.applications[id]) {	
+
+			this.applications[id].terminate();
+
+			if(this.currentApplicationId == id) {
+				this.currentApplicationId = false;
+			}
+
+		} else {
+			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+		}
+	},
+
+	/**
 	 * (getMenuItems) returns the items for the main application menu
 	 */
 
-	getMenuItems: function() {
+	getMenuItems: function(callback) {
 
-		var items = [];
+		return CustomApplicationHelpers.iterate(this.applications, function(id, application) {
 
-		CustomApplicationHelpers.iterate(this.applications, function(id, application) {
+			CustomApplicationLog.info(this.__name, {id:id}, "Adding application to menu", {
+				title: application.getTitle(),
+			});
 
-			items.push({
+			return {
 				appData : { 
 					appName : application.getTitle(), 
 					isVisible : true, 
 					mmuiEvent : 'ExecuteCustomApplication',
 					appId: application.getId(),         
 				}, 
+				title: application.getTitle(),
 				text1Id : application.getTitle(),
 				disabled : false,  
 				itemStyle : 'style01', 
 				hasCaret : false 
-			});
-
-			CustomApplicationLog.info(this.__name, {id:id}, "Adding application to menu", {
-				title: application.getTitle(),
-			});
+			};
 
 		}.bind(this));
-
-		return items;
 	},
 
 };

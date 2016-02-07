@@ -45,9 +45,12 @@ var CustomApplication = (function(){
 		
 		/* (initialize) */
 		__initialize: function() {
+
+			this.is = CustomApplicationHelpers.is();
 			
 			this.canvas = document.createElement("div");
 			this.canvas.classList.add("CustomApplicationCanvas");
+			this.canvas.style.display = "none";
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
 				this.canvas.style.backgroundColor = backgroundColor;
@@ -55,21 +58,74 @@ var CustomApplication = (function(){
 			if(textColor = this.getSetting("textColor"))
 				this.canvas.style.color = textColor;
 
+			if(this.getSetting('statusbar'))
+				this.setStatusbar(true);
+
 			document.body.appendChild(this.canvas);
+
+			this.__created = true;
+		},
+
+		/** 
+		 * (wakeup)
+		 */
+
+		wakeup: function() {
+
+			if(!this.__initialized) {
+
+				if(this.is.fn(this.application.initialize)) {
+					this.application.initialize();
+				}
+
+				this.__initialized = false;
+			}
+
+			this.canvas.style.display = "block";
+			this.canvas.classList.add("visible");
+
+		},
+
+
+		/**
+		 * (sleep)
+		 */
+
+		sleep: function() {
+
+			this.canvas.classList.remove("visible");
+
+			setTimeout(function() {
+				this.canvas.style.display = "none";
+			}.bind(this), 950);
+		},
+
+
+		/**
+		 * (terminate)
+		 */
+
+		terminate: function() {
+
+			this.sleep();
+
+			document.body.removeChild(this.canvas);
+
+			this.__initialized = false;
+
+			this.__created = false;
 		},
 
 		/**
 		 * (settings)
 		 */
 
-		getSetting: function(name, _default)
-		{
+		getSetting: function(name, _default) {
 			return this.application.settings[name] ? this.application.settings[name] : (_default ? _default : false);
 		},
 
-
 		/**
-		 * (attributes)
+		 * (getters)
 		 */
 
 		getId: function() {
@@ -80,9 +136,17 @@ var CustomApplication = (function(){
 			return this.getSetting('title');
 		},
 
-		getStatusbar: function()  {
-			return this.getSetting('statusbar');
-		}
+		/**
+		 * (setters)
+		 */
+
+		setStatusbar: function(visible)  {
+			if(visible) {
+				this.canvas.classList.add("withStatusBar");
+			} else {
+				this.canvas.classList.remove("withStatusBar");
+			}
+		},
 		
 	}
 

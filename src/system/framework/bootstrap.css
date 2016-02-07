@@ -23,12 +23,99 @@
  * If not, see http://www.gnu.org/licenses/
  *
  */
+/**
+ * Animation for Canvas FadeIn/FadeOut
+ */
+@keyframes CustomApplicationFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-o-keyframes CustomApplicationFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-moz-keyframes CustomApplicationFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes CustomApplicationFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes CustomApplicationFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-o-keyframes CustomApplicationFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-moz-keyframes CustomApplicationFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes CustomApplicationFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/**
+ * Main class
+ */
 .CustomApplicationCanvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  font-family: "Tipperary", Arial, Helvetica, sans-serif;
+  text-align: left;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 800px;
+  height: 480px;
+  z-index: 0;
   overflow: hidden;
-  display: none;
+  font-size: 1.8em;
+  -webkit-animation: CustomApplicationFadeOut 0.5s;
+  -moz-animation: CustomApplicationFadeOut 0.5s;
+  -o-animation: CustomApplicationFadeOut 0.5s;
+  animation: CustomApplicationFadeOut 0.5s;
+}
+.CustomApplicationCanvas.visible {
+  -webkit-animation: CustomApplicationFadeIn 0.5s;
+  -moz-animation: CustomApplicationFadeIn 0.5s;
+  -o-animation: CustomApplicationFadeIn 0.5s;
+  animation: CustomApplicationFadeIn 0.5s;
+}
+.CustomApplicationCanvas.withStatusBar {
+  top: 60px;
+  height: 420px;
 }

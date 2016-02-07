@@ -24,7 +24,7 @@
 body {
 	margin:0;padding:0;
 	font-family: sans-serif;
-	font-size:12px;
+	font-size:25px;
 }
 
 #mock {
@@ -43,8 +43,8 @@ body {
 		right:0;
 		height:58px;
 		color:#fff;
-		font-size:2em;
 		display:block;
+		font-size:25px;
 	}
 
 		#mock #header label {
@@ -54,7 +54,7 @@ body {
 
 	#mock #view {
 		position:absolute;
-		top:0px;
+		top:58px;
 		left:0px;
 		right:0;
 		bottom:0;
@@ -66,3 +66,15 @@ body {
 			height:100%;
 			position:relative;
 		}
+
+		#mock #view #menu {
+			padding:1em 0.5em;
+		}
+			#mock #view #menu a {
+				cursor: pointer;
+			}
+
+				#mock #view #menu a:hover {
+					color: #aaa;
+				}
+				
