@@ -47,6 +47,7 @@ var CustomApplicationsHandler = {
 	paths: {
 		framework: 'apps/system/custom/framework/',
 		applications: 'apps/system/custom/apps/', 
+		library: 'apps/system/custom/library/',
 	},
 
 
@@ -57,26 +58,36 @@ var CustomApplicationsHandler = {
 	retrieve: function(callback) {
 
 		try {
-			CustomApplicationResourceLoader.loadCSS("bootstrap.css", this.paths.framework);
+			CustomApplicationResourceLoader.loadJavascript("jquery.js", this.paths.library, function() {
 
-			CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
+				CustomApplicationResourceLoader.loadCSS("bootstrap.css", this.paths.framework, function() {
 
-				// this has been completed
-				if(typeof(CustomApplications) != "undefined") {
+					CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
 
-					// load applications
-					CustomApplicationResourceLoader.loadJavascript(
-						CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
-						this.paths.applications,
-						function() {
-							callback(this.getMenuItems());
-						}.bind(this)
-					);
-				}
+						// this has been completed
+						if(typeof(CustomApplications) != "undefined") {
 
-			}.bind(this));
+							// load applications
+							CustomApplicationResourceLoader.loadJavascript(
+								CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
+								this.paths.applications,
+								function() {
+									callback(this.getMenuItems());
+								}.bind(this)
+							);
+						}
+
+					}.bind(this));
+
+				}.bind(this)); // bootstrap css
+
+			}.bind(this)); // jquery library
 
 		} catch(e) {
+
+			// error message
+			CustomApplicationLog.error(this.__name, "Error while retrieving applications", e);
+
 			// make sure that we notify otherwise we don't get any applications
 			callback(this.getMenuItems());
 		}

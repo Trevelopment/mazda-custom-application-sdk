@@ -49,25 +49,21 @@ var CustomApplication = (function(){
 			this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
 
 			this.is = CustomApplicationHelpers.is();
-			
-			this.surface = document.createElement("div");
-			this.surface.classList.add("CustomApplicationSurface");
-			this.surface.style.display = "none";
+
+			// create surface
+			this.surface = $("<div/>").addClass("CustomApplicationSurface").hide().appendTo('body');
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
-				this.surface.style.backgroundColor = backgroundColor;
+				this.surface.css("backgroundColor", backgroundColor);
 
 			if(textColor = this.getSetting("textColor"))
-				this.surface.style.color = textColor;
+				this.surface.css("color", textColor);
 
 			if(this.getSetting('statusbar'))
 				this.setStatusbar(true);
 
-			document.body.appendChild(this.surface);
-
-			this.canvas = document.createElement("div");
-			this.canvas.classList.add("CustomApplicationCanvas");
-			this.surface.appendChild(this.canvas);
+			// create canvas
+			this.canvas = $("<div/>").addClass("CustomApplicationCanvas").appendTo(this.surface);
 
 			this.__extendApplication();
 
@@ -97,9 +93,7 @@ var CustomApplication = (function(){
 				this.application.render();
 			}
 
-			this.surface.style.display = "block";
-			this.surface.classList.add("visible");
-
+			this.surface.addClass("visible").show();
 		},
 
 
@@ -107,12 +101,15 @@ var CustomApplication = (function(){
 		 * (sleep)
 		 */
 
-		sleep: function() {
+		sleep: function(finish) {
 
-			this.canvas.classList.remove("visible");
+			this.surface.removeClass("visible");
 
 			setTimeout(function() {
-				this.canvas.style.display = "none";
+				this.surface.hide();
+
+				if(this.is.fn(finish)) finish();
+
 			}.bind(this), 950);
 		},
 
@@ -123,13 +120,15 @@ var CustomApplication = (function(){
 
 		terminate: function() {
 
-			this.sleep();
+			this.sleep(function() {
 
-			document.body.removeChild(this.canvas);
+				this.surface.remove();
 
-			this.__initialized = false;
+				this.__initialized = false;
 
-			this.__created = false;
+				this.__created = false;
+
+			}.bind(this));
 		},
 
 		/**
@@ -211,19 +210,10 @@ var CustomApplication = (function(){
 
 	    	this.application.element = function(tag, id, classNames, styles) {
 
-		    	var el = document.createElement(tag);
-		    	el.setAttribute("ID", id);
-		    	el.setAttribute("CLASS", classNames);
+		    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {});
 
-		    	if(that.is.object(styles)) {
-
-		    		CustomApplicationHelpers.iterate(styles, function(key, value) {
-		    			el.style[key] = value;
-		    		});
-		    	}
-
-		    	that.canvas.appendChild(el);
-
+		    	that.canvas.append(el);
+		    
 		    	return el;
 		    };
 
