@@ -16,7 +16,7 @@
  Revisions:
  v0.1 - 08-May-2012  Integrated mainMenuControl. Fixed issues with DOM ready
  v0.2 - 10-May-2012  Added ActivePanel, LeftButton, StatusBar
- v0.3 - 11-May-2012  Merged transitions.js code into framework. System App Prototype now shows transitions between
+ v0.3 - 11-May-2012  Merged transitions.j_masterApplicationDataLists code into framework. System App Prototype now shows transitions between
                      contexts.
  v0.4 - 17-May-2012  Reworked functionality of Active Panel Content to handle transitions. Added alerts.
  v0.5 - 14-June-2012 Language Localization added to ListCtrls
@@ -84,18 +84,16 @@ systemApp.prototype.appInit = function()
     // prepare data lists
     this._initEntertainmentDataList();
     this._initCommunicationsDataList();
+    this._initApplicationsDataList();
 
     // attempt loading custom application handler
     try {
         utility.loadScript("apps/system/custom/runtime/bootstrap.js", false, function() {
-
-             this._initApplicationsDataList();
-
+            this._initCustomApplicationsDataList();   
         }.bind(this));
 
     } catch(e) {
-        // do nothing if not available
-        this._initApplicationsDataList();
+        // do nothing if not available 
     }
         
     //@formatter:off
@@ -673,19 +671,26 @@ systemApp.prototype._initApplicationsDataList = function()
     this._masterApplicationDataList = {
         items: items
     };
+};
 
+systemApp.prototype._initCustomApplicationsDataList = function()
+{
     // extend with custom applications
-    if(typeof(CustomApplicationsHandler) != "undefined") {
-        
-        CustomApplicationsHandler.retrieve(function(items) {
+    try {
+        if(typeof(CustomApplicationsHandler) != "undefined") {
+            
+            CustomApplicationsHandler.retrieve(function(items) {
 
-            items.forEach(function(item) {
+                items.forEach(function(item) {
 
-                this._masterApplicationDataList.items.push(item);
+                    this._masterApplicationDataList.items.push(item);
+
+                }.bind(this));
 
             }.bind(this));
+        }
+    } catch(e) {
 
-        }.bind(this));
     }
 };
 
@@ -1456,6 +1461,10 @@ systemApp.prototype._buildApplicationsDataList = function()
         items : [],
         vuiSupport: true
     };
+
+    if(!this._masterApplicationDataList.items) {
+        this._initApplicationsDataList();
+    }
 
     for (var i = 0; i < this._masterApplicationDataList.items.length; ++i)
     {

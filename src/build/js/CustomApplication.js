@@ -46,8 +46,6 @@ var CustomApplication = (function(){
 		/* (initialize) */
 		__initialize: function() {
 
-			this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
-
 			this.is = CustomApplicationHelpers.is();
 
 			// create surface
@@ -163,43 +161,6 @@ var CustomApplication = (function(){
 			}
 		},
 
-		/**
-		 * handleControllerEvent
-		 */
-
-		handleControllerEvent: function(eventId) {
-
-	        var response = "ignored"; // consumed
-
-	        CustomApplicationLog.debug(this.application.id, "Controller event received", {event: eventId});
-
-	        if(this.is.fn(this.application.controllerEvent)) {
-	        	this.application.controllerEvent(eventId);
-	        }
-
-	        /*
-
-            switch(eventId) {
-                case "select":
-                case "left":
-                case "right":
-                case "down":
-                case "up":
-                case "cw":
-                case "ccw":
-                case "lostFocus":
-        		case "acceptFocusInit":
-		        case "leftStart":
-        		case "left":
-     		    case "rightStart":
-        		case "right":
-        		case "selectStart":
-            };*/
-	        
-	        return response;
-	    },
-
-
 	    /**
 	     * element
 	     */
@@ -213,9 +174,28 @@ var CustomApplication = (function(){
 		    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {});
 
 		    	that.canvas.append(el);
-		    
+
 		    	return el;
 		    };
+
+	    },
+
+	    /**
+	     * MultiController
+	     */
+
+	    handleControllerEvent: function(eventId) {
+
+	    	var result = true;
+
+	    	if(this.is.fn(this.application.controllerEvent)) {
+
+	    		result = this.application.controllerEvent(eventId);
+
+	    		if(result === false) result = false;
+	    	}
+
+	    	return result;
 
 	    },
 		

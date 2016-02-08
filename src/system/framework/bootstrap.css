@@ -93,7 +93,7 @@
 /**
  * Main class
  */
-.CustomApplicationCanvas {
+.CustomApplicationSurface {
   font-family: "Tipperary", Arial, Helvetica, sans-serif;
   text-align: left;
   position: absolute;
@@ -109,13 +109,18 @@
   -o-animation: CustomApplicationFadeOut 0.5s;
   animation: CustomApplicationFadeOut 0.5s;
 }
-.CustomApplicationCanvas.visible {
+.CustomApplicationSurface.visible {
   -webkit-animation: CustomApplicationFadeIn 0.5s;
   -moz-animation: CustomApplicationFadeIn 0.5s;
   -o-animation: CustomApplicationFadeIn 0.5s;
   animation: CustomApplicationFadeIn 0.5s;
 }
-.CustomApplicationCanvas.withStatusBar {
+.CustomApplicationSurface.withStatusBar {
   top: 60px;
   height: 420px;
+}
+.CustomApplicationSurface .CustomApplicationCanvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }

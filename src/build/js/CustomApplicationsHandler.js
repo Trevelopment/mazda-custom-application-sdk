@@ -50,6 +50,17 @@ var CustomApplicationsHandler = {
 		library: 'apps/system/custom/library/',
 	},
 
+	/**
+	 * (initialize) Initializes some of the core objects
+	 */
+
+	initialize: function() {
+
+		this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
+
+		this.initialized = true;
+	},
+
 
 	/**
 	 * (Retrieve) loads the current application list and returns the additional items
@@ -58,6 +69,11 @@ var CustomApplicationsHandler = {
 	retrieve: function(callback) {
 
 		try {
+			// initialize
+			if(!this.initialized) this.initialize();
+
+			// load libraries
+
 			CustomApplicationResourceLoader.loadJavascript("jquery.js", this.paths.library, function() {
 
 				CustomApplicationResourceLoader.loadCSS("bootstrap.css", this.paths.framework, function() {
@@ -207,6 +223,49 @@ var CustomApplicationsHandler = {
 
 		}.bind(this));
 	},
+
+
+	/**
+	 * MultiController Handler
+	 */
+
+	handleControllerEvent: function(eventId) {
+
+        var response = "ignored"; // consumed
+
+	    CustomApplicationLog.debug(this.__name, "Controller event received", {event: eventId});
+
+        if(this.currentApplicationId && this.applications[this.currentApplicationId]) {
+
+  			if(this.applications[this.currentApplicationId].handleControllerEvent(eventId)) {
+
+  				response = "handled";
+
+  			}
+        }
+
+        /*
+
+        switch(eventId) {
+            case "select":
+            case "left":
+            case "right":
+            case "down":
+            case "up":
+            case "cw":
+            case "ccw":
+            case "lostFocus":
+    		case "acceptFocusInit":
+	        case "leftStart":
+    		case "left":
+ 		    case "rightStart":
+    		case "right":
+    		case "selectStart":
+        };*/
+        
+        return response;
+    },
+
 
 };
 

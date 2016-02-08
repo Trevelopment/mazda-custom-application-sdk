@@ -107,33 +107,54 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 	initialize: function() {
 
+
+
 	},
 
 	/** 
-	 * (render) 
+	 * (created) 
 	 * 
 	 * Executed the first time the application gets selected from the menu
 	 *
 	 * Add any content that will be static here
 	 */
 
-	render: function() {
+	created: function() {
 
-		// Canvas is a jQuery object that defines the main application window
-		this.canvas.append($("<div>").append("Hello World"));
+		// Elements returns a jQuery object
+
+		this.label = this.element("div", false, false, {
+			position: 'absolute',
+			top: 10, 
+			left: 10,
+		});
+
+		this.label.html("Waiting for Element");
 	},
 
 	/**
-	 * (execute)
+	 * (render)
 	 *
 	 * Executes when the application gets the focus. You can either use this event to
-	 * build the application or use the render() method to predefine the canvas and use
+	 * build the application or use the firstRender() method to predefine the canvas and use
 	 * this method to run your logic.
 	 */
 
-	execute: function() {
+	render: function() {
 
 
-	}
+	},
+
+	/**
+	 * (controllerEvent)
+	 *
+	 * Executed when the controller sends an signal
+	 */
+
+	controllerEvent: function(eventId) {
+
+		this.label.html(eventId);
+
+	},
 
 })); /** EOF **/

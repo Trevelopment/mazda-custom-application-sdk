@@ -53,7 +53,10 @@ var mock = {
 
 	createMenu: function() {
 
+
 		CustomApplicationsHandler.retrieve(function(items) {
+
+
 
 			this.menu.html("");
 

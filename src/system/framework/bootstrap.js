@@ -47,23 +47,29 @@ var CustomApplication = (function(){
 		__initialize: function() {
 
 			this.is = CustomApplicationHelpers.is();
-			
-			this.canvas = document.createElement("div");
-			this.canvas.classList.add("CustomApplicationCanvas");
-			this.canvas.style.display = "none";
+
+			// create surface
+			this.surface = $("<div/>").addClass("CustomApplicationSurface").hide().appendTo('body');
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
-				this.canvas.style.backgroundColor = backgroundColor;
+				this.surface.css("backgroundColor", backgroundColor);
 
 			if(textColor = this.getSetting("textColor"))
-				this.canvas.style.color = textColor;
+				this.surface.css("color", textColor);
 
 			if(this.getSetting('statusbar'))
 				this.setStatusbar(true);
 
-			document.body.appendChild(this.canvas);
+			// create canvas
+			this.canvas = $("<div/>").addClass("CustomApplicationCanvas").appendTo(this.surface);
+
+			this.__extendApplication();
 
 			this.__created = true;
+
+			if(this.is.fn(this.application.created)) {
+				this.application.created();
+			}
 		},
 
 		/** 
@@ -81,9 +87,11 @@ var CustomApplication = (function(){
 				this.__initialized = false;
 			}
 
-			this.canvas.style.display = "block";
-			this.canvas.classList.add("visible");
+			if(this.is.fn(this.application.render)) {
+				this.application.render();
+			}
 
+			this.surface.addClass("visible").show();
 		},
 
 
@@ -91,12 +99,15 @@ var CustomApplication = (function(){
 		 * (sleep)
 		 */
 
-		sleep: function() {
+		sleep: function(finish) {
 
-			this.canvas.classList.remove("visible");
+			this.surface.removeClass("visible");
 
 			setTimeout(function() {
-				this.canvas.style.display = "none";
+				this.surface.hide();
+
+				if(this.is.fn(finish)) finish();
+
 			}.bind(this), 950);
 		},
 
@@ -107,13 +118,15 @@ var CustomApplication = (function(){
 
 		terminate: function() {
 
-			this.sleep();
+			this.sleep(function() {
 
-			document.body.removeChild(this.canvas);
+				this.surface.remove();
 
-			this.__initialized = false;
+				this.__initialized = false;
 
-			this.__created = false;
+				this.__created = false;
+
+			}.bind(this));
 		},
 
 		/**
@@ -147,6 +160,44 @@ var CustomApplication = (function(){
 				this.canvas.classList.remove("withStatusBar");
 			}
 		},
+
+	    /**
+	     * element
+	     */
+
+	    __extendApplication: function() {
+
+	    	var that = this;
+
+	    	this.application.element = function(tag, id, classNames, styles) {
+
+		    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {});
+
+		    	that.canvas.append(el);
+
+		    	return el;
+		    };
+
+	    },
+
+	    /**
+	     * MultiController
+	     */
+
+	    handleControllerEvent: function(eventId) {
+
+	    	var result = true;
+
+	    	if(this.is.fn(this.application.controllerEvent)) {
+
+	    		result = this.application.controllerEvent(eventId);
+
+	    		if(result === false) result = false;
+	    	}
+
+	    	return result;
+
+	    },
 		
 	}
 
@@ -607,6 +658,18 @@ var CustomApplicationsHandler = {
 	paths: {
 		framework: 'apps/system/custom/framework/',
 		applications: 'apps/system/custom/apps/', 
+		library: 'apps/system/custom/library/',
+	},
+
+	/**
+	 * (initialize) Initializes some of the core objects
+	 */
+
+	initialize: function() {
+
+		this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
+
+		this.initialized = true;
 	},
 
 
@@ -617,26 +680,41 @@ var CustomApplicationsHandler = {
 	retrieve: function(callback) {
 
 		try {
-			CustomApplicationResourceLoader.loadCSS("bootstrap.css", this.paths.framework);
+			// initialize
+			if(!this.initialized) this.initialize();
 
-			CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
+			// load libraries
 
-				// this has been completed
-				if(typeof(CustomApplications) != "undefined") {
+			CustomApplicationResourceLoader.loadJavascript("jquery.js", this.paths.library, function() {
 
-					// load applications
-					CustomApplicationResourceLoader.loadJavascript(
-						CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
-						this.paths.applications,
-						function() {
-							callback(this.getMenuItems());
-						}.bind(this)
-					);
-				}
+				CustomApplicationResourceLoader.loadCSS("bootstrap.css", this.paths.framework, function() {
 
-			}.bind(this));
+					CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
+
+						// this has been completed
+						if(typeof(CustomApplications) != "undefined") {
+
+							// load applications
+							CustomApplicationResourceLoader.loadJavascript(
+								CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
+								this.paths.applications,
+								function() {
+									callback(this.getMenuItems());
+								}.bind(this)
+							);
+						}
+
+					}.bind(this));
+
+				}.bind(this)); // bootstrap css
+
+			}.bind(this)); // jquery library
 
 		} catch(e) {
+
+			// error message
+			CustomApplicationLog.error(this.__name, "Error while retrieving applications", e);
+
 			// make sure that we notify otherwise we don't get any applications
 			callback(this.getMenuItems());
 		}
@@ -756,6 +834,49 @@ var CustomApplicationsHandler = {
 
 		}.bind(this));
 	},
+
+
+	/**
+	 * MultiController Handler
+	 */
+
+	handleControllerEvent: function(eventId) {
+
+        var response = "ignored"; // consumed
+
+	    CustomApplicationLog.debug(this.__name, "Controller event received", {event: eventId});
+
+        if(this.currentApplicationId && this.applications[this.currentApplicationId]) {
+
+  			if(this.applications[this.currentApplicationId].handleControllerEvent(eventId)) {
+
+  				response = "handled";
+
+  			}
+        }
+
+        /*
+
+        switch(eventId) {
+            case "select":
+            case "left":
+            case "right":
+            case "down":
+            case "up":
+            case "cw":
+            case "ccw":
+            case "lostFocus":
+    		case "acceptFocusInit":
+	        case "leftStart":
+    		case "left":
+ 		    case "rightStart":
+    		case "right":
+    		case "selectStart":
+        };*/
+        
+        return response;
+    },
+
 
 };
 
