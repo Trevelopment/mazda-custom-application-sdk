@@ -82,7 +82,7 @@ var CustomApplicationsHandler = {
 
 						// this has been completed
 						if(typeof(CustomApplications) != "undefined") {
-
+	
 							// load applications
 							CustomApplicationResourceLoader.loadJavascript(
 								CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
@@ -129,6 +129,12 @@ var CustomApplicationsHandler = {
 	 */
 
 	run: function(id) {
+
+		if(CustomApplicationHelpers.is().object(id)) {
+
+			id = id.appId ? id.appId : false;
+		}
+
 		return this.wakeup(id);
 	},
 
@@ -208,7 +214,7 @@ var CustomApplicationsHandler = {
 
 			return {
 				appData : { 
-					appName : application.getTitle(), 
+					appName : 'custom_' + application.getId(), 
 					isVisible : true, 
 					mmuiEvent : 'ExecuteCustomApplication',
 					appId: application.getId(),         

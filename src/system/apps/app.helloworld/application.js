@@ -77,7 +77,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * (title) The title of the application in the Application menu
 		 */
 
-		title: 'Hello World Application',
+		title: 'Hello World',
 
 		/**
 		 * (statusbar) Defines if the statusbar should be shown
@@ -139,7 +139,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 		this.info.html("Vehicle Speed");
 
-		console.log(this.vehicle.speed);
+		//console.log(this.vehicle.speed);
 
 
 		//this.log(this.transform(this.vehicle.speed, this.transform.toMPH));

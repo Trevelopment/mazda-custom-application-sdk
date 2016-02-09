@@ -81,20 +81,13 @@ systemApp.prototype.appInit = function()
         utility.loadScript("apps/system/test/systemAppTest.js");
     }
 
+    // Custom Applications Hook
+    this._prepareCustomApplications();
+
     // prepare data lists
     this._initEntertainmentDataList();
     this._initCommunicationsDataList();
     this._initApplicationsDataList();
-
-    // attempt loading custom application handler
-    try {
-        utility.loadScript("apps/system/custom/runtime/bootstrap.js", false, function() {
-            this._initCustomApplicationsDataList();   
-        }.bind(this));
-
-    } catch(e) {
-        // do nothing if not available 
-    }
         
     //@formatter:off
 
@@ -673,26 +666,7 @@ systemApp.prototype._initApplicationsDataList = function()
     };
 };
 
-systemApp.prototype._initCustomApplicationsDataList = function()
-{
-    // extend with custom applications
-    try {
-        if(typeof(CustomApplicationsHandler) != "undefined") {
-            
-            CustomApplicationsHandler.retrieve(function(items) {
 
-                items.forEach(function(item) {
-
-                    this._masterApplicationDataList.items.push(item);
-
-                }.bind(this));
-
-            }.bind(this));
-        }
-    } catch(e) {
-
-    }
-};
 
 systemApp.prototype._initCommunicationsDataList = function()
 {
@@ -758,6 +732,7 @@ systemApp.prototype._StatusPhoneCallMsgHandler = function(msg)
 
 systemApp.prototype._StatusMenuMsgHandler = function(msg)
 {
+
     log.debug("Received StatusMenu message: " + msg.params.payload.statusMenu.appName + " " + msg.params.payload.statusMenu.appStatus);
 
     // Update menu items associated with the given appName of the message. Menu items can appear
@@ -1389,11 +1364,14 @@ systemApp.prototype._selectCallbackHomeScreen = function(mainMenuCtrlObj, appDat
  */
 systemApp.prototype._menuItemSelectCallback = function(listCtrlObj, appData, params)
 {
-    // CustomApplication Support
+    /**
+     * CustomApplication Handler Hook
+     */
+
     if(appData.mmuiEvent == "ExecuteCustomApplication") {
 
         if(typeof(CustomApplicationsHandler) != "undefined") {
-            CustomApplicationsHandler.show(appData);
+            CustomApplicationsHandler.run(appData);
         }
 
         return;
@@ -2172,6 +2150,81 @@ systemApp.prototype._selectSourceReconnectFailed = function(controlRef, appData,
         case "Global.Yes":
             framework.sendEventToMmui("common", appData);
             break;
+    }
+};
+
+
+/**
+ * Custom Application Integration
+ */
+
+systemApp.prototype._prepareCustomApplications = function()
+{
+    this.CustomApplicationLoadCount = 0;
+    setTimeout(function() {
+        this._loadCustomApplications();
+    }.bind(this), 1000);
+
+}
+
+systemApp.prototype._loadCustomApplications = function()
+{
+    try {
+
+        if(typeof(CustomApplicationsHandler) == "undefined") {
+
+            // try to load the script
+            utility.loadScript("apps/system/custom/framework/bootstrap.js", false, function() {
+
+                this._initCustomApplicationsDataList();   
+            
+            }.bind(this));
+
+            // clear timeout
+            setTimeout(function() {
+
+                if(typeof(CustomApplicationsHandler) == "undefined") {
+
+                    this.CustomApplicationLoadCount = this.CustomApplicationLoadCount + 1;
+
+                    // 10 attempts or we forget it
+                    if(this.CustomApplicationLoadCount < 10) {
+
+                        if(div) document.body.removeChild(div);
+                        
+                        this._loadCustomApplications();
+                    }
+                }
+
+            }.bind(this), 2500);
+
+        }
+
+    } catch(e) {
+        // if this fails, we won't attempt again because there could be issues with the actual handler
+    }
+};
+
+systemApp.prototype._initCustomApplicationsDataList = function()
+{
+    // extend with custom applications
+    try {
+        if(typeof(CustomApplicationsHandler) != "undefined") {
+            
+            CustomApplicationsHandler.retrieve(function(items) {
+
+                items.forEach(function(item) {
+
+                    this._masterApplicationDataList.items.push(item);
+
+                }.bind(this));
+
+                this._readyApplications();
+
+            }.bind(this));
+        }
+    } catch(e) {
+
     }
 };
 
