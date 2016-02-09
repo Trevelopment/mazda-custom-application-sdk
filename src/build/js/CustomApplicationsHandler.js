@@ -45,9 +45,9 @@ var CustomApplicationsHandler = {
 	 */
 
 	paths: {
-		framework: 'apps/system/custom/framework/',
+		framework: 'apps/system/custom/runtime/',
 		applications: 'apps/system/custom/apps/', 
-		library: 'apps/system/custom/library/',
+		library: 'apps/system/custom/runtime/library/',
 	},
 
 	/**
@@ -85,7 +85,7 @@ var CustomApplicationsHandler = {
 	
 							// load applications
 							CustomApplicationResourceLoader.loadJavascript(
-								CustomApplicationResourceLoader.fromFormatted("{0}/application.js", CustomApplications),
+								CustomApplicationResourceLoader.fromFormatted("{0}/app.js", CustomApplications),
 								this.paths.applications,
 								function() {
 									callback(this.getMenuItems());

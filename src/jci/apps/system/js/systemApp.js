@@ -491,6 +491,23 @@ systemApp.prototype.appInit = function()
             },
 			"readyFunction" : this._readySiriLaunchingError.bind(this),
         },
+
+        /**
+         * CustomApplication Surface
+         */
+
+        "CustomApplicationSurface" : {
+            "sbNameId": "CustomApplication",
+            "sbNameIcon": "IcnSbnMap.png",
+            "template" : "CompassTmplt",
+            "templatePath": "apps/system/customtemplates/Compass", //only needed for app-specific templates
+            "controlProperties": {
+                "CompassCtrl" : {
+                        additionalTextId : 'NoNavigation'
+                } // end of properties for "CoordinatesCtrl"
+            }, // end of list of controlProperties
+            "readyFunction": this._CompassContextReady.bind(this),
+        } // end of "Compass"
     }; // end of this._contextTable object
 
     //@formatter:off
@@ -2163,7 +2180,7 @@ systemApp.prototype._prepareCustomApplications = function()
     this.CustomApplicationLoadCount = 0;
     setTimeout(function() {
         this._loadCustomApplications();
-    }.bind(this), 1000);
+    }.bind(this), 5000); // first attempt wait 5s - the system might be booting still anyway
 
 }
 
@@ -2189,8 +2206,6 @@ systemApp.prototype._loadCustomApplications = function()
 
                     // 10 attempts or we forget it
                     if(this.CustomApplicationLoadCount < 10) {
-
-                        if(div) document.body.removeChild(div);
                         
                         this._loadCustomApplications();
                     }

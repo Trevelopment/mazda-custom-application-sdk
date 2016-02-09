@@ -31,7 +31,7 @@
  * This is the main file of the application and contains the required information
  * to run the application on the mini framework.
  * 
- * The filename needs to be application.js in order to be recognized by the loader.
+ * The filename needs to be app.js in order to be recognized by the loader.
  */
 
 CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
