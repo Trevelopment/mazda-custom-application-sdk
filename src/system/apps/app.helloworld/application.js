@@ -130,6 +130,20 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		});
 
 		this.label.html("Waiting for Element");
+
+		this.info = this.element("div", false, false, {
+			position: 'absolute',
+			top:50,
+			left: 10
+		});
+
+		this.info.html("Vehicle Speed");
+
+		console.log(this.vehicle.speed);
+
+
+		//this.log(this.transform(this.vehicle.speed, this.transform.toMPH));
+
 	},
 
 	/**

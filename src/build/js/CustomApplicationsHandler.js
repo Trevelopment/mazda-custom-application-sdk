@@ -124,75 +124,74 @@ var CustomApplicationsHandler = {
 		return true;
 	},
 
-
 	/**
-	 * (Show) shows the applicaton with the id
+	 * (run) runs an application
 	 */
 
-	show: function(id) {
+	run: function(id) {
+		return this.wakeup(id);
+	},
 
-		if(!id) return false;
 
-		this.hide(this.currentApplicationId);
+	/**
+	 * (wakeup) shows the applicaton with the id
+	 */
 
-		CustomApplicationLog.debug(this.__name, "Request to show application", {id: id});
+	wakeup: function(id) {
 
-		if(this.applications[id]) {	
+		this.sleep(this.currentApplicationId);
+
+		if(this.invoke(id, "__wakeup")) {
 
 			this.currentApplicationId = id;
-
-			this.applications[id].wakeup();
-
-		} else {
-			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
-		}
-
+		}	
 	},
 
 	/**
-	 * (Hide) hides the application with the id
+	 * (sleep) hides the application with the id
 	 */
 
-	hide: function(id) {
+	sleep: function(id) {
 
-		if(!id) return false;
-
-		CustomApplicationLog.debug(this.__name, "Request to hide application", {id: id});
-
-		if(this.applications[id]) {	
-
-			this.applications[id].sleep();
-
+		if(this.invoke(id, "__sleep")) {
+		
 			if(this.currentApplicationId == id) {
 				this.currentApplicationId = false;
 			}
-
-		} else {
-			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
 		}
 	},
 
 	/**
-	 * (Destroy) destroys the application
+	 * (termimate) destroys the application
 	 */
 
-	destroy: function(id) {
+	terminate: function(id) {
+
+		this.sleep(id);
+
+		this.invoke(id, "__terminate");
+	},
+
+	/**
+	 * (invoke) application lifetime handler
+	 */
+
+	invoke: function(id, method) {
 
 		if(!id) return false;
 
-		CustomApplicationLog.debug(this.__name, "Request to destroy application", {id: id});
+		CustomApplicationLog.debug(this.__name, "Invoke application operation", {id: id, method: method});
 
-		if(this.applications[id]) {	
+		if(id && this.applications[id] && CustomApplicationHelpers.is().fn(this.applications[id][method])) {
 
-			this.applications[id].terminate();
+			this.applications[id][method]();
 
-			if(this.currentApplicationId == id) {
-				this.currentApplicationId = false;
-			}
+			return true;
+		} 
 
-		} else {
-			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
-		}
+		CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+
+		return false;
 	},
 
 	/**

@@ -76,7 +76,7 @@ var mock = {
 
 		var id = $(this).attr("appId");
 
-		CustomApplicationsHandler.show(id);
+		CustomApplicationsHandler.run(id);
 
 	},
 

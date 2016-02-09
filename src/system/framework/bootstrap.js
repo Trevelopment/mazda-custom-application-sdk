@@ -34,93 +34,113 @@ var CustomApplication = (function(){
 
 	function CustomApplication(application) {
 
-		this.application = application;
-		
+		Object.keys(application).map(function(key) {
+			if(!this[key]) {
+				this[key] = application[key];
+			}
+		}.bind(this));
+
 		this.__initialize();
 	};
 
 	CustomApplication.prototype = {
 
 		storages: {},
+
+		vehicle: {},
+
+		/**
+		 * (protected) __initialie
+		 *
+		 * Called when the application is initalized first and is reponsible for creating 
+		 * the surface and canvas.
+		 */
 		
 		/* (initialize) */
 		__initialize: function() {
 
+			// global specific
 			this.is = CustomApplicationHelpers.is();
 
+			// application specific
+			this.settings = this.settings ? this.settings : {};
+
 			// create surface
-			this.surface = $("<div/>").addClass("CustomApplicationSurface").hide().appendTo('body');
+			this.__surface = $("<div/>").addClass("CustomApplicationSurface").hide().appendTo('body');
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
-				this.surface.css("backgroundColor", backgroundColor);
+				this.__surface.css("backgroundColor", backgroundColor);
 
 			if(textColor = this.getSetting("textColor"))
-				this.surface.css("color", textColor);
+				this.__surface.css("color", textColor);
 
 			if(this.getSetting('statusbar'))
 				this.setStatusbar(true);
 
 			// create canvas
-			this.canvas = $("<div/>").addClass("CustomApplicationCanvas").appendTo(this.surface);
+			this.canvas = $("<div/>").addClass("CustomApplicationCanvas").appendTo(this.__surface);
 
-			this.__extendApplication();
-
+			// finalize and bootup
 			this.__created = true;
 
-			if(this.is.fn(this.application.created)) {
-				this.application.created();
+			if(this.is.fn(this.created)) {
+				this.created();
 			}
 		},
 
-		/** 
-		 * (wakeup)
+		/**
+		 * (protected) __wakeup
+		 *
+		 * Wakes up the application from sleep. Called by the application handler.
 		 */
 
-		wakeup: function() {
+		__wakeup: function() {
 
 			if(!this.__initialized) {
 
-				if(this.is.fn(this.application.initialize)) {
-					this.application.initialize();
+				if(this.is.fn(this.initialize)) {
+					this.initialize();
 				}
 
 				this.__initialized = false;
 			}
 
-			if(this.is.fn(this.application.render)) {
-				this.application.render();
+			if(this.is.fn(this.render)) {
+				this.render();
 			}
 
-			this.surface.addClass("visible").show();
+			this.__surface.addClass("visible").show();
 		},
 
-
 		/**
-		 * (sleep)
+		 * (protected) __sleep
+		 *
+		 * Puts the application in sleep mode / pauses it. Called by the application handler.
 		 */
 
-		sleep: function(finish) {
+		__sleep: function(finish) {
 
-			this.surface.removeClass("visible");
+			this.__surface.removeClass("visible");
 
 			setTimeout(function() {
-				this.surface.hide();
+				this.__surface.hide();
 
 				if(this.is.fn(finish)) finish();
 
 			}.bind(this), 950);
 		},
 
-
 		/**
-		 * (terminate)
+		 * (protected) __terminate
+		 *
+		 * Terminates an application for good. Usually only called in fatal errors.
 		 */
 
-		terminate: function() {
+		__terminate: function() {
 
 			this.sleep(function() {
 
-				this.surface.remove();
+				this.__surface.remove();
 
 				this.__initialized = false;
 
@@ -129,17 +149,38 @@ var CustomApplication = (function(){
 			}.bind(this));
 		},
 
+
+	    /**
+	     * (protected) __handleControllerEvent
+	     *
+	     * Handles a event from the multi controller. 
+	     */
+
+	    __handleControllerEvent: function(eventId) {
+
+	    	// pass to application
+	    	if(this.is.fn(this.onControllerEvent)) {
+
+	    		this.onControllerEvent(eventId);
+
+	    		return true;
+	    	}
+
+	    	return false;
+	    },
+
+
+	    /**
+		 * (internal) getters
+		 */
+
 		/**
 		 * (settings)
 		 */
 
 		getSetting: function(name, _default) {
-			return this.application.settings[name] ? this.application.settings[name] : (_default ? _default : false);
+			return this.settings[name] ? this.settings[name] : (_default ? _default : false);
 		},
-
-		/**
-		 * (getters)
-		 */
 
 		getId: function() {
 			return this.id;
@@ -150,54 +191,58 @@ var CustomApplication = (function(){
 		},
 
 		/**
-		 * (setters)
+		 * (internal) setters
 		 */
 
 		setStatusbar: function(visible)  {
 			if(visible) {
-				this.canvas.classList.add("withStatusBar");
+				this.__surface.classList.add("withStatusBar");
 			} else {
-				this.canvas.classList.remove("withStatusBar");
+				this.__surface.classList.remove("withStatusBar");
 			}
 		},
 
-	    /**
-	     * element
-	     */
+		/**
+		 * (internal) observe
+		 *
+		 * Observes a specific vehicle data point
+		 */
 
-	    __extendApplication: function() {
+		observe: function(name, every, flank) {
 
-	    	var that = this;
+		},
 
-	    	this.application.element = function(tag, id, classNames, styles) {
+		/**
+		 * (internal) forget
+		 *
+		 * Stops the observer for a specific vehicle data point
+		 */
 
-		    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {});
+		forget: function(name) {
 
-		    	that.canvas.append(el);
+		},
 
-		    	return el;
-		    };
 
+    	/*
+    	 * (internal) element
+    	 *
+    	 * creates a new jquery element and adds to the canvas
+    	 */
+
+	   	element: function(tag, id, classNames, styles) {
+
+	    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {});
+
+	    	this.canvas.append(el);
+
+	    	return el;
 	    },
 
 	    /**
-	     * MultiController
+	     * Transform Vehicle Data
 	     */
 
-	    handleControllerEvent: function(eventId) {
 
-	    	var result = true;
-
-	    	if(this.is.fn(this.application.controllerEvent)) {
-
-	    		result = this.application.controllerEvent(eventId);
-
-	    		if(result === false) result = false;
-	    	}
-
-	    	return result;
-
-	    },
 		
 	}
 
@@ -735,75 +780,74 @@ var CustomApplicationsHandler = {
 		return true;
 	},
 
-
 	/**
-	 * (Show) shows the applicaton with the id
+	 * (run) runs an application
 	 */
 
-	show: function(id) {
+	run: function(id) {
+		return this.wakeup(id);
+	},
 
-		if(!id) return false;
 
-		this.hide(this.currentApplicationId);
+	/**
+	 * (wakeup) shows the applicaton with the id
+	 */
 
-		CustomApplicationLog.debug(this.__name, "Request to show application", {id: id});
+	wakeup: function(id) {
 
-		if(this.applications[id]) {	
+		this.sleep(this.currentApplicationId);
+
+		if(this.invoke(id, "__wakeup")) {
 
 			this.currentApplicationId = id;
-
-			this.applications[id].wakeup();
-
-		} else {
-			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
-		}
-
+		}	
 	},
 
 	/**
-	 * (Hide) hides the application with the id
+	 * (sleep) hides the application with the id
 	 */
 
-	hide: function(id) {
+	sleep: function(id) {
 
-		if(!id) return false;
-
-		CustomApplicationLog.debug(this.__name, "Request to hide application", {id: id});
-
-		if(this.applications[id]) {	
-
-			this.applications[id].sleep();
-
+		if(this.invoke(id, "__sleep")) {
+		
 			if(this.currentApplicationId == id) {
 				this.currentApplicationId = false;
 			}
-
-		} else {
-			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
 		}
 	},
 
 	/**
-	 * (Destroy) destroys the application
+	 * (termimate) destroys the application
 	 */
 
-	destroy: function(id) {
+	terminate: function(id) {
+
+		this.sleep(id);
+
+		this.invoke(id, "__terminate");
+	},
+
+	/**
+	 * (invoke) application lifetime handler
+	 */
+
+	invoke: function(id, method) {
 
 		if(!id) return false;
 
-		CustomApplicationLog.debug(this.__name, "Request to destroy application", {id: id});
+		CustomApplicationLog.debug(this.__name, "Invoke application operation", {id: id, method: method});
 
-		if(this.applications[id]) {	
+		if(id && this.applications[id] && CustomApplicationHelpers.is().fn(this.applications[id][method])) {
 
-			this.applications[id].terminate();
+			this.applications[id][method]();
 
-			if(this.currentApplicationId == id) {
-				this.currentApplicationId = false;
-			}
+			return true;
+		} 
 
-		} else {
-			CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
-		}
+		CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+
+		return false;
 	},
 
 	/**
