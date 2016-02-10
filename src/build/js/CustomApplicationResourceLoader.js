@@ -35,16 +35,6 @@ var CustomApplicationResourceLoader = {
 	__name: 'ResourceLoader',
 
 	/**
-	 * (require) loads a resource object array
-	 */
-
-	require: function(resources, callback, async) {
-
-
-
-	},
-
-	/**
 	 * (loadJavascript)
 	 */
 
@@ -76,6 +66,31 @@ var CustomApplicationResourceLoader = {
 	},
 
 	/**
+	 * (loadImages)
+	 */
+
+	loadImages: function(images, path, callback, async) {
+
+		this.__loadInvoker(images, path, function(filename, next, id) {
+			var img = document.createElement('img');
+			img.onload = function() {
+
+				if(async) {
+					var result = false;
+					if(id) {
+						result = {};
+						result[id] = this;
+					}
+					callback(id ? result : this);
+				} else {
+					next(this);
+				}
+			} 
+			img.src = filename;
+		}, callback, async);
+	},
+
+	/**
 	 * (fromFormatted)
 	 */
 
@@ -96,33 +111,59 @@ var CustomApplicationResourceLoader = {
 
 	__loadInvoker: function(items, path, build, callback, async) {
 
-		if(!CustomApplicationHelpers.is().array(items)) items = [items];
+		var ids = false, result = false;
 
+		// support for arrays and objects 
+		if(CustomApplicationHelpers.is().object(items)) {
+
+			var idsObject = items, ids = [], items = [];
+
+			Object.keys(idsObject).map(function(key) {
+				ids.push(key);
+				items.push(idsObject[key]);
+			});
+
+			// return as object
+			result = {};
+		
+		} else {
+
+			if(!CustomApplicationHelpers.is().array(items)) items = [items];
+		}
+
+		// loaded handler
 		var loaded = 0, next = function() {
 			loaded++;
 			if(loaded >= items.length) {
 				if(CustomApplicationHelpers.is().fn(callback)) {
-					callback();
+					callback(result);
 				}
 			}
 		};
 
+		// process items
 		items.forEach(function(filename, index) {
 
 			filename = path + filename;
 
 			CustomApplicationLog.debug(this.__name, "Attempting to load resource from", filename);
 
-			build(filename, function() {
+			build(filename, function(resource) {
 
 				CustomApplicationLog.info(this.__name, "Successfully loaded resource", filename);
+
+				if(resource && ids != false) {
+					CustomApplicationLog.debug(this.__name, "Loaded resource assigned to id", {id: ids[index], filename: filename});	
+					
+					result[ids[index]] = resource;
+				}
 
 	        	if(async) {
 	        		if(CustomApplicationHelpers.is().fn(callback)) callback();
 	        	} else {
 	        		next();
 	        	}
-	        }.bind(this));
+	        }.bind(this), ids ? ids[index] : false);
 		    
 	   	}.bind(this));
 	}

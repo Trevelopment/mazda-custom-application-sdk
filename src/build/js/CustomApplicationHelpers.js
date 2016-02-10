@@ -99,16 +99,16 @@ var CustomApplicationHelpers = {
 			/** (empty) */
 			empty: function(o) {
 				switch(true) {
-					case Is.array(o) || Is.string(o): 
+					case this.array(o) || this.string(o): 
 						return o.length === 0; 
 
-					case Is.object(o): 
+					case this.object(o): 
 						var s = 0;
 						for(var key in o) 
 							if(o.hasOwnProperty(key)) s++;
 						return s === 0;
 				
-					case Is.boolean(o):
+					case this.boolean(o):
 						return o === false;
 
 					default:

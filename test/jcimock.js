@@ -35,7 +35,7 @@ var log = {
 
 
 // (framework)
-var mock = {
+var framework = {
 
 	init: function() {
 
@@ -137,6 +137,13 @@ var mock = {
         script.onload = callback;
         document.body.appendChild(script);
 	},
+
+
+	/** 
+	 * Mocks
+	 */
+
+	registerAppLoaded: function() {},
 
 };
 

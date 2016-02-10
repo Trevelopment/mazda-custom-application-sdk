@@ -56,13 +56,19 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * (css) defines css includes
 		 */
 
-		css: [],
+		css: ['app.css'],
 
 		/**
-		 * (images) defines images
+		 * (images) defines images that are being preloaded
+		 *
+		 * Images are assigned to an id
 		 */
 
-		images: [],
+		images: {
+
+			world: 'images/world.png'
+
+		},
 	},
 
 	/**
@@ -144,54 +150,96 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 
 	/***
-	 *** Constructor
-	 ***/
-
-	/**
-	 * (initialize) 
-	 * 
-	 * This is the constructor that is called when the application is created
-	 */
-
-	initialize: function() {
-
-
-
-	},
-
-
-	/***
 	 *** User Interface Life Cycles
 	 ***/
 
 	/** 
 	 * (created) 
 	 * 
-	 * Executed the first time the application gets selected from the menu
+	 * Executed when the application gets initialized
 	 *
 	 * Add any content that will be static here
 	 */
 
 	created: function() {
 
-		// Elements returns a jQuery object
+		/**
+		 * HelloWorld Showcase
+		 */
 
-		this.label = this.element("div", false, false, {
+		/* The use of 'element'.
+		 * 
+		 * By default the app framework includes the jQuery library.
+		 *
+		 * The application exposes the 'element' helper which basically creates a simple
+		 * jQuery object for you and attaches it to the canvas.
+		 *
+		 * var newElement = this.element(<tag>, <attr:id>, <classNames>, <styles>, <content>, <preventAutoAppend>)
+		 *
+		 * See the examples below:
+		 */
+
+		// Yeah I gotta do this! 
+		this.element("div", false, false, false, "Hello World!");
+
+		// This will add a class to the element
+		this.element("div", false, "smallerText", false, "This is a showcase of the Custom Application SDK for the Mazda Infotainment System");
+
+		// This item will never appear on the screen because we prevent auto append to the canvas
+		this.element("div", false, false, false, "This will never appear", true);
+
+		// Let's try an image with an absolute position on the top/right corner
+		this.element("div", false, false, {
 			position: 'absolute',
-			top: 10, 
-			left: 10,
-		});
+			top: 10,
+			right: 10,
+		}, this.images.world);
 
-		this.label.html("Waiting for Element");
+		// Now you can do the same thing with just pure jQuery
 
-		this.info = this.element("div", false, false, {
-			position: 'absolute',
-			top:50,
-			left: 10
-		});
+		this.canvas.append($("<div/>").append("Generated through pure jQuery"));
 
-		this.info.html("Vehicle Speed");
+		// .. or for the hard core people, pure DOM
 
+		var div = document.createElement("div");
+		div.innerHTML = "OMG - This is 1995 all over again";
+
+		this.canvas.get(0).appendChild(div); // yeah canvas is a jQuery object
+
+
+		/* A word about this.canvas 
+		 * 
+		 * this.canvas is the main application screen and the DOM root for the application.
+		 *
+		 * this.canvas is a jQuery object! Just FYI.
+		 * 
+		 * Any content you want to display needs to be attached to the canvas or any children 
+		 * below it. Please don't attach it to the 'body' or you will loose all the automatic
+		 * context handling of the JCI system which will end up in a bad user experience.
+		 */
+
+
+		/*
+		 * Let's move to some more advanced stuff. 
+		 */
+
+		// Let's create a simple label with an value
+
+		this.label = this.element("span", false, false, false, "No event", true);
+
+		this.element("div", false, "simpleLabel", false, ['Controller Event:', this.label]);
+
+		// Look at the controller event below to see how we use .label
+
+
+		/**
+		 * Now let's do someting really cool.
+		 *
+		 * It wouldn't be a framework if it wouldn't allow you easy access to the internal
+		 * data bus of the car. Yeah, let's get some info directly from the car :-)
+		 */
+
+		
 		//console.log(this.vehicle.speed);
 
 
@@ -237,6 +285,9 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 	 */
 
 	onControllerEvent: function(eventId) {
+
+		// Look above where we create this.label
+		// Here is where we assign the value!
 
 		this.label.html(eventId);
 

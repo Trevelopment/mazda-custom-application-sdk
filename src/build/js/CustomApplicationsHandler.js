@@ -121,6 +121,8 @@ var CustomApplicationsHandler = {
 
 		application.location = this.paths.applications + id + "/";
 
+		application.__initialize();
+
 		this.applications[id] = application;
 		
 		return true;

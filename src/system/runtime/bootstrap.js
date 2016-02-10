@@ -40,14 +40,19 @@ var CustomApplication = (function(){
 			}
 		}.bind(this));
 
-		this.__initialize();
-	};
+	}
 
 	CustomApplication.prototype = {
+
+		/**
+		 * Internal arrays
+		 */
 
 		storages: {},
 
 		vehicle: {},
+
+		images: {},
 
 		/**
 		 * (protected) __initialie
@@ -57,7 +62,7 @@ var CustomApplication = (function(){
 		 */
 		
 		/* (initialize) */
-		__initialize: function() {
+		__initialize: function(next) {
 
 			// global specific
 			this.is = CustomApplicationHelpers.is();
@@ -65,22 +70,103 @@ var CustomApplication = (function(){
 			// application specific
 			this.settings = this.settings ? this.settings : {};
 
-			// create surface
-			this.canvas = $("<div/>").addClass("CustomApplicationCanvas");
+			// set loader status
+			this.__loaded = false;
 
-			if(backgroundColor = this.getSetting("backgroundColor"))
-				this.canvas.css("background-color", backgroundColor);
+			// execute loader
+			this.__load(function() {
 
-			if(textColor = this.getSetting("textColor"))
-				this.canvas.css("color", textColor);
+				// finalize
+				this.__loaded = true;
 
-			// finalize and bootup
-			this.__created = true;
+				// create surface and set some basic properties
+				this.canvas = $("<div/>").addClass("CustomApplicationCanvas CustomApplication").addClass(this.id);
 
-			// execute life cycle
-			if(this.is.fn(this.created)) {
-				this.created();
+				if(this.getSetting("backgroundColor")) {
+					this.canvas.css("background-color", this.getSetting("backgroundColor"));
+				}
+
+				if(this.getSetting("textColor")) {
+					this.canvas.css("color", this.getSetting("textColor"));
+				}
+
+				// finalize and bootup
+				this.__created = true;
+
+				// execute life cycle
+				this.__lifecycle("created");
+
+				// all done
+				this.__initialized = true;
+
+				// continue
+				if(this.is.fn(next)) {
+					next();
+				}
+
+			}.bind(this));
+		},
+
+		/**
+		 * (protected) __load
+		 *
+		 * This loads all resources and holds the application
+		 */
+
+		__load: function(next) {
+
+			var loaded = 0, toload = 0, isFinished = function(o) {
+
+				CustomApplicationLog.debug(this.id, "Status update for loading resources", {loaded:loaded, toload: toload});
+
+				var o = o === true || loaded == toload;
+
+				if(o && this.is.fn(next)) {
+					next();
+				}
+
+			}.bind(this);
+
+			// loader
+
+			if(this.is.object(this.require) && !this.__loaded) {
+
+				// load javascripts
+				if(this.require.js && !this.is.empty(this.require.js)) {
+					toload++;
+					CustomApplicationResourceLoader.loadJavascript(this.require.js, this.location, function() {
+						loaded++;
+						isFinished();
+					});
+				}
+
+				// load css
+				if(this.require.css && !this.is.empty(this.require.css)) {
+					toload++;
+					CustomApplicationResourceLoader.loadCSS(this.require.css, this.location, function() {
+						loaded++;
+						isFinished();
+					});
+				}
+
+				// load images
+				if(this.require.images && !this.is.empty(this.require.images)) {
+					toload++;
+					CustomApplicationResourceLoader.loadImages(this.require.images, this.location, function(loadedImages) {
+						
+						// assign images
+						this.images = loadedImages;
+
+						loaded++;
+						isFinished();
+					}.bind(this));
+				}
+
+				return;
 			}
+
+			isFinished(true);
+
 		},
 
 		/**
@@ -93,17 +179,15 @@ var CustomApplication = (function(){
 
 			if(!this.__initialized) {
 
-				if(this.is.fn(this.initialize)) {
-					this.initialize();
-				}
+				return this.__initialize(function() {
 
-				this.__initialized = true;
+					this.__wakeup(parent);
+
+				}.bind(this));
 			}
 
 			// execute life cycle 
-			if(this.is.fn(this.focused)) {
-				this.focused();
-			}
+			this.__lifecycle("focused");
 
 			this.canvas.appendTo(parent);
 		},
@@ -119,9 +203,7 @@ var CustomApplication = (function(){
 			this.canvas.detach();
 
 			// execute life cycle 
-			if(this.is.fn(this.lost)) {
-				this.lost();
-			}
+			this.__lifecycle("lost");
 
 			// end life cycle if requested
 			if(this.getSetting("terminateOnLost") === true) {
@@ -159,12 +241,41 @@ var CustomApplication = (function(){
 	    	// pass to application
 	    	if(this.is.fn(this.onControllerEvent)) {
 
-	    		this.onControllerEvent(eventId);
+	    		try {
 
-	    		return true;
+	    			this.onControllerEvent(eventId);
+
+	    			return true;
+
+	    		} catch(e) {
+
+	    		}
 	    	}
 
 	    	return false;
+	    },
+
+	    /**
+	     * (protected) __lifecycle
+	     *
+	     * Executes a lifecycle event
+	     */
+
+	    __lifecycle: function(cycle) {
+
+	    	try {
+
+	    		CustomApplicationLog.info(this.id, "Executing lifecycle", {lifecycle:cycle});
+
+	    		if(this.is.fn(this[cycle])) {
+	    			this[cycle]();
+	    		}
+
+	    	} catch(e) {
+
+	    		CustomApplicationLog.error(this.id, "Error while executing lifecycle event", {lifecycle:cycle, error: e.message});
+	    	
+	    	}
 	    },
 
 
@@ -207,7 +318,7 @@ var CustomApplication = (function(){
 
 		getStatusbarHomeButton: function() {
 
-			return this.getSetting('statusbarHomeButton');
+			return !(this.getSetting('statusbarHomeButton') === false);
 		},
 
 		getLeftButton: function() {
@@ -241,11 +352,11 @@ var CustomApplication = (function(){
     	 * creates a new jquery element and adds to the canvas
     	 */
 
-	   	element: function(tag, id, classNames, styles, content) {
+	   	element: function(tag, id, classNames, styles, content, preventAutoAppend) {
 
-	    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {}).append(content);
+	    	var el = $(document.createElement(tag)).attr(id ? {id: id} : {}).addClass(classNames).css(styles ? styles : {}).append(content);
 
-	    	this.canvas.append(el);
+	    	if(!preventAutoAppend) this.canvas.append(el);
 
 	    	return el;
 	    },
@@ -253,12 +364,11 @@ var CustomApplication = (function(){
 	    /**
 	     * Transform Vehicle Data
 	     */
-
-
-		
-	}
+	
+	};
 
 	return CustomApplication;
+
 })();
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
@@ -361,16 +471,16 @@ var CustomApplicationHelpers = {
 			/** (empty) */
 			empty: function(o) {
 				switch(true) {
-					case Is.array(o) || Is.string(o): 
+					case this.array(o) || this.string(o): 
 						return o.length === 0; 
 
-					case Is.object(o): 
+					case this.object(o): 
 						var s = 0;
 						for(var key in o) 
 							if(o.hasOwnProperty(key)) s++;
 						return s === 0;
 				
-					case Is.boolean(o):
+					case this.boolean(o):
 						return o === false;
 
 					default:
@@ -572,16 +682,6 @@ var CustomApplicationResourceLoader = {
 	__name: 'ResourceLoader',
 
 	/**
-	 * (require) loads a resource object array
-	 */
-
-	require: function(resources, callback, async) {
-
-
-
-	},
-
-	/**
 	 * (loadJavascript)
 	 */
 
@@ -613,6 +713,31 @@ var CustomApplicationResourceLoader = {
 	},
 
 	/**
+	 * (loadImages)
+	 */
+
+	loadImages: function(images, path, callback, async) {
+
+		this.__loadInvoker(images, path, function(filename, next, id) {
+			var img = document.createElement('img');
+			img.onload = function() {
+
+				if(async) {
+					var result = false;
+					if(id) {
+						result = {};
+						result[id] = this;
+					}
+					callback(id ? result : this);
+				} else {
+					next(this);
+				}
+			} 
+			img.src = filename;
+		}, callback, async);
+	},
+
+	/**
 	 * (fromFormatted)
 	 */
 
@@ -633,33 +758,59 @@ var CustomApplicationResourceLoader = {
 
 	__loadInvoker: function(items, path, build, callback, async) {
 
-		if(!CustomApplicationHelpers.is().array(items)) items = [items];
+		var ids = false, result = false;
 
+		// support for arrays and objects 
+		if(CustomApplicationHelpers.is().object(items)) {
+
+			var idsObject = items, ids = [], items = [];
+
+			Object.keys(idsObject).map(function(key) {
+				ids.push(key);
+				items.push(idsObject[key]);
+			});
+
+			// return as object
+			result = {};
+		
+		} else {
+
+			if(!CustomApplicationHelpers.is().array(items)) items = [items];
+		}
+
+		// loaded handler
 		var loaded = 0, next = function() {
 			loaded++;
 			if(loaded >= items.length) {
 				if(CustomApplicationHelpers.is().fn(callback)) {
-					callback();
+					callback(result);
 				}
 			}
 		};
 
+		// process items
 		items.forEach(function(filename, index) {
 
 			filename = path + filename;
 
 			CustomApplicationLog.debug(this.__name, "Attempting to load resource from", filename);
 
-			build(filename, function() {
+			build(filename, function(resource) {
 
 				CustomApplicationLog.info(this.__name, "Successfully loaded resource", filename);
+
+				if(resource && ids != false) {
+					CustomApplicationLog.debug(this.__name, "Loaded resource assigned to id", {id: ids[index], filename: filename});	
+					
+					result[ids[index]] = resource;
+				}
 
 	        	if(async) {
 	        		if(CustomApplicationHelpers.is().fn(callback)) callback();
 	        	} else {
 	        		next();
 	        	}
-	        }.bind(this));
+	        }.bind(this), ids ? ids[index] : false);
 		    
 	   	}.bind(this));
 	}
@@ -788,6 +939,8 @@ var CustomApplicationsHandler = {
 		application.id = id;
 
 		application.location = this.paths.applications + id + "/";
+
+		application.__initialize();
 
 		this.applications[id] = application;
 		
