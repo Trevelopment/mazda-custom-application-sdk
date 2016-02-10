@@ -438,7 +438,7 @@ systemApp.prototype.appInit = function()
                     text1Id : "SiriDisabled",
                 }
             },
-			"readyFunction" : this._readyEnableRVR.bind(this),
+            "readyFunction" : this._readyEnableRVR.bind(this),
         },
         
         "RVRInstructions" : {
@@ -459,19 +459,19 @@ systemApp.prototype.appInit = function()
             },
         },
        
-		"SiriInSession" : {
+        "SiriInSession" : {
             "template" : "Dialog3Tmplt",
             "controlProperties": {
                 "Dialog3Ctrl" : {
                     titleStyle : "titleStyle01", 
                     titleId : "Siri",
                     contentStyle : "style14", 
-					"meter" : {"meterType":"indeterminate", "meterPath":"apps/system/images/IcnSiri.png"}
+                    "meter" : {"meterType":"indeterminate", "meterPath":"apps/system/images/IcnSiri.png"}
                 }
             },
         },
 
-		 "SiriLaunchingError" : {
+         "SiriLaunchingError" : {
             "template" : "Dialog3Tmplt",
             "controlProperties": {
                 "Dialog3Ctrl" : {
@@ -489,7 +489,7 @@ systemApp.prototype.appInit = function()
                     text1Id : "DisconnectThenReconnect",
                 }
             },
-			"readyFunction" : this._readySiriLaunchingError.bind(this),
+            "readyFunction" : this._readySiriLaunchingError.bind(this),
         },
 
         /**
@@ -497,9 +497,10 @@ systemApp.prototype.appInit = function()
          */
 
         "CustomApplicationSurface" : {
-            "template" : "CustomApplicationTmplt",
-            "templatePath": "apps/system/custom/runtime/templates/CustomApplicationTmplt", 
-            "readyFunction": this._CustomApplicationReady.bind(this),
+            "template" : "CustomApplicationSurfaceTmplt",
+            "templatePath": "apps/system/custom/runtime/surface/CustomApplicationSurfaceTmplt", 
+            "sbNameId" : null,
+            "hideHomeBtn": true,
         },
 
     }; // end of this._contextTable object
@@ -541,18 +542,18 @@ systemApp.prototype.appInit = function()
 
         // Update whether scheduled maintenance is due
         "StatusUpdateSchedMaint"      : this._StatusUpdateSchedMaintHandler.bind(this),
-		
-		// Show an Siri SBN
-		"ShowStateSBN_SiriActive"		  : this._ShowStateSBN_SiriActiveMsgHandler.bind(this),
-		
-		// Show an Siri Error SBN
-		"TimedSBN_SiriError"		  : this._TimedSBN_SiriErrorMsgHandler.bind(this),
-		
-		// Remove an Siri SBN
-		"RemoveStateSBN_SiriActive"		  : this._RemoveStateSBN_SiriActiveMsgHandler.bind(this),
-		
-		//Show timed SBN Voice not supported
-		"TimedSBN_VoiceNotSupported"	: this._TimedSBN_VoiceNotSupportedMsgHandler.bind(this),
+        
+        // Show an Siri SBN
+        "ShowStateSBN_SiriActive"         : this._ShowStateSBN_SiriActiveMsgHandler.bind(this),
+        
+        // Show an Siri Error SBN
+        "TimedSBN_SiriError"          : this._TimedSBN_SiriErrorMsgHandler.bind(this),
+        
+        // Remove an Siri SBN
+        "RemoveStateSBN_SiriActive"       : this._RemoveStateSBN_SiriActiveMsgHandler.bind(this),
+        
+        //Show timed SBN Voice not supported
+        "TimedSBN_VoiceNotSupported"    : this._TimedSBN_VoiceNotSupportedMsgHandler.bind(this),
     };
     //@formatter:on
 
@@ -583,21 +584,21 @@ systemApp.prototype.appInit = function()
 
 systemApp.prototype.getWinkProperties = function(alert, params)
 {
-	log.info("setting wink properties for: ", alert, params);
+    log.info("setting wink properties for: ", alert, params);
     var winkProperties = null;
     switch(alert)
     {
         case "System_RVR_NOT_ACTIVE":
-		case "System_RVR_EFM_ERROR":
-		case "System_RVR_ACTIVATE_ERROR":
-			winkProperties = {
+        case "System_RVR_EFM_ERROR":
+        case "System_RVR_ACTIVATE_ERROR":
+            winkProperties = {
                 "style": "style03",
                 "text1Id": "ErrorWhileStartingSiri"
             };
             break;
         case "System_RVR_ACTIVE":
-		case "System_RVR_ACTIVE_WITH_EFM":
-		case "System_RVR_ACTIVE_NO_EFM":
+        case "System_RVR_ACTIVE_WITH_EFM":
+        case "System_RVR_ACTIVE_NO_EFM":
             winkProperties = {
                 "style": "style03",
                 "text1Id": "Siri"
@@ -1090,48 +1091,48 @@ systemApp.prototype._StatusUpdateNotificationsHandler = function(msg)
         // Update current context if needed
         if (this._currentContext && this._currentContext.ctxtId === "Communication" && this._currentContextTemplate)
         {
-			var dataList = this._buildCommunicationDataList();
-			this._currentContextTemplate.list2Ctrl.setDataList(dataList);
-			this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
+            var dataList = this._buildCommunicationDataList();
+            this._currentContextTemplate.list2Ctrl.setDataList(dataList);
+            this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
         }
     }
 };
 
 systemApp.prototype._ShowStateSBN_SiriActiveMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus"); //End the SBN if displayed
-	var params = {
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus"); //End the SBN if displayed
+    var params = {
             sbnStyle : 'Style02',
-			text1Id : 'VoiceRecognition',
+            text1Id : 'VoiceRecognition',
             imagePath1 : 'apps/system/images/IcnSiriSBN.png'
         };
-	framework.common.showStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
+    framework.common.showStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
 }
 
 systemApp.prototype._TimedSBN_SiriErrorMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
-	var params = {
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
+    var params = {
             sbnStyle : 'Style01',
-			text1Id : 'ErrorWhileStartingSiri',
+            text1Id : 'ErrorWhileStartingSiri',
         };
-	framework.common.startTimedSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
+    framework.common.startTimedSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
 }
 
 systemApp.prototype._TimedSBN_VoiceNotSupportedMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
-	var params = {
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
+    var params = {
             sbnStyle : 'Style02',
-			text1Id : 'VoiceNotSupported',
-			imagePath1 : 'common/images/icons/IcnSbnMicUnavail.png'
+            text1Id : 'VoiceNotSupported',
+            imagePath1 : 'common/images/icons/IcnSbnMicUnavail.png'
         };
-	framework.common.startTimedSbn(this.uiaId, 'VoiceNotificationErr', "vrStatus", params);
+    framework.common.startTimedSbn(this.uiaId, 'VoiceNotificationErr', "vrStatus", params);
 }
 
 systemApp.prototype._RemoveStateSBN_SiriActiveMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");
 }
 
 systemApp.prototype._TimedSBN_SourceNotAvailableMsgHandler = function(msg)
@@ -1905,7 +1906,7 @@ systemApp.prototype._displayedDisclaimer = function()
 
     if (this._disclaimerTime.remaining < 0)
     {
-		 this._disclaimerTime.reset = true;
+         this._disclaimerTime.reset = true;
          framework.sendEventToMmui(this.uiaId, "Timeout");
     }
     else
@@ -1937,9 +1938,9 @@ systemApp.prototype._disclaimerTimedout = function()
     {
         framework.sendEventToMmui(this.uiaId, "Timeout");
     }
-	
-	//Incase after Timeout Disclaimer screen didnt remove then sends start the timer again
-	if (this._disclaimerTime.reset)
+    
+    //Incase after Timeout Disclaimer screen didnt remove then sends start the timer again
+    if (this._disclaimerTime.reset)
     {
         this._disclaimerTime.reset = false;
         this._disclaimerTime.remaining = 3500;
@@ -2083,7 +2084,7 @@ systemApp.prototype._selectSourceReconnect = function(controlRef, appData, param
 
 systemApp.prototype._readySourceReconnectFailed = function()
 {
-	if (this._currentContext.params && 
+    if (this._currentContext.params && 
         this._currentContext.params.payload &&
         this._currentContextTemplate &&
         this._currentContextTemplate.dialog3Ctrl)
@@ -2130,9 +2131,9 @@ systemApp.prototype._readyEnableRVR = function()
         this._currentContextTemplate.dialog3Ctrl)
     {
         this._CachedDeviceName = this._currentContext.params.payload.deviceName;
-		var subMapObj = {nameOfDevice : this._CachedDeviceName}
-		this._currentContextTemplate.dialog3Ctrl.setText1Id("SiriDisabled",subMapObj);
-		
+        var subMapObj = {nameOfDevice : this._CachedDeviceName}
+        this._currentContextTemplate.dialog3Ctrl.setText1Id("SiriDisabled",subMapObj);
+        
     }
 };
 
@@ -2145,9 +2146,9 @@ systemApp.prototype._readySiriLaunchingError = function()
         this._currentContextTemplate.dialog3Ctrl)
     {
         this._CachedDeviceName = this._currentContext.params.payload.deviceName;
-		var subMapObj = {nameOfDevice : this._CachedDeviceName}
-		this._currentContextTemplate.dialog3Ctrl.setText1Id("DisconnectThenReconnect",subMapObj);
-		
+        var subMapObj = {nameOfDevice : this._CachedDeviceName}
+        this._currentContextTemplate.dialog3Ctrl.setText1Id("DisconnectThenReconnect",subMapObj);
+        
     }
 };
 
@@ -2182,7 +2183,7 @@ systemApp.prototype._loadCustomApplications = function()
         if(typeof(CustomApplicationsHandler) == "undefined") {
 
             // try to load the script
-            utility.loadScript("apps/system/custom/framework/bootstrap.js", false, function() {
+            utility.loadScript("apps/system/custom/runtime/bootstrap.js", false, function() {
 
                 this._initCustomApplicationsDataList();   
             
@@ -2234,18 +2235,13 @@ systemApp.prototype._initCustomApplicationsDataList = function()
     }
 };
 
-systemApp.prototype._CustomApplicationReady = function()
-{
-
-}
 
 systemApp.prototype._runCustomApplication = function()
 {
     if(typeof(CustomApplicationsHandler) != "undefined") {
         CustomApplicationsHandler.run(appData);
     }
-    //{"msgType":"focusStack","appIdList":[{"id":"system"},{"id":"usbaudio"},{"id":"emnavi"}]}
-}
+};
 
 // Tell framework that system app has finished loading
 framework.registerAppLoaded("system", null, true);

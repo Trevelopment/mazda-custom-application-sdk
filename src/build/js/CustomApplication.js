@@ -241,9 +241,9 @@ var CustomApplication = (function(){
     	 * creates a new jquery element and adds to the canvas
     	 */
 
-	   	element: function(tag, id, classNames, styles) {
+	   	element: function(tag, id, classNames, styles, content) {
 
-	    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {});
+	    	var el = $(document.createElement(tag)).attr("id", id).addClass(classNames).css(styles ? styles : {}).append(content);
 
 	    	this.canvas.append(el);
 
