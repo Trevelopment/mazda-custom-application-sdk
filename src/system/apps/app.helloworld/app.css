@@ -35,7 +35,6 @@
 }
 
 [app="app.helloworld"] .simpleLabel {
-
 	margin:15px;
 	padding:10px;
 	background:#333;
@@ -44,4 +43,5 @@
 
 	[app="app.helloworld"] .simpleLabel span {
 		color: red;
+		padding-left:15px;
 	}
