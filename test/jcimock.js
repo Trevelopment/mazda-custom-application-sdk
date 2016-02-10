@@ -145,12 +145,25 @@ var framework = {
 
 	registerAppLoaded: function() {},
 
+	registerTmpltLoaded: function() {},
+
+	routeMmuiMsg: function(data) {
+
+		if(data.msgType == "focusStack") {
+
+			// initialize template
+			var template = new CustomApplicationSurfaceTmplt("system", this.surface, 1);
+
+
+		}
+	},
+
 };
 
 // (interval)
 setInterval(function() {
 
-	mock.common.statusBar.clock._update();
+	framework.common.statusBar.clock._update();
 
 }, 500);
 
