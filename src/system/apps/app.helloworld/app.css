@@ -25,11 +25,23 @@
  */
 
 /**
- * NOTICE: It's important that you wrap
+ * NOTICE: It's important that you target your application with the [app] attribute
  */
 
-.app-helloworld {
-
-
-
+[app="app.helloworld"] .smallerText {	
+	font-size:0.8em;
+	color: #aaa;
+	margin-bottom:20px;
 }
+
+[app="app.helloworld"] .simpleLabel {
+
+	margin:15px;
+	padding:10px;
+	background:#333;
+	border:1px solid #666;
+}
+
+	[app="app.helloworld"] .simpleLabel span {
+		color: red;
+	}
