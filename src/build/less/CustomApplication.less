@@ -24,82 +24,27 @@
  *
  */
 
-
 /**
- * Animation for Canvas FadeIn/FadeOut
+ * CustomApplicationCanvas
  */
 
-@animationSpeed: 0.5s;
+.CustomApplicationCanvas {
+	position: relative;
+	width:100%;
+	height:100%;
 
-@keyframes CustomApplicationFadeIn {
-  0%   { opacity:0; }
-  100% { opacity:1; }
+	/**
+	 * Default Values - These are being used all over the system
+	 */
+  	font-family: "Tipperary", Arial, Helvetica, sans-serif;
+  	font-weight: normal;
+  	font-style: normal;
+  	font-size: 28px;
+  	color: white;
+  	overflow: hidden;
+  	white-space: nowrap;
+  	text-overflow: ellipsis;
+  	text-align: left;
+  	background-position: center;
+  	background-repeat: no-repeat;
 }
-@-o-keyframes CustomApplicationFadeIn{
-  0%   { opacity:0; }
-  100%  { opacity:1; }
-}
-@-moz-keyframes CustomApplicationFadeIn{
-  0%   { opacity:0; }
-  100%  { opacity:1; }
-}
-@-webkit-keyframes CustomApplicationFadeIn{
-  0%   { opacity:0; }
-  100%  { opacity:1; }
-}
-
-@keyframes CustomApplicationFadeOut {
-  0%   { opacity:1; }
-  100% { opacity:0; }
-}
-@-o-keyframes CustomApplicationFadeOut{
-  0%   { opacity:1; }
-  100%  { opacity:0; }
-}
-@-moz-keyframes CustomApplicationFadeOut{
-  0%   { opacity:1; }
-  100%  { opacity:0; }
-}
-@-webkit-keyframes CustomApplicationFadeOut{
-  0%   { opacity:1; }
-  100%  { opacity:0; }
-}
-
-/**
- * Main class
- */
-
-.CustomApplicationSurface {
-	font-family: "Tipperary", Arial, Helvetica, sans-serif;
-	text-align: left;
-	position: absolute;
-	top:0px;
-	left:0px;
-	width:800px;
-	height:480px;
-	z-index: 0;
-	overflow:hidden;
-	font-size:1.8em;
- 	-webkit-animation: CustomApplicationFadeOut @animationSpeed;
-   	-moz-animation: CustomApplicationFadeOut @animationSpeed;
-   	-o-animation: CustomApplicationFadeOut @animationSpeed;
-   	animation: CustomApplicationFadeOut @animationSpeed;
-}
-
-	.CustomApplicationSurface.visible {
-	   -webkit-animation: CustomApplicationFadeIn @animationSpeed;
-	   -moz-animation: CustomApplicationFadeIn @animationSpeed;
-	   -o-animation: CustomApplicationFadeIn @animationSpeed;
-	   animation: CustomApplicationFadeIn @animationSpeed;
-	}
-
-	.CustomApplicationSurface.withStatusBar {
-		top:60px;
-		height:420px;
-	}
-
-	.CustomApplicationSurface .CustomApplicationCanvas {
-		position:relative;
-		width:100%;
-		height:100%;
-	}

@@ -74,6 +74,18 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 	settings: {
 
 		/**
+		 * (terminateOnLost) 	
+		 * 
+		 * If set to 'true' this will remove the stateless life cycle and always
+		 * recreate the application once the focus is lost. Otherwise by default
+		 * the inital created state will stay alive across the systems runtime.
+		 *
+		 * Default is false or not set
+		 * /
+
+		// terminateOnLost: false, 
+
+		/**
 		 * (title) The title of the application in the Application menu
 		 */
 
@@ -83,7 +95,38 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * (statusbar) Defines if the statusbar should be shown
 		 */
 
-		statusbar: false,
+		statusbar: true,
+
+		/**
+		 * (statusbarIcon) defines the status bar icon
+		 * 
+		 * Set to true to display the default icon app.png or set a string to display
+		 * a fully custom icon.
+		 *
+		 * Icons need to be 37x37
+		 */
+
+		statusbarIcon: true,
+
+		/**
+		 * (statusbarTitle) overrides the statusbar title, otherwise title is used
+		 */
+
+		statusbarTitle: false,
+
+		/**
+		 * (statusbarHomeButton) hides the home button in the statusbar 
+		 *
+		 * By default this is disabled
+		 */
+
+		// statusbarHomeButton: false,
+
+		/**
+		 * (leftButton) indicates if the UI left button / return button should be shown
+		 */
+
+		leftButton: false,
 
 		/**
 		 * (backgroundColor) Defines the background color of the application
@@ -95,9 +138,14 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * (textColor) Defines the text color of the application
 		 */
 
-		textColor: "#FFFFFF"
+		textColor: "#FFFFFF",
 
 	},
+
+
+	/***
+	 *** Constructor
+	 ***/
 
 	/**
 	 * (initialize) 
@@ -110,6 +158,11 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 
 	},
+
+
+	/***
+	 *** User Interface Life Cycles
+	 ***/
 
 	/** 
 	 * (created) 
@@ -147,28 +200,47 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 	},
 
 	/**
-	 * (render)
+	 * (focused)
 	 *
 	 * Executes when the application gets the focus. You can either use this event to
-	 * build the application or use the firstRender() method to predefine the canvas and use
+	 * build the application or use the created() method to predefine the canvas and use
 	 * this method to run your logic.
 	 */
 
-	render: function() {
+	focused: function() {
 
 
 	},
 
+
 	/**
-	 * (controllerEvent)
+	 * (lost)
 	 *
-	 * Executed when the controller sends an signal
+	 * Lost is executed when the application looses it's context. You can specify any
+	 * logic that you want to run before the application gets removed from the DOM.
+	 *
+	 * If you enabled terminateOnLost you may want to save the state of your app here.
+	 */
+	
+	lost: function() {
+
+	},
+
+	/***
+	 *** Events
+	 ***/
+
+	/**
+	 * (event) onControllerEvent
+	 *
+	 * Called when a new (multi)controller event is available 
 	 */
 
-	controllerEvent: function(eventId) {
+	onControllerEvent: function(eventId) {
 
 		this.label.html(eventId);
 
 	},
+
 
 })); /** EOF **/

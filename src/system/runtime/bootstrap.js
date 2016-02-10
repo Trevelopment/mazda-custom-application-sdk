@@ -66,23 +66,18 @@ var CustomApplication = (function(){
 			this.settings = this.settings ? this.settings : {};
 
 			// create surface
-			this.__surface = $("<div/>").addClass("CustomApplicationSurface").hide().appendTo('body');
+			this.canvas = $("<div/>").addClass("CustomApplicationCanvas");
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
-				this.__surface.css("backgroundColor", backgroundColor);
+				this.canvas.css("background-color", backgroundColor);
 
 			if(textColor = this.getSetting("textColor"))
-				this.__surface.css("color", textColor);
-
-			if(this.getSetting('statusbar'))
-				this.setStatusbar(true);
-
-			// create canvas
-			this.canvas = $("<div/>").addClass("CustomApplicationCanvas").appendTo(this.__surface);
+				this.canvas.css("color", textColor);
 
 			// finalize and bootup
 			this.__created = true;
 
+			// execute life cycle
 			if(this.is.fn(this.created)) {
 				this.created();
 			}
@@ -94,7 +89,7 @@ var CustomApplication = (function(){
 		 * Wakes up the application from sleep. Called by the application handler.
 		 */
 
-		__wakeup: function() {
+		__wakeup: function(parent) {
 
 			if(!this.__initialized) {
 
@@ -102,14 +97,15 @@ var CustomApplication = (function(){
 					this.initialize();
 				}
 
-				this.__initialized = false;
+				this.__initialized = true;
 			}
 
-			if(this.is.fn(this.render)) {
-				this.render();
+			// execute life cycle 
+			if(this.is.fn(this.focused)) {
+				this.focused();
 			}
 
-			this.__surface.addClass("visible").show();
+			this.canvas.appendTo(parent);
 		},
 
 		/**
@@ -118,16 +114,22 @@ var CustomApplication = (function(){
 		 * Puts the application in sleep mode / pauses it. Called by the application handler.
 		 */
 
-		__sleep: function(finish) {
+		__sleep: function() {
 
-			this.__surface.removeClass("visible");
+			this.canvas.detach();
 
-			setTimeout(function() {
-				this.__surface.hide();
+			// execute life cycle 
+			if(this.is.fn(this.lost)) {
+				this.lost();
+			}
 
-				if(this.is.fn(finish)) finish();
+			// end life cycle if requested
+			if(this.getSetting("terminateOnLost") === true) {
 
-			}.bind(this), 950);
+				// that's it! 
+				this.__terminate();
+			}
+			
 		},
 
 		/**
@@ -138,15 +140,11 @@ var CustomApplication = (function(){
 
 		__terminate: function() {
 
-			this.sleep(function() {
+			this.canvas.remove();
 
-				this.__surface.remove();
+			this.canvas = null;
 
-				this.__initialized = false;
-
-				this.__created = false;
-
-			}.bind(this));
+			this.__initialized = false;
 		},
 
 
@@ -190,16 +188,30 @@ var CustomApplication = (function(){
 			return this.getSetting('title');
 		},
 
-		/**
-		 * (internal) setters
-		 */
+		getStatusbar: function() {
+			return this.getSetting('statusbar');
+		},
 
-		setStatusbar: function(visible)  {
-			if(visible) {
-				this.__surface.classList.add("withStatusBar");
-			} else {
-				this.__surface.classList.remove("withStatusBar");
-			}
+		getStatusbarTitle: function() {
+			return this.getSetting('statusbarTitle') || this.getTitle();
+		},
+
+		getStatusbarIcon: function() {
+
+			var icon = this.getSetting('statusbarIcon');
+
+			if(icon === true) icon = this.location + "app.png";
+
+			return icon;
+		},
+
+		getStatusbarHomeButton: function() {
+
+			return this.getSetting('statusbarHomeButton');
+		},
+
+		getLeftButton: function() {
+			return this.getSetting('leftButton');
 		},
 
 		/**
@@ -712,7 +724,7 @@ var CustomApplicationsHandler = {
 
 	initialize: function() {
 
-		this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
+		//this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
 
 		this.initialized = true;
 	},
@@ -775,6 +787,8 @@ var CustomApplicationsHandler = {
 
 		application.id = id;
 
+		application.location = this.paths.applications + id + "/";
+
 		this.applications[id] = application;
 		
 		return true;
@@ -791,70 +805,62 @@ var CustomApplicationsHandler = {
 			id = id.appId ? id.appId : false;
 		}
 
-		return this.wakeup(id);
-	},
-
-
-	/**
-	 * (wakeup) shows the applicaton with the id
-	 */
-
-	wakeup: function(id) {
-
-		this.sleep(this.currentApplicationId);
-
-		if(this.invoke(id, "__wakeup")) {
+		if(this.applications[id]) {
 
 			this.currentApplicationId = id;
-		}	
-	},
 
-	/**
-	 * (sleep) hides the application with the id
-	 */
+			CustomApplicationLog.info(this.__name, "Preparing application launch", {id: id});
 
-	sleep: function(id) {
+			if(typeof(framework) != "undefined") {
 
-		if(this.invoke(id, "__sleep")) {
-		
-			if(this.currentApplicationId == id) {
-				this.currentApplicationId = false;
+				// send message to framework to launch application
+				framework.routeMmuiMsg({"msgType":"transition","enabled":true});
+				framework.routeMmuiMsg({"msgType":"ctxtChg","ctxtId":"CustomApplicationSurface","uiaId":"system","contextSeq":2})
+				framework.routeMmuiMsg({"msgType":"focusStack","appIdList":[{"id": "system", "id":"system"}]});
+				framework.routeMmuiMsg({"msgType":"transition","enabled":false});
+
+				return true;
+
 			}
+
+			CustomApplicationLog.error(this.__name, "Failed to launch application because framework is not available", {id: id});
+
+			return false;
+		
 		}
-	},
-
-	/**
-	 * (termimate) destroys the application
-	 */
-
-	terminate: function(id) {
-
-		this.sleep(id);
-
-		this.invoke(id, "__terminate");
-	},
-
-	/**
-	 * (invoke) application lifetime handler
-	 */
-
-	invoke: function(id, method) {
-
-		if(!id) return false;
-
-		CustomApplicationLog.debug(this.__name, "Invoke application operation", {id: id, method: method});
-
-		if(id && this.applications[id] && CustomApplicationHelpers.is().fn(this.applications[id][method])) {
-
-			this.applications[id][method]();
-
-			return true;
-		} 
 
 		CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
 
 		return false;
 	},
+
+
+	/**
+	 * (getCurrentApplication) returns the current application
+	 */
+
+	getCurrentApplication: function() {
+
+		if(this.currentApplicationId) {
+
+			CustomApplicationLog.debug(this.__name, "Invoking current set application", {id: this.currentApplicationId});
+
+			if(this.applications[this.currentApplicationId]) {
+
+				return this.applications[this.currentApplicationId];
+			}
+
+			CustomApplicationLog.error(this.__name, "Application was not registered", {id: this.currentApplicationId});
+
+			return false;
+		}
+
+
+		CustomApplicationLog.error(this.__name, "Missing currentApplicationId");
+
+		return false;
+	},
+
 
 	/**
 	 * (getMenuItems) returns the items for the main application menu
@@ -885,50 +891,4 @@ var CustomApplicationsHandler = {
 		}.bind(this));
 	},
 
-
-	/**
-	 * MultiController Handler
-	 */
-
-	handleControllerEvent: function(eventId) {
-
-        var response = "ignored"; // consumed
-
-	    CustomApplicationLog.debug(this.__name, "Controller event received", {event: eventId});
-
-        if(this.currentApplicationId && this.applications[this.currentApplicationId]) {
-
-  			if(this.applications[this.currentApplicationId].handleControllerEvent(eventId)) {
-
-  				response = "handled";
-
-  			}
-        }
-
-        /*
-
-        switch(eventId) {
-            case "select":
-            case "left":
-            case "right":
-            case "down":
-            case "up":
-            case "cw":
-            case "ccw":
-            case "lostFocus":
-    		case "acceptFocusInit":
-	        case "leftStart":
-    		case "left":
- 		    case "rightStart":
-    		case "right":
-    		case "selectStart":
-        };*/
-        
-        return response;
-    },
-
-
 };
-
-//{ appData : { appName : 'hdtrafficimage', isVisible : false, mmuiEvent : 'SelectHDTrafficImage'         }, text1Id : 'HDTrafficItem',               disabled : true,  itemStyle : 'style01', hasCaret : false },
-

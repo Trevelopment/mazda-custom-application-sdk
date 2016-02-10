@@ -41,57 +41,103 @@ log.addSrcFile("CustomApplicationSurfaceTmplt.js", "customapplicationsurface");
  */
 function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
 {
+    // create context
     this.divElt = null;
     this.templateName = "CustomApplicationSurfaceTmplt";
-    this.onScreenClass = "CustomApplicationSurfaceTmplt";
+    //this.onScreenClass = "CustomApplicationSurfaceTmplt";
+
+    this.onScreenClass = "TestTemplateWithStatusLeft";
+    this.offScreenLeftClass = "TestTemplateWithStatusLeft-OffscreenLeft";
+    this.offScreenRightClass = "TestTemplateWithStatusLeft-OffscreenRight";
 
     log.debug("templateID in CustomApplicationSurfaceTmplt constructor: " + templateID);
 
-    //@formatter:off
+    // get active application
+    this.application = CustomApplicationsHandler.getCurrentApplication();
+
     //set the template properties
     this.properties = {
-        "statusBarVisible" : true,
-        "leftButtonVisible" : true,
+        "statusBarVisible" : this.application.getStatusbar(),
+        "leftButtonVisible" : this.application.getLeftButton(), 
         "hasActivePanel" : false,
         "isDialog" : false,
     }
-    //@formatter:on
 
     // create the div for template
     this.divElt = document.createElement('div');
     this.divElt.id = templateID;
-    this.divElt.className = "TemplateWithStatusLeft CustomApplicationSurfaceTmplt";
 
+    // set the correct template class
+    switch(true) {
+
+        case this.properties.leftButtonVisible:
+            this.divElt.className = "TemplateWithStatusLeft";
+            break;
+
+        case this.properties.statusBarVisible:
+            this.divElt.className = "TemplateWithStatus";
+            break;
+
+        default:
+            this.divElt.className = "TemplateFull";
+            break;
+    }
+
+    // assign to parent
     parentDiv.appendChild(this.divElt);
 
-    // initiate main application
+    // wakeup
+    this.application.__wakeup(this.divElt);
+
+    // finish application creation
+    setTimeout(function() {    
+
+        // there is no really work around for this. The templates context is never changed and
+        // so none of the standard template callbacks are called. Anything else would require
+        // to change the GUIFramework which would be awful :-)
+
+        // set framework specifics
+        if(this.properties.statusBarVisible) {
+
+            // execute statusbar handler
+            framework.common.statusBar.setAppName(this.application.getStatusbarTitle());
+
+            // execute custom icon
+            var icon = this.application.getStatusbarIcon();
+
+            if(icon) framework.common.statusBar.setDomainIcon(icon);
+
+            // adjust home button
+            framework.common.statusBar.showHomeBtn(this.application.getStatusbarHomeButton());
+
+        }
+
+    }.bind(this), 50);
 }
 
-/*
- * =========================
- * Standard Template API functions
- * =========================
+
+
+/**
+ * CleanUp
  */
 
-/* (internal - called by the framework)
- * Handles multicontroller events.
- * @param   eventID (string) any of the “Internal event name” values in IHU_GUI_MulticontrollerSimulation.docx (e.g. 'cw',
- * 'ccw', 'select')
+CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
+{
+    this.application.__sleep();
+}
+
+/**
+ * MultiController
  */
 
 CustomApplicationSurfaceTmplt.prototype.handleControllerEvent = function(eventID)
 {
     log.debug("handleController() called, eventID: " + eventID);
-}
 
-
-/*
- * Called by the app during templateNoLongerDisplayed. Used to perform garbage collection procedures on the template and
- * its controls.
- */
-CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
-{
+    this.application.__handleControllerEvent(eventID);
 
 }
 
+
+// Finalize
 framework.registerTmpltLoaded("CustomApplicationSurfaceTmplt");

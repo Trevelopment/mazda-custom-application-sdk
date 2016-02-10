@@ -66,23 +66,18 @@ var CustomApplication = (function(){
 			this.settings = this.settings ? this.settings : {};
 
 			// create surface
-			this.__surface = $("<div/>").addClass("CustomApplicationSurface").hide().appendTo('body');
+			this.canvas = $("<div/>").addClass("CustomApplicationCanvas");
 
 			if(backgroundColor = this.getSetting("backgroundColor"))
-				this.__surface.css("backgroundColor", backgroundColor);
+				this.canvas.css("background-color", backgroundColor);
 
 			if(textColor = this.getSetting("textColor"))
-				this.__surface.css("color", textColor);
-
-			if(this.getSetting('statusbar'))
-				this.setStatusbar(true);
-
-			// create canvas
-			this.canvas = $("<div/>").addClass("CustomApplicationCanvas").appendTo(this.__surface);
+				this.canvas.css("color", textColor);
 
 			// finalize and bootup
 			this.__created = true;
 
+			// execute life cycle
 			if(this.is.fn(this.created)) {
 				this.created();
 			}
@@ -94,7 +89,7 @@ var CustomApplication = (function(){
 		 * Wakes up the application from sleep. Called by the application handler.
 		 */
 
-		__wakeup: function() {
+		__wakeup: function(parent) {
 
 			if(!this.__initialized) {
 
@@ -102,14 +97,15 @@ var CustomApplication = (function(){
 					this.initialize();
 				}
 
-				this.__initialized = false;
+				this.__initialized = true;
 			}
 
-			if(this.is.fn(this.render)) {
-				this.render();
+			// execute life cycle 
+			if(this.is.fn(this.focused)) {
+				this.focused();
 			}
 
-			this.__surface.addClass("visible").show();
+			this.canvas.appendTo(parent);
 		},
 
 		/**
@@ -118,16 +114,22 @@ var CustomApplication = (function(){
 		 * Puts the application in sleep mode / pauses it. Called by the application handler.
 		 */
 
-		__sleep: function(finish) {
+		__sleep: function() {
 
-			this.__surface.removeClass("visible");
+			this.canvas.detach();
 
-			setTimeout(function() {
-				this.__surface.hide();
+			// execute life cycle 
+			if(this.is.fn(this.lost)) {
+				this.lost();
+			}
 
-				if(this.is.fn(finish)) finish();
+			// end life cycle if requested
+			if(this.getSetting("terminateOnLost") === true) {
 
-			}.bind(this), 950);
+				// that's it! 
+				this.__terminate();
+			}
+			
 		},
 
 		/**
@@ -138,15 +140,11 @@ var CustomApplication = (function(){
 
 		__terminate: function() {
 
-			this.sleep(function() {
+			this.canvas.remove();
 
-				this.__surface.remove();
+			this.canvas = null;
 
-				this.__initialized = false;
-
-				this.__created = false;
-
-			}.bind(this));
+			this.__initialized = false;
 		},
 
 
@@ -190,16 +188,30 @@ var CustomApplication = (function(){
 			return this.getSetting('title');
 		},
 
-		/**
-		 * (internal) setters
-		 */
+		getStatusbar: function() {
+			return this.getSetting('statusbar');
+		},
 
-		setStatusbar: function(visible)  {
-			if(visible) {
-				this.__surface.classList.add("withStatusBar");
-			} else {
-				this.__surface.classList.remove("withStatusBar");
-			}
+		getStatusbarTitle: function() {
+			return this.getSetting('statusbarTitle') || this.getTitle();
+		},
+
+		getStatusbarIcon: function() {
+
+			var icon = this.getSetting('statusbarIcon');
+
+			if(icon === true) icon = this.location + "app.png";
+
+			return icon;
+		},
+
+		getStatusbarHomeButton: function() {
+
+			return this.getSetting('statusbarHomeButton');
+		},
+
+		getLeftButton: function() {
+			return this.getSetting('leftButton');
 		},
 
 		/**
