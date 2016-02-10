@@ -32,20 +32,20 @@
  */
 
 
-log.addSrcFile("CustomApplicationTmplt.js", "customapplication");
+log.addSrcFile("CustomApplicationSurfaceTmplt.js", "customapplicationsurface");
 
 /*
  * =========================
  * Constructor
  * =========================
  */
-function CustomApplicationTmplt(uiaId, parentDiv, templateID, controlProperties)
+function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
 {
     this.divElt = null;
-    this.templateName = "CustomApplicationTmplt";
-    this.onScreenClass = "CustomApplicationTmplt";
+    this.templateName = "CustomApplicationSurfaceTmplt";
+    this.onScreenClass = "CustomApplicationSurfaceTmplt";
 
-    log.debug("templateID in CustomApplicationTmplt constructor: " + templateID);
+    log.debug("templateID in CustomApplicationSurfaceTmplt constructor: " + templateID);
 
     //@formatter:off
     //set the template properties
@@ -60,7 +60,7 @@ function CustomApplicationTmplt(uiaId, parentDiv, templateID, controlProperties)
     // create the div for template
     this.divElt = document.createElement('div');
     this.divElt.id = templateID;
-    this.divElt.className = "TemplateWithStatusLeft CompassTmplt";
+    this.divElt.className = "TemplateWithStatusLeft CustomApplicationSurfaceTmplt";
 
     parentDiv.appendChild(this.divElt);
 
@@ -79,7 +79,7 @@ function CustomApplicationTmplt(uiaId, parentDiv, templateID, controlProperties)
  * 'ccw', 'select')
  */
 
-CustomApplicationTmplt.prototype.handleControllerEvent = function(eventID)
+CustomApplicationSurfaceTmplt.prototype.handleControllerEvent = function(eventID)
 {
     log.debug("handleController() called, eventID: " + eventID);
 }
@@ -89,9 +89,9 @@ CustomApplicationTmplt.prototype.handleControllerEvent = function(eventID)
  * Called by the app during templateNoLongerDisplayed. Used to perform garbage collection procedures on the template and
  * its controls.
  */
-CustomApplicationTmplt.prototype.cleanUp = function()
+CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
 {
 
 }
 
-framework.registerTmpltLoaded("CustomApplicationTmplt");
+framework.registerTmpltLoaded("CustomApplicationSurfaceTmplt");

@@ -497,17 +497,11 @@ systemApp.prototype.appInit = function()
          */
 
         "CustomApplicationSurface" : {
-            "sbNameId": "CustomApplication",
-            "sbNameIcon": "IcnSbnMap.png",
-            "template" : "CompassTmplt",
-            "templatePath": "apps/system/customtemplates/Compass", //only needed for app-specific templates
-            "controlProperties": {
-                "CompassCtrl" : {
-                        additionalTextId : 'NoNavigation'
-                } // end of properties for "CoordinatesCtrl"
-            }, // end of list of controlProperties
-            "readyFunction": this._CompassContextReady.bind(this),
-        } // end of "Compass"
+            "template" : "CustomApplicationTmplt",
+            "templatePath": "apps/system/custom/runtime/templates/CustomApplicationTmplt", 
+            "readyFunction": this._CustomApplicationReady.bind(this),
+        },
+
     }; // end of this._contextTable object
 
     //@formatter:off
@@ -1387,11 +1381,8 @@ systemApp.prototype._menuItemSelectCallback = function(listCtrlObj, appData, par
 
     if(appData.mmuiEvent == "ExecuteCustomApplication") {
 
-        if(typeof(CustomApplicationsHandler) != "undefined") {
-            CustomApplicationsHandler.run(appData);
-        }
+        return this._runCustomApplication(appData);
 
-        return;
     } 
 
     // continue normal
@@ -2242,6 +2233,19 @@ systemApp.prototype._initCustomApplicationsDataList = function()
 
     }
 };
+
+systemApp.prototype._CustomApplicationReady = function()
+{
+
+}
+
+systemApp.prototype._runCustomApplication = function()
+{
+    if(typeof(CustomApplicationsHandler) != "undefined") {
+        CustomApplicationsHandler.run(appData);
+    }
+    //{"msgType":"focusStack","appIdList":[{"id":"system"},{"id":"usbaudio"},{"id":"emnavi"}]}
+}
 
 // Tell framework that system app has finished loading
 framework.registerAppLoaded("system", null, true);

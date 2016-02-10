@@ -46,7 +46,7 @@ var lessPath = [
     'less/*'
 ];
 
-var output = "../system/framework/";
+var output = "../system/runtime/";
 
 
 /**
