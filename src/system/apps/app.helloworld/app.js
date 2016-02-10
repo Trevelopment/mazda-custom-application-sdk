@@ -121,12 +121,10 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		statusbarTitle: false,
 
 		/**
-		 * (statusbarHomeButton) hides the home button in the statusbar 
-		 *
-		 * By default this is disabled
+		 * (statusbarHideHomeButton) hides the home button in the statusbar 
 		 */
 
-		// statusbarHomeButton: false,
+		// statusbarHideHomeButton: false,
 
 		/**
 		 * (leftButton) indicates if the UI left button / return button should be shown

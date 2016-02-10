@@ -318,7 +318,7 @@ var CustomApplication = (function(){
 
 		getStatusbarHomeButton: function() {
 
-			return !(this.getSetting('statusbarHomeButton') === false);
+			return this.getSetting('statusbarHideHomeButton') === true ? false : true;
 		},
 
 		getLeftButton: function() {
