@@ -500,7 +500,6 @@ systemApp.prototype.appInit = function()
             "template" : "CustomApplicationSurfaceTmplt",
             "templatePath": "apps/system/custom/runtime/surface/CustomApplicationSurfaceTmplt", 
             "sbNameId" : null,
-            "hideHomeBtn": true,
         },
 
     }; // end of this._contextTable object
