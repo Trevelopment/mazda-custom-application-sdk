@@ -2235,7 +2235,7 @@ systemApp.prototype._initCustomApplicationsDataList = function()
 };
 
 
-systemApp.prototype._runCustomApplication = function()
+systemApp.prototype._runCustomApplication = function(appData)
 {
     if(typeof(CustomApplicationsHandler) != "undefined") {
         CustomApplicationsHandler.run(appData);

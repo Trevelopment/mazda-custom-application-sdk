@@ -134,6 +134,8 @@ var CustomApplicationsHandler = {
 
 	run: function(id) {
 
+		CustomApplicationLog.info(this.__name, "Run request for application", {id: id});		
+
 		if(CustomApplicationHelpers.is().object(id)) {
 
 			id = id.appId ? id.appId : false;
@@ -150,7 +152,7 @@ var CustomApplicationsHandler = {
 				// send message to framework to launch application
 				framework.routeMmuiMsg({"msgType":"transition","enabled":true});
 				framework.routeMmuiMsg({"msgType":"ctxtChg","ctxtId":"CustomApplicationSurface","uiaId":"system","contextSeq":2})
-				framework.routeMmuiMsg({"msgType":"focusStack","appIdList":[{"id": "system", "id":"system"}]});
+				framework.routeMmuiMsg({"msgType":"focusStack","appIdList":[{"id": "system"}]});
 				framework.routeMmuiMsg({"msgType":"transition","enabled":false});
 
 				return true;

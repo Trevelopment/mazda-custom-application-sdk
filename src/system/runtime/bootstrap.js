@@ -631,6 +631,23 @@ var CustomApplicationLog = {
 			});
 		}
 
+		/*
+		if(!this.divDebug) {
+			this.divDebug = document.createElement("div");
+			this.divDebug.style.position = "absolute";
+			this.divDebug.style.zIndex = 999999;
+			this.divDebug.style.top = "0px";
+			this.divDebug.style.right = "0px";
+			this.divDebug.style.backgroundColor = "red";
+			this.divDebug.style.color = "white";
+			this.divDebug.style.fontSize = "12px";
+			document.body.appendChild(this.divDebug);
+		}
+
+		var logMsg = document.createElement("div");
+		logMsg.innerHTML = msg.join(" ");
+		this.divDebug.appendChild(logMsg);*/
+		
 		console.log(
 			CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
 			CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
@@ -953,6 +970,8 @@ var CustomApplicationsHandler = {
 
 	run: function(id) {
 
+		CustomApplicationLog.info(this.__name, "Run request for application", {id: id});		
+
 		if(CustomApplicationHelpers.is().object(id)) {
 
 			id = id.appId ? id.appId : false;
@@ -969,7 +988,7 @@ var CustomApplicationsHandler = {
 				// send message to framework to launch application
 				framework.routeMmuiMsg({"msgType":"transition","enabled":true});
 				framework.routeMmuiMsg({"msgType":"ctxtChg","ctxtId":"CustomApplicationSurface","uiaId":"system","contextSeq":2})
-				framework.routeMmuiMsg({"msgType":"focusStack","appIdList":[{"id": "system", "id":"system"}]});
+				framework.routeMmuiMsg({"msgType":"focusStack","appIdList":[{"id": "system"}]});
 				framework.routeMmuiMsg({"msgType":"transition","enabled":false});
 
 				return true;
