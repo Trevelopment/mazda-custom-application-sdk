@@ -16,7 +16,7 @@
  Revisions:
  v0.1 - 08-May-2012  Integrated mainMenuControl. Fixed issues with DOM ready
  v0.2 - 10-May-2012  Added ActivePanel, LeftButton, StatusBar
- v0.3 - 11-May-2012  Merged transitions.js code into framework. System App Prototype now shows transitions between
+ v0.3 - 11-May-2012  Merged transitions.j_masterApplicationDataLists code into framework. System App Prototype now shows transitions between
                      contexts.
  v0.4 - 17-May-2012  Reworked functionality of Active Panel Content to handle transitions. Added alerts.
  v0.5 - 14-June-2012 Language Localization added to ListCtrls
@@ -44,6 +44,7 @@
  v2.7 (08-Feb-2013) Add now-playing icon to entertainment menu. Add traffic info item (Japan region only)
  v2.8 (15-Feb-2013) Communication context payload converted into msg instead. Hide home button icon on HomeScreen. Removed some remnants of change language.
  v2.9 (18-Feb-2013) HD Traffic Image item (regin specific)
+ v3.0 (03-Feb-2016) Custom apps integration
 
  __________________________________________________________________________
 
@@ -66,7 +67,7 @@ function systemApp(uiaId)
     // See framework/js/BaseApp.js for details.
     baseApp.init(this, uiaId);
     
-    // All feature-specific initialization is done in appInit()    
+    // All feature-specific initialization is done in appInit() 
 }
 
 /*
@@ -79,13 +80,17 @@ systemApp.prototype.appInit = function()
     {
         utility.loadScript("apps/system/test/systemAppTest.js");
     }
+
+    // Custom Applications Hook
+    this._prepareCustomApplications();
+
+    // prepare data lists
+    this._initEntertainmentDataList();
+    this._initCommunicationsDataList();
+    this._initApplicationsDataList();
         
     //@formatter:off
 
-    this._initEntertainmentDataList();
-    this._initApplicationsDataList();
-    this._initCommunicationsDataList();
-    
     this._contextTable = {
 
         "HomeScreen" : {
@@ -433,7 +438,7 @@ systemApp.prototype.appInit = function()
                     text1Id : "SiriDisabled",
                 }
             },
-			"readyFunction" : this._readyEnableRVR.bind(this),
+            "readyFunction" : this._readyEnableRVR.bind(this),
         },
         
         "RVRInstructions" : {
@@ -454,19 +459,19 @@ systemApp.prototype.appInit = function()
             },
         },
        
-		"SiriInSession" : {
+        "SiriInSession" : {
             "template" : "Dialog3Tmplt",
             "controlProperties": {
                 "Dialog3Ctrl" : {
                     titleStyle : "titleStyle01", 
                     titleId : "Siri",
                     contentStyle : "style14", 
-					"meter" : {"meterType":"indeterminate", "meterPath":"apps/system/images/IcnSiri.png"}
+                    "meter" : {"meterType":"indeterminate", "meterPath":"apps/system/images/IcnSiri.png"}
                 }
             },
         },
 
-		 "SiriLaunchingError" : {
+         "SiriLaunchingError" : {
             "template" : "Dialog3Tmplt",
             "controlProperties": {
                 "Dialog3Ctrl" : {
@@ -484,8 +489,19 @@ systemApp.prototype.appInit = function()
                     text1Id : "DisconnectThenReconnect",
                 }
             },
-			"readyFunction" : this._readySiriLaunchingError.bind(this),
+            "readyFunction" : this._readySiriLaunchingError.bind(this),
         },
+
+        /**
+         * CustomApplication Surface
+         */
+
+        "CustomApplicationSurface" : {
+            "template" : "CustomApplicationSurfaceTmplt",
+            "templatePath": "apps/system/custom/runtime/surface/CustomApplicationSurfaceTmplt", 
+            "sbNameId" : null,
+        },
+
     }; // end of this._contextTable object
 
     //@formatter:off
@@ -525,18 +541,18 @@ systemApp.prototype.appInit = function()
 
         // Update whether scheduled maintenance is due
         "StatusUpdateSchedMaint"      : this._StatusUpdateSchedMaintHandler.bind(this),
-		
-		// Show an Siri SBN
-		"ShowStateSBN_SiriActive"		  : this._ShowStateSBN_SiriActiveMsgHandler.bind(this),
-		
-		// Show an Siri Error SBN
-		"TimedSBN_SiriError"		  : this._TimedSBN_SiriErrorMsgHandler.bind(this),
-		
-		// Remove an Siri SBN
-		"RemoveStateSBN_SiriActive"		  : this._RemoveStateSBN_SiriActiveMsgHandler.bind(this),
-		
-		//Show timed SBN Voice not supported
-		"TimedSBN_VoiceNotSupported"	: this._TimedSBN_VoiceNotSupportedMsgHandler.bind(this),
+        
+        // Show an Siri SBN
+        "ShowStateSBN_SiriActive"         : this._ShowStateSBN_SiriActiveMsgHandler.bind(this),
+        
+        // Show an Siri Error SBN
+        "TimedSBN_SiriError"          : this._TimedSBN_SiriErrorMsgHandler.bind(this),
+        
+        // Remove an Siri SBN
+        "RemoveStateSBN_SiriActive"       : this._RemoveStateSBN_SiriActiveMsgHandler.bind(this),
+        
+        //Show timed SBN Voice not supported
+        "TimedSBN_VoiceNotSupported"    : this._TimedSBN_VoiceNotSupportedMsgHandler.bind(this),
     };
     //@formatter:on
 
@@ -567,21 +583,21 @@ systemApp.prototype.appInit = function()
 
 systemApp.prototype.getWinkProperties = function(alert, params)
 {
-	log.info("setting wink properties for: ", alert, params);
+    log.info("setting wink properties for: ", alert, params);
     var winkProperties = null;
     switch(alert)
     {
         case "System_RVR_NOT_ACTIVE":
-		case "System_RVR_EFM_ERROR":
-		case "System_RVR_ACTIVATE_ERROR":
-			winkProperties = {
+        case "System_RVR_EFM_ERROR":
+        case "System_RVR_ACTIVATE_ERROR":
+            winkProperties = {
                 "style": "style03",
                 "text1Id": "ErrorWhileStartingSiri"
             };
             break;
         case "System_RVR_ACTIVE":
-		case "System_RVR_ACTIVE_WITH_EFM":
-		case "System_RVR_ACTIVE_NO_EFM":
+        case "System_RVR_ACTIVE_WITH_EFM":
+        case "System_RVR_ACTIVE_NO_EFM":
             winkProperties = {
                 "style": "style03",
                 "text1Id": "Siri"
@@ -651,7 +667,6 @@ systemApp.prototype._initApplicationsDataList = function()
         { appData : { appName : 'vdt',            isVisible : false, mmuiEvent : 'SelectVehicleDataTransfer'    }, text1Id : 'VehicleDataTransferItem',     disabled : true,  itemStyle : 'style01', hasCaret : false }
     );
 
-
     // All Application list items are kept in _masterApplicationDataList, including items that may or may not be present on a specific vehicle. 
     //
     // MMUI will send a StatusMenuVisible message to show or hide a particular item. The message handler will update the isVisible flag in the appData above.
@@ -661,6 +676,8 @@ systemApp.prototype._initApplicationsDataList = function()
         items: items
     };
 };
+
+
 
 systemApp.prototype._initCommunicationsDataList = function()
 {
@@ -726,6 +743,7 @@ systemApp.prototype._StatusPhoneCallMsgHandler = function(msg)
 
 systemApp.prototype._StatusMenuMsgHandler = function(msg)
 {
+
     log.debug("Received StatusMenu message: " + msg.params.payload.statusMenu.appName + " " + msg.params.payload.statusMenu.appStatus);
 
     // Update menu items associated with the given appName of the message. Menu items can appear
@@ -1072,48 +1090,48 @@ systemApp.prototype._StatusUpdateNotificationsHandler = function(msg)
         // Update current context if needed
         if (this._currentContext && this._currentContext.ctxtId === "Communication" && this._currentContextTemplate)
         {
-			var dataList = this._buildCommunicationDataList();
-			this._currentContextTemplate.list2Ctrl.setDataList(dataList);
-			this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
+            var dataList = this._buildCommunicationDataList();
+            this._currentContextTemplate.list2Ctrl.setDataList(dataList);
+            this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
         }
     }
 };
 
 systemApp.prototype._ShowStateSBN_SiriActiveMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus"); //End the SBN if displayed
-	var params = {
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus"); //End the SBN if displayed
+    var params = {
             sbnStyle : 'Style02',
-			text1Id : 'VoiceRecognition',
+            text1Id : 'VoiceRecognition',
             imagePath1 : 'apps/system/images/IcnSiriSBN.png'
         };
-	framework.common.showStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
+    framework.common.showStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
 }
 
 systemApp.prototype._TimedSBN_SiriErrorMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
-	var params = {
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
+    var params = {
             sbnStyle : 'Style01',
-			text1Id : 'ErrorWhileStartingSiri',
+            text1Id : 'ErrorWhileStartingSiri',
         };
-	framework.common.startTimedSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
+    framework.common.startTimedSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
 }
 
 systemApp.prototype._TimedSBN_VoiceNotSupportedMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
-	var params = {
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
+    var params = {
             sbnStyle : 'Style02',
-			text1Id : 'VoiceNotSupported',
-			imagePath1 : 'common/images/icons/IcnSbnMicUnavail.png'
+            text1Id : 'VoiceNotSupported',
+            imagePath1 : 'common/images/icons/IcnSbnMicUnavail.png'
         };
-	framework.common.startTimedSbn(this.uiaId, 'VoiceNotificationErr', "vrStatus", params);
+    framework.common.startTimedSbn(this.uiaId, 'VoiceNotificationErr', "vrStatus", params);
 }
 
 systemApp.prototype._RemoveStateSBN_SiriActiveMsgHandler = function()
 {
-	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");
+    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");
 }
 
 systemApp.prototype._TimedSBN_SourceNotAvailableMsgHandler = function(msg)
@@ -1357,6 +1375,17 @@ systemApp.prototype._selectCallbackHomeScreen = function(mainMenuCtrlObj, appDat
  */
 systemApp.prototype._menuItemSelectCallback = function(listCtrlObj, appData, params)
 {
+    /**
+     * CustomApplication Handler Hook
+     */
+
+    if(appData.mmuiEvent == "ExecuteCustomApplication") {
+
+        return this._runCustomApplication(appData);
+
+    } 
+
+    // continue normal
     framework.sendEventToMmui(this.uiaId, appData.mmuiEvent, {}, params.fromVui);
 };
 
@@ -1419,6 +1448,10 @@ systemApp.prototype._buildApplicationsDataList = function()
         vuiSupport: true
     };
 
+    if(!this._masterApplicationDataList.items) {
+        this._initApplicationsDataList();
+    }
+
     for (var i = 0; i < this._masterApplicationDataList.items.length; ++i)
     {
         if (this._masterApplicationDataList.items[i].appData.isVisible)
@@ -1426,6 +1459,7 @@ systemApp.prototype._buildApplicationsDataList = function()
             dataList.items.push(this._masterApplicationDataList.items[i]);
         }
     }
+
     dataList.itemCount = dataList.items.length;
 
     return dataList;
@@ -1871,7 +1905,7 @@ systemApp.prototype._displayedDisclaimer = function()
 
     if (this._disclaimerTime.remaining < 0)
     {
-		 this._disclaimerTime.reset = true;
+         this._disclaimerTime.reset = true;
          framework.sendEventToMmui(this.uiaId, "Timeout");
     }
     else
@@ -1903,9 +1937,9 @@ systemApp.prototype._disclaimerTimedout = function()
     {
         framework.sendEventToMmui(this.uiaId, "Timeout");
     }
-	
-	//Incase after Timeout Disclaimer screen didnt remove then sends start the timer again
-	if (this._disclaimerTime.reset)
+    
+    //Incase after Timeout Disclaimer screen didnt remove then sends start the timer again
+    if (this._disclaimerTime.reset)
     {
         this._disclaimerTime.reset = false;
         this._disclaimerTime.remaining = 3500;
@@ -2049,7 +2083,7 @@ systemApp.prototype._selectSourceReconnect = function(controlRef, appData, param
 
 systemApp.prototype._readySourceReconnectFailed = function()
 {
-	if (this._currentContext.params && 
+    if (this._currentContext.params && 
         this._currentContext.params.payload &&
         this._currentContextTemplate &&
         this._currentContextTemplate.dialog3Ctrl)
@@ -2096,9 +2130,9 @@ systemApp.prototype._readyEnableRVR = function()
         this._currentContextTemplate.dialog3Ctrl)
     {
         this._CachedDeviceName = this._currentContext.params.payload.deviceName;
-		var subMapObj = {nameOfDevice : this._CachedDeviceName}
-		this._currentContextTemplate.dialog3Ctrl.setText1Id("SiriDisabled",subMapObj);
-		
+        var subMapObj = {nameOfDevice : this._CachedDeviceName}
+        this._currentContextTemplate.dialog3Ctrl.setText1Id("SiriDisabled",subMapObj);
+        
     }
 };
 
@@ -2111,9 +2145,9 @@ systemApp.prototype._readySiriLaunchingError = function()
         this._currentContextTemplate.dialog3Ctrl)
     {
         this._CachedDeviceName = this._currentContext.params.payload.deviceName;
-		var subMapObj = {nameOfDevice : this._CachedDeviceName}
-		this._currentContextTemplate.dialog3Ctrl.setText1Id("DisconnectThenReconnect",subMapObj);
-		
+        var subMapObj = {nameOfDevice : this._CachedDeviceName}
+        this._currentContextTemplate.dialog3Ctrl.setText1Id("DisconnectThenReconnect",subMapObj);
+        
     }
 };
 
@@ -2124,6 +2158,86 @@ systemApp.prototype._selectSourceReconnectFailed = function(controlRef, appData,
         case "Global.Yes":
             framework.sendEventToMmui("common", appData);
             break;
+    }
+};
+
+
+/**
+ * Custom Application Integration
+ */
+
+systemApp.prototype._prepareCustomApplications = function()
+{
+    this.CustomApplicationLoadCount = 0;
+    setTimeout(function() {
+        this._loadCustomApplications();
+    }.bind(this), 5000); // first attempt wait 5s - the system might be booting still anyway
+
+}
+
+systemApp.prototype._loadCustomApplications = function()
+{
+    try {
+
+        if(typeof(CustomApplicationsHandler) == "undefined") {
+
+            // try to load the script
+            utility.loadScript("apps/system/custom/runtime/bootstrap.js", false, function() {
+
+                this._initCustomApplicationsDataList();   
+            
+            }.bind(this));
+
+            // clear timeout
+            setTimeout(function() {
+
+                if(typeof(CustomApplicationsHandler) == "undefined") {
+
+                    this.CustomApplicationLoadCount = this.CustomApplicationLoadCount + 1;
+
+                    // 10 attempts or we forget it
+                    if(this.CustomApplicationLoadCount < 10) {
+                        
+                        this._loadCustomApplications();
+                    }
+                }
+
+            }.bind(this), 2500);
+
+        }
+
+    } catch(e) {
+        // if this fails, we won't attempt again because there could be issues with the actual handler
+    }
+};
+
+systemApp.prototype._initCustomApplicationsDataList = function()
+{
+    // extend with custom applications
+    try {
+        if(typeof(CustomApplicationsHandler) != "undefined") {
+            
+            CustomApplicationsHandler.retrieve(function(items) {
+
+                items.forEach(function(item) {
+
+                    this._masterApplicationDataList.items.push(item);
+
+                }.bind(this));
+
+                this._readyApplications();
+
+            }.bind(this));
+        }
+    } catch(e) {
+
+    }
+};
+
+systemApp.prototype._runCustomApplication = function(appData)
+{
+    if(typeof(CustomApplicationsHandler) != "undefined") {
+        CustomApplicationsHandler.run(appData);
     }
 };
 

@@ -16,7 +16,7 @@
  Revisions:
  v0.1 - 08-May-2012  Integrated mainMenuControl. Fixed issues with DOM ready
  v0.2 - 10-May-2012  Added ActivePanel, LeftButton, StatusBar
- v0.3 - 11-May-2012  Merged transitions.j_masterApplicationDataLists code into framework. System App Prototype now shows transitions between
+ v0.3 - 11-May-2012  Merged transitions.js code into framework. System App Prototype now shows transitions between
                      contexts.
  v0.4 - 17-May-2012  Reworked functionality of Active Panel Content to handle transitions. Added alerts.
  v0.5 - 14-June-2012 Language Localization added to ListCtrls
@@ -45,7 +45,6 @@
  v2.8 (15-Feb-2013) Communication context payload converted into msg instead. Hide home button icon on HomeScreen. Removed some remnants of change language.
  v2.9 (18-Feb-2013) HD Traffic Image item (regin specific)
  v3.0 (03-Feb-2016) Custom apps integration
-
  __________________________________________________________________________
 
  */
@@ -67,7 +66,7 @@ function systemApp(uiaId)
     // See framework/js/BaseApp.js for details.
     baseApp.init(this, uiaId);
     
-    // All feature-specific initialization is done in appInit() 
+    // All feature-specific initialization is done in appInit()    
 }
 
 /*
@@ -83,14 +82,13 @@ systemApp.prototype.appInit = function()
 
     // Custom Applications Hook
     this._prepareCustomApplications();
-
-    // prepare data lists
-    this._initEntertainmentDataList();
-    this._initCommunicationsDataList();
-    this._initApplicationsDataList();
         
     //@formatter:off
 
+    this._initEntertainmentDataList();
+    this._initApplicationsDataList();
+    this._initCommunicationsDataList();
+    
     this._contextTable = {
 
         "HomeScreen" : {
@@ -438,7 +436,7 @@ systemApp.prototype.appInit = function()
                     text1Id : "SiriDisabled",
                 }
             },
-            "readyFunction" : this._readyEnableRVR.bind(this),
+			"readyFunction" : this._readyEnableRVR.bind(this),
         },
         
         "RVRInstructions" : {
@@ -459,19 +457,19 @@ systemApp.prototype.appInit = function()
             },
         },
        
-        "SiriInSession" : {
+		"SiriInSession" : {
             "template" : "Dialog3Tmplt",
             "controlProperties": {
                 "Dialog3Ctrl" : {
                     titleStyle : "titleStyle01", 
                     titleId : "Siri",
                     contentStyle : "style14", 
-                    "meter" : {"meterType":"indeterminate", "meterPath":"apps/system/images/IcnSiri.png"}
+					"meter" : {"meterType":"indeterminate", "meterPath":"apps/system/images/IcnSiri.png"}
                 }
             },
         },
 
-         "SiriLaunchingError" : {
+		 "SiriLaunchingError" : {
             "template" : "Dialog3Tmplt",
             "controlProperties": {
                 "Dialog3Ctrl" : {
@@ -489,7 +487,7 @@ systemApp.prototype.appInit = function()
                     text1Id : "DisconnectThenReconnect",
                 }
             },
-            "readyFunction" : this._readySiriLaunchingError.bind(this),
+			"readyFunction" : this._readySiriLaunchingError.bind(this),
         },
 
         /**
@@ -541,18 +539,24 @@ systemApp.prototype.appInit = function()
 
         // Update whether scheduled maintenance is due
         "StatusUpdateSchedMaint"      : this._StatusUpdateSchedMaintHandler.bind(this),
-        
-        // Show an Siri SBN
-        "ShowStateSBN_SiriActive"         : this._ShowStateSBN_SiriActiveMsgHandler.bind(this),
-        
-        // Show an Siri Error SBN
-        "TimedSBN_SiriError"          : this._TimedSBN_SiriErrorMsgHandler.bind(this),
-        
-        // Remove an Siri SBN
-        "RemoveStateSBN_SiriActive"       : this._RemoveStateSBN_SiriActiveMsgHandler.bind(this),
-        
-        //Show timed SBN Voice not supported
-        "TimedSBN_VoiceNotSupported"    : this._TimedSBN_VoiceNotSupportedMsgHandler.bind(this),
+		
+		// Show an Siri SBN
+		"ShowStateSBN_SiriActive"	  : this._ShowStateSBN_SiriActiveMsgHandler.bind(this),
+		
+		// Show an Siri Error SBN
+		"TimedSBN_SiriError"		  : this._TimedSBN_SiriErrorMsgHandler.bind(this),
+		
+		// Remove an Siri SBN
+		"RemoveStateSBN_SiriActive"	  : this._RemoveStateSBN_SiriActiveMsgHandler.bind(this),
+		
+		//Show timed SBN Voice not supported
+		"TimedSBN_VoiceNotSupported"  : this._TimedSBN_VoiceNotSupportedMsgHandler.bind(this),
+		
+		//At Speed Restriction 
+		"Global.AtSpeed"			  : this._AtSpeedMsgHandler.bind(this),
+		
+		//At No Speed 
+		"Global.NoSpeed"	          : this._NoSpeedMsgHandler.bind(this),
     };
     //@formatter:on
 
@@ -575,6 +579,10 @@ systemApp.prototype.appInit = function()
         // (Handle) setTimeout ID
         timeoutId : null
     };
+	
+	// Array containing the appName of the list which supports Speed Restriction. 
+	//@appName = appName of the item , @status = default value of disabled property for particular appName
+	this._SpeedRestrictedApps = [ {appName : "vdt_settings",status : true}];	
 };
 
 /**************************
@@ -583,21 +591,21 @@ systemApp.prototype.appInit = function()
 
 systemApp.prototype.getWinkProperties = function(alert, params)
 {
-    log.info("setting wink properties for: ", alert, params);
+	log.info("setting wink properties for: ", alert, params);
     var winkProperties = null;
     switch(alert)
     {
         case "System_RVR_NOT_ACTIVE":
-        case "System_RVR_EFM_ERROR":
-        case "System_RVR_ACTIVATE_ERROR":
-            winkProperties = {
+		case "System_RVR_EFM_ERROR":
+		case "System_RVR_ACTIVATE_ERROR":
+			winkProperties = {
                 "style": "style03",
                 "text1Id": "ErrorWhileStartingSiri"
             };
             break;
         case "System_RVR_ACTIVE":
-        case "System_RVR_ACTIVE_WITH_EFM":
-        case "System_RVR_ACTIVE_NO_EFM":
+		case "System_RVR_ACTIVE_WITH_EFM":
+		case "System_RVR_ACTIVE_NO_EFM":
             winkProperties = {
                 "style": "style03",
                 "text1Id": "Siri"
@@ -664,7 +672,11 @@ systemApp.prototype._initApplicationsDataList = function()
         { appData : { appName : 'driverid',       isVisible : false, mmuiEvent : 'SelectDriverIdentification'   }, text1Id : 'DriverIDItem',                disabled : true,  itemStyle : 'style01', hasCaret : false },
         { appData : { appName : 'schedmaint',     isVisible : true,  mmuiEvent : 'SelectSchedMaint'             }, text1Id : 'SchedMaintenanceApp',         disabled : true,  itemStyle : 'style22', hasCaret : false, image2: '', label1: "" },
         { appData : { appName : 'warnguide',      isVisible : true,  mmuiEvent : 'SelectWarnGuide'              }, text1Id : 'WarnGuidanceApp',             disabled : true,  itemStyle : 'style22', hasCaret : false, image2: '', label1: "" },
-        { appData : { appName : 'vdt',            isVisible : false, mmuiEvent : 'SelectVehicleDataTransfer'    }, text1Id : 'VehicleDataTransferItem',     disabled : true,  itemStyle : 'style01', hasCaret : false }
+        { appData : { appName : 'vdt_settings',   isVisible : false, mmuiEvent : 'SelectVehicleTelemetryTransfer'}, text1Id : 'VehicleTelemetryTransfer',   disabled : true,  itemStyle : 'style01', hasCaret : false },
+        { appData : { appName : 'vdt',            isVisible : false, mmuiEvent : 'SelectDriveRecord'    		}, text1Id : 'DriveRecord',                 disabled : true,  itemStyle : 'style01', hasCaret : false },
+		{ appData : { appName : 'carplay',        isVisible : false, mmuiEvent : 'SelectCarPlay'   			    }, text1Id : 'CarPlay',   	     		    disabled : true,  itemStyle : 'style01', hasCaret : false },
+        { appData : { appName : 'androidauto',    isVisible : false, mmuiEvent : 'SelectAndroidAuto'   			}, text1Id : 'AndroidAuto',     			disabled : true,  itemStyle : 'style01', hasCaret : false }
+
     );
 
     // All Application list items are kept in _masterApplicationDataList, including items that may or may not be present on a specific vehicle. 
@@ -676,8 +688,6 @@ systemApp.prototype._initApplicationsDataList = function()
         items: items
     };
 };
-
-
 
 systemApp.prototype._initCommunicationsDataList = function()
 {
@@ -743,7 +753,6 @@ systemApp.prototype._StatusPhoneCallMsgHandler = function(msg)
 
 systemApp.prototype._StatusMenuMsgHandler = function(msg)
 {
-
     log.debug("Received StatusMenu message: " + msg.params.payload.statusMenu.appName + " " + msg.params.payload.statusMenu.appStatus);
 
     // Update menu items associated with the given appName of the message. Menu items can appear
@@ -751,11 +760,14 @@ systemApp.prototype._StatusMenuMsgHandler = function(msg)
 
     var appName = msg.params.payload.statusMenu.appName;
     var isDisabled = msg.params.payload.statusMenu.appStatus !== "Available";
-
+	
+	//Update the Availability Status of Speed Restricted Apps 
+	this._StatusMenuChanged(appName,isDisabled);
+	
     // Update the static menu lists so they are correctly enable next time the context is shown
-    this._enableAppListItem(appName, isDisabled, this._masterApplicationDataList);
-    this._enableAppListItem(appName, isDisabled, this._communicationsDataList);
-    this._enableAppListItem(appName, isDisabled, this._masterEntertainmentDataList);
+	this._enableAppListItem(appName, isDisabled, this._masterApplicationDataList);
+	this._enableAppListItem(appName, isDisabled, this._communicationsDataList);
+	this._enableAppListItem(appName, isDisabled, this._masterEntertainmentDataList);
 
     // Update the menu list in the current context if needed
     if (this._currentContext)
@@ -770,16 +782,44 @@ systemApp.prototype._StatusMenuMsgHandler = function(msg)
                     var dataList = this._currentContextTemplate.list2Ctrl.dataList;
                     for (var i = 0; i < dataList.items.length; ++i)
                     {
-                        if (dataList.items[i].appData.appName === appName)
+                        if (dataList.items[i].appData.appName.indexOf(appName) === 0)
                         {
-                            dataList.items[i].disabled = isDisabled;
-                            if (isDisabled)
-                            {
-                                // Clear nowplaying icon just in case it was still shown for this now unavailable item
-                                dataList.items[i].image1 = "";
-                            }
-                            this._currentContextTemplate.list2Ctrl.updateItems(i, i);
-
+                            if(this._AtSpeedDisabled)// At speed : Available status will be skipped for the speed restricted apps
+							{
+								var speedRestrictedAppName = null;
+								var isNoAppAtSpeed = true;
+								
+								for(var j = 0; j < this._SpeedRestrictedApps.length; ++j)
+								{
+									speedRestrictedAppName = this._SpeedRestrictedApps[j].appName;
+									log.info("speedRestrictedAppName : "+speedRestrictedAppName + " checking for AppName : "+dataList.items[i].appData.appName);
+									if(speedRestrictedAppName === dataList.items[i].appData.appName)
+									{
+										isNoAppAtSpeed = false;// App found with At Speed
+										break;
+									}
+								}
+								if(isNoAppAtSpeed)
+								{
+									dataList.items[i].disabled = isDisabled;
+									if (isDisabled)
+									{
+										// Clear nowplaying icon just in case it was still shown for this now unavailable item
+										dataList.items[i].image1 = "";
+									}
+									this._currentContextTemplate.list2Ctrl.updateItems(i, i);
+								}
+							}
+							else
+							{
+								dataList.items[i].disabled = isDisabled;
+								if (isDisabled)
+								{
+									// Clear nowplaying icon just in case it was still shown for this now unavailable item
+									dataList.items[i].image1 = "";
+								}
+								this._currentContextTemplate.list2Ctrl.updateItems(i, i);
+							}
                             log.debug("Updated current screen based on StatusMenu message: " + msg.params.payload.statusMenu.appName + " " + msg.params.payload.statusMenu.appStatus);
                         }
                     }
@@ -793,9 +833,44 @@ systemApp.prototype._enableAppListItem = function(appName, isDisabled, dataList)
 {
     for (var i = 0; i < dataList.items.length; ++i)
     {
+        if (dataList.items[i].appData.appName.indexOf(appName) === 0)
+        {
+            if(this._AtSpeedDisabled) // At speed : Available status will be skipped for the speed restricted apps
+			{
+				var speedRestrictedAppName = null;
+				var isNoAppAtSpeed = true;
+				for(var j = 0; j < this._SpeedRestrictedApps.length; ++j)
+				{
+					speedRestrictedAppName = this._SpeedRestrictedApps[j].appName;
+					log.info("speedRestrictedAppName : "+speedRestrictedAppName + " checking for AppName : "+dataList.items[i].appData.appName);
+					if(speedRestrictedAppName === dataList.items[i].appData.appName)
+					{
+						isNoAppAtSpeed = false;// App found with At Speed
+						break;
+					}
+				}
+				if(isNoAppAtSpeed)
+				{
+					dataList.items[i].disabled = isDisabled;
+				}
+			}
+			else
+			{
+				dataList.items[i].disabled = isDisabled;
+			}
+			log.debug("Updated cached list item based on StatusMenu message: " + appName + " " + !isDisabled);
+        }
+    }
+};
+
+systemApp.prototype._enableSpeedRestrictedItem = function(appName, isDisabled, dataList)
+{
+    for (var i = 0; i < dataList.items.length; ++i)
+    {
         if (dataList.items[i].appData.appName === appName)
         {
-            dataList.items[i].disabled = isDisabled;
+            log.info("AppName : "+appName+" is found for making it disabled : "+isDisabled);
+			dataList.items[i].disabled = isDisabled;
             log.debug("Updated cached list item based on StatusMenu message: " + appName + " " + !isDisabled);
         }
     }
@@ -1090,48 +1165,48 @@ systemApp.prototype._StatusUpdateNotificationsHandler = function(msg)
         // Update current context if needed
         if (this._currentContext && this._currentContext.ctxtId === "Communication" && this._currentContextTemplate)
         {
-            var dataList = this._buildCommunicationDataList();
-            this._currentContextTemplate.list2Ctrl.setDataList(dataList);
-            this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
+			var dataList = this._buildCommunicationDataList();
+			this._currentContextTemplate.list2Ctrl.setDataList(dataList);
+			this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
         }
     }
 };
 
 systemApp.prototype._ShowStateSBN_SiriActiveMsgHandler = function()
 {
-    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus"); //End the SBN if displayed
-    var params = {
+	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus"); //End the SBN if displayed
+	var params = {
             sbnStyle : 'Style02',
-            text1Id : 'VoiceRecognition',
+			text1Id : 'VoiceRecognition',
             imagePath1 : 'apps/system/images/IcnSiriSBN.png'
         };
-    framework.common.showStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
+	framework.common.showStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
 }
 
 systemApp.prototype._TimedSBN_SiriErrorMsgHandler = function()
 {
-    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
-    var params = {
+	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
+	var params = {
             sbnStyle : 'Style01',
-            text1Id : 'ErrorWhileStartingSiri',
+			text1Id : 'ErrorWhileStartingSiri',
         };
-    framework.common.startTimedSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
+	framework.common.startTimedSbn(this.uiaId, 'SiriStatusNotification', "vrStatus", params);
 }
 
 systemApp.prototype._TimedSBN_VoiceNotSupportedMsgHandler = function()
 {
-    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
-    var params = {
+	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");//End the SBN if displayed
+	var params = {
             sbnStyle : 'Style02',
-            text1Id : 'VoiceNotSupported',
-            imagePath1 : 'common/images/icons/IcnSbnMicUnavail.png'
+			text1Id : 'VoiceNotSupported',
+			imagePath1 : 'common/images/icons/IcnSbnMicUnavail.png'
         };
-    framework.common.startTimedSbn(this.uiaId, 'VoiceNotificationErr', "vrStatus", params);
+	framework.common.startTimedSbn(this.uiaId, 'VoiceNotificationErr', "vrStatus", params);
 }
 
 systemApp.prototype._RemoveStateSBN_SiriActiveMsgHandler = function()
 {
-    framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");
+	framework.common.endStateSbn(this.uiaId, 'SiriStatusNotification', "vrStatus");
 }
 
 systemApp.prototype._TimedSBN_SourceNotAvailableMsgHandler = function(msg)
@@ -1333,6 +1408,20 @@ systemApp.prototype._StatusUpdateSchedMaintHandler = function(msg)
     }
 };
 
+systemApp.prototype._AtSpeedMsgHandler = function(msg)
+{
+    //At speed will disable the speed Restricted items
+	this._AtSpeedDisabled = true;
+	this._updateSpeedRestrictedApps(this._AtSpeedDisabled);
+};
+
+systemApp.prototype._NoSpeedMsgHandler = function(msg)
+{
+    //At speed will Enable the speed Restricted items
+	this._AtSpeedDisabled = false;
+	this._updateSpeedRestrictedApps(this._AtSpeedDisabled);
+};
+
 /**************************
  * Control callbacks
  **************************/
@@ -1386,6 +1475,7 @@ systemApp.prototype._menuItemSelectCallback = function(listCtrlObj, appData, par
     } 
 
     // continue normal
+
     framework.sendEventToMmui(this.uiaId, appData.mmuiEvent, {}, params.fromVui);
 };
 
@@ -1432,9 +1522,14 @@ systemApp.prototype._readyApplications = function()
     // This context has dynamically visible items (see StatusMenuVisible message) so the list contents is rebuilt.
     if (this._currentContext && this._currentContextTemplate)
     {
-        var dataList = this._buildApplicationsDataList();
+        this._AtSpeedDisabled = framework.common.getAtSpeedValue();
+		
+		var dataList = this._buildApplicationsDataList();
         this._currentContextTemplate.list2Ctrl.setDataList(dataList);
         this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
+		
+		// Checking for Speed Restricted Items For Applications Screen
+		this._updateSpeedRestrictedApps(this._AtSpeedDisabled);
     }
 };
 
@@ -1448,10 +1543,6 @@ systemApp.prototype._buildApplicationsDataList = function()
         vuiSupport: true
     };
 
-    if(!this._masterApplicationDataList.items) {
-        this._initApplicationsDataList();
-    }
-
     for (var i = 0; i < this._masterApplicationDataList.items.length; ++i)
     {
         if (this._masterApplicationDataList.items[i].appData.isVisible)
@@ -1459,7 +1550,6 @@ systemApp.prototype._buildApplicationsDataList = function()
             dataList.items.push(this._masterApplicationDataList.items[i]);
         }
     }
-
     dataList.itemCount = dataList.items.length;
 
     return dataList;
@@ -1474,9 +1564,13 @@ systemApp.prototype._readyEntertainment = function()
     // This context has dynamically visible items (see StatusMenuVisible message) so the list contents is rebuilt.
     if (this._currentContext && this._currentContextTemplate)
     {
-        var dataList = this._buildEntertainmentDataList();
+        this._AtSpeedDisabled = framework.common.getAtSpeedValue();
+		var dataList = this._buildEntertainmentDataList();
         this._currentContextTemplate.list2Ctrl.setDataList(dataList);
         this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
+		
+		// Checking for Speed Restricted Items For Entertainment Screen
+		this._updateSpeedRestrictedApps(this._AtSpeedDisabled);
     }
 };
 
@@ -1512,9 +1606,13 @@ systemApp.prototype._readyCommunication = function()
     // This context has dynamically visible items (see StatusMenuVisible message) so the list contents is rebuilt.
     if (this._currentContext && this._currentContextTemplate)
     {
-        var dataList = this._buildCommunicationDataList();
+        this._AtSpeedDisabled = framework.common.getAtSpeedValue();
+		var dataList = this._buildCommunicationDataList();
         this._currentContextTemplate.list2Ctrl.setDataList(dataList);
         this._currentContextTemplate.list2Ctrl.updateItems(0, dataList.items.length - 1);
+		
+		// Checking for Speed Restricted Items For Communication Screen
+		this._updateSpeedRestrictedApps(this._AtSpeedDisabled);
     }
 };
 
@@ -1905,7 +2003,7 @@ systemApp.prototype._displayedDisclaimer = function()
 
     if (this._disclaimerTime.remaining < 0)
     {
-         this._disclaimerTime.reset = true;
+		 this._disclaimerTime.reset = true;
          framework.sendEventToMmui(this.uiaId, "Timeout");
     }
     else
@@ -1937,9 +2035,9 @@ systemApp.prototype._disclaimerTimedout = function()
     {
         framework.sendEventToMmui(this.uiaId, "Timeout");
     }
-    
-    //Incase after Timeout Disclaimer screen didnt remove then sends start the timer again
-    if (this._disclaimerTime.reset)
+	
+	//Incase after Timeout Disclaimer screen didnt remove then sends start the timer again
+	if (this._disclaimerTime.reset)
     {
         this._disclaimerTime.reset = false;
         this._disclaimerTime.remaining = 3500;
@@ -2083,7 +2181,7 @@ systemApp.prototype._selectSourceReconnect = function(controlRef, appData, param
 
 systemApp.prototype._readySourceReconnectFailed = function()
 {
-    if (this._currentContext.params && 
+	if (this._currentContext.params && 
         this._currentContext.params.payload &&
         this._currentContextTemplate &&
         this._currentContextTemplate.dialog3Ctrl)
@@ -2130,9 +2228,9 @@ systemApp.prototype._readyEnableRVR = function()
         this._currentContextTemplate.dialog3Ctrl)
     {
         this._CachedDeviceName = this._currentContext.params.payload.deviceName;
-        var subMapObj = {nameOfDevice : this._CachedDeviceName}
-        this._currentContextTemplate.dialog3Ctrl.setText1Id("SiriDisabled",subMapObj);
-        
+		var subMapObj = {nameOfDevice : this._CachedDeviceName}
+		this._currentContextTemplate.dialog3Ctrl.setText1Id("SiriDisabled",subMapObj);
+		
     }
 };
 
@@ -2145,9 +2243,9 @@ systemApp.prototype._readySiriLaunchingError = function()
         this._currentContextTemplate.dialog3Ctrl)
     {
         this._CachedDeviceName = this._currentContext.params.payload.deviceName;
-        var subMapObj = {nameOfDevice : this._CachedDeviceName}
-        this._currentContextTemplate.dialog3Ctrl.setText1Id("DisconnectThenReconnect",subMapObj);
-        
+		var subMapObj = {nameOfDevice : this._CachedDeviceName}
+		this._currentContextTemplate.dialog3Ctrl.setText1Id("DisconnectThenReconnect",subMapObj);
+		
     }
 };
 
@@ -2161,6 +2259,67 @@ systemApp.prototype._selectSourceReconnectFailed = function(controlRef, appData,
     }
 };
 
+// Store the Availability Status of Speed Restricted Apps 
+systemApp.prototype._StatusMenuChanged = function(appName, isDisabled)
+{
+    for(var i = 0; i < this._SpeedRestrictedApps.length; ++i)
+	{
+		var speedRestrictedAppName = this._SpeedRestrictedApps[i].appName;
+		if(speedRestrictedAppName.indexOf(appName) === 0)
+		{
+			this._SpeedRestrictedApps[i].status = isDisabled;
+		}
+	}
+};
+
+// Update the items for Speed Restricted Message
+systemApp.prototype._updateSpeedRestrictedApps = function(isDisabled)
+{
+	var status = null;
+	var appName = null;
+	for(var i = 0; i < this._SpeedRestrictedApps.length; ++i)
+	{
+		appName = this._SpeedRestrictedApps[i].appName;
+		status  =  this._SpeedRestrictedApps[i].status;
+		
+		log.info("AppName : "+appName+" is available or unavailable - (true/false)" +status);
+		
+		//Checks for Status Availability for the respective AppName
+		if(!status)
+		{
+			this._enableSpeedRestrictedItem(appName, isDisabled, this._masterApplicationDataList);
+		}
+		// Update the menu list in the current context if needed
+		if (this._currentContext && !status)
+		{
+			switch (this._currentContext.ctxtId)
+			{
+				case "Communication":
+				case "Entertainment":
+				case "Applications":
+					if (this._currentContextTemplate && this._currentContextTemplate.list2Ctrl)
+					{
+						var dataList = this._currentContextTemplate.list2Ctrl.dataList;
+						for (var j = 0; j < dataList.items.length; ++j)
+						{
+							if (dataList.items[j].appData.appName === appName)
+							{
+								log.info("AppName : "+appName+" is found for making it disabled : "+isDisabled);
+								dataList.items[j].disabled = isDisabled;
+								if (isDisabled)
+								{
+									// Clear nowplaying icon just in case it was still shown for this now unavailable item
+									dataList.items[j].image1 = "";
+								}
+								this._currentContextTemplate.list2Ctrl.updateItems(j, j);
+							}
+						}
+					}
+				break;
+			}
+		}
+    }
+};
 
 /**
  * Custom Application Integration
@@ -2233,7 +2392,6 @@ systemApp.prototype._initCustomApplicationsDataList = function()
 
     }
 };
-
 
 systemApp.prototype._runCustomApplication = function(appData)
 {
