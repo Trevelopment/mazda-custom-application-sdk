@@ -64,6 +64,13 @@ var CustomApplicationDataHandler = {
 		{table: 'vdtsettings', enabled: false},
 	],
 
+	/**
+	 * (Pools)
+	 */
+
+	current: {},
+	buffer: {},
+
 
 	/**
 	 * (initialize) Initializes some of the core objects
@@ -101,14 +108,20 @@ var CustomApplicationDataHandler = {
 		CustomApplicationLog.info(this.__name, "Retrieving data tables");	
 
 		// prepare
-		var loaded = 0, toload = 0, buffer = [], finish = function() {
+		var loaded = 0, toload = 0, finish = function() {
 
 			if(loaded >= toload) {
-				this.process(buffer);
+
+				this.current = this.buffer;
+
+				this.notify();
+
 			}
 
 		}.bind(this);
 
+		// reset buffer
+		this.buffer = {};
 
 		// build to load list
 		this.tables.map(function(table) {
@@ -127,56 +140,34 @@ var CustomApplicationDataHandler = {
 
 					CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
 
-					if(table.filter) data = this.filter(data);
-
-					
+					this.process(table, data);
 
 					finish();
 
 				}.bind(this));
 			}
+		}.bind(this));		
+	},
+
+
+	/**
+	 * (process)
+	 */
+
+	process: function(table, data) {
+
+		if(table.filter) data = this.filter(data);
+
+		// quick process
+		(data.split("\n")).forEach(function(line, index) {
+
+			var parts = line.split(/[\((,)\).*(:)]/);
+
+			// filter by type
+			
+
+
 		}.bind(this));
-
-
-/*			data = $.trim(data);
-// Revised for using speed from smdb-read as it is in 0.01 KPH increments
-			if ($.isNumeric(data)) {
-				data = data * 0.01;
-				// Cutoff under 1KPH
-				if (data < 1.0) {
-					data = 0;
-				}
-			}
-			if ($.isNumeric(data) && isEnglish) {
-				data = data * 0.6213712;
-			}
-			if ($.isNumeric(data) && data != speedValue) {
-				speedValue = data;
-				var speedTemp = Math.round(data);
-				if(speedTemp > 0){
-					updateSpeedTop(speedTemp);
-					updateSpeedAvg(speedTemp);
-				}
-				$('#speedCurrent').each(function () {
-					var $this = $(this);
-					$({Counter: $this.text()}).animate({Counter: speedValue}, {
-						duration: 950,
-						easing: 'linear',
-						step: function (now) {
-							$this.text(Math.round(now));
-							speedCurrent = $this.text();
-							updateSpeedIndicator(speedCurrent);
-						},
-						complete: function () {
-						}
-					});
-				});
-			}
-		});*/
-
-
-
-		
 	},
 
 
