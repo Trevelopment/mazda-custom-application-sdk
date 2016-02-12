@@ -47,7 +47,16 @@ var CustomApplicationsHandler = {
 	paths: {
 		framework: 'apps/system/custom/runtime/',
 		applications: 'apps/system/custom/apps/', 
-		library: 'apps/system/custom/runtime/library/',
+		library: 'apps/system/custom/runtime/library/'
+	},
+
+	/**
+	 * (Mapping)
+	 */
+
+	mapping: {
+
+
 	},
 
 	/**
@@ -56,9 +65,8 @@ var CustomApplicationsHandler = {
 
 	initialize: function() {
 
-		//this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
-
 		this.initialized = true;
+
 	},
 
 
@@ -88,6 +96,10 @@ var CustomApplicationsHandler = {
 								CustomApplicationResourceLoader.fromFormatted("{0}/app.js", CustomApplications),
 								this.paths.applications,
 								function() {
+									// all applications are loaded, run data
+									CustomApplicationDataHandler.initialize();
+
+									// create menu items
 									callback(this.getMenuItems());
 								}.bind(this)
 							);
@@ -149,10 +161,14 @@ var CustomApplicationsHandler = {
 
 			if(typeof(framework) != "undefined") {
 
+				var list = framework._focusStack;
+
+				list.unshift({id: "system"});
+
 				// send message to framework to launch application
 				framework.routeMmuiMsg({"msgType":"transition","enabled":true});
 				framework.routeMmuiMsg({"msgType":"ctxtChg","ctxtId":"CustomApplicationSurface","uiaId":"system","contextSeq":2})
-				framework.routeMmuiMsg({"msgType":"focusStack","appIdList":[{"id": "system"}]});
+				framework.routeMmuiMsg({"msgType":"focusStack","appIdList": list});
 				framework.routeMmuiMsg({"msgType":"transition","enabled":false});
 
 				return true;
@@ -168,6 +184,19 @@ var CustomApplicationsHandler = {
 		CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
 
 		return false;
+	},
+
+	/**
+	 * (sleep) sleeps an application
+	 */
+
+	sleep: function(application) {
+
+		if(application.id == this.currentApplicationId) {
+			this.currentApplicationId = false;
+		}
+
+		application.__sleep();
 	},
 
 

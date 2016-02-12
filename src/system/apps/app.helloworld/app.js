@@ -130,7 +130,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * (leftButton) indicates if the UI left button / return button should be shown
 		 */
 
-		leftButton: false,
+		leftButton: true,
 
 		/**
 		 * (backgroundColor) Defines the background color of the application

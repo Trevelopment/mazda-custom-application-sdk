@@ -60,7 +60,7 @@ function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProp
         "statusBarVisible" : this.application.getStatusbar(),
         "leftButtonVisible" : this.application.getLeftButton(), 
         "hasActivePanel" : false,
-        "isDialog" : false,
+        "isDialog" : false
     }
 
     // create the div for template
@@ -123,7 +123,7 @@ function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProp
 
 CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
 {
-    this.application.__sleep();
+    CustomApplicationsHandler.sleep(this.application);
 }
 
 /**
