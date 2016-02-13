@@ -46,7 +46,7 @@ var CustomApplicationsHandler = {
 
 	paths: {
 		framework: 'apps/system/custom/runtime/',
-		applications: 'apps/system/custom/apps/', 
+		applications: 'apps/system/custom/apps/',
 		library: 'apps/system/custom/runtime/library/'
 	},
 
@@ -90,7 +90,7 @@ var CustomApplicationsHandler = {
 
 						// this has been completed
 						if(typeof(CustomApplications) != "undefined") {
-	
+
 							// load applications
 							CustomApplicationResourceLoader.loadJavascript(
 								CustomApplicationResourceLoader.fromFormatted("{0}/app.js", CustomApplications),
@@ -136,7 +136,7 @@ var CustomApplicationsHandler = {
 		application.__initialize();
 
 		this.applications[id] = application;
-		
+
 		return true;
 	},
 
@@ -146,7 +146,7 @@ var CustomApplicationsHandler = {
 
 	run: function(id) {
 
-		CustomApplicationLog.info(this.__name, "Run request for application", {id: id});		
+		CustomApplicationLog.info(this.__name, "Run request for application", {id: id});
 
 		if(CustomApplicationHelpers.is().object(id)) {
 
@@ -161,7 +161,7 @@ var CustomApplicationsHandler = {
 
 			if(typeof(framework) != "undefined") {
 
-				var list = framework._focusStack;
+				var list = framework._focusStack ? framework._focusStack : [];
 
 				list.unshift({id: "system"});
 
