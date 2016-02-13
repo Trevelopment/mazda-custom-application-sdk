@@ -237,11 +237,19 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * data bus of the car. Yeah, let's get some info directly from the car :-)
 		 */
 
+		// Lets create a label
+		 this.speedLabel = this.element("span", false, false, false, "0", true);
+
+		// lets add it to the canvas
+		this.element("div", false, "simpleLabel", false, ['Current Speed', this.speedLabel]);
 		
-		//console.log(this.vehicle.speed);
+		// lets get the speed assigned to it
+		this.subscribe(VehicleData.vehicleSpeed, function(speed) {
 
+			// another cool thing is that we can convert our speed from km/h to mp/h very easy
 
-		//this.log(this.transform(this.vehicle.speed, this.transform.toMPH));
+			this.speedLabel = VehicleData.transform(speed, VehicleData.KMHMPH) + " mph/h";
+		}.bind(this));
 
 	},
 

@@ -226,6 +226,20 @@ var CustomApplicationsHandler = {
 		return false;
 	},
 
+	/**
+	 * (notifyDataChange) notifies the active application about a data change
+	 */
+
+	notifyDataChange: function(id, payload) {
+
+		if(this.currentApplicationId && this.applications[this.currentApplicationId]) {
+
+			this.applications[this.currentApplicationId].__notify(id, payload);
+
+		}
+
+	},
+
 
 	/**
 	 * (getMenuItems) returns the items for the main application menu

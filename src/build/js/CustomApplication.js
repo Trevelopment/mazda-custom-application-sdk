@@ -45,12 +45,23 @@ var CustomApplication = (function(){
 	CustomApplication.prototype = {
 
 		/**
-		 * Internal arrays
+		 * (constants)
+		 */
+
+		ANY: 0,
+		CHANGED: 1,
+		GREATER: 2,
+		LESSER: 3,
+		EQUAL: 4,
+
+
+		/**
+		 * (arrays)
 		 */
 
 		storages: {},
 
-		vehicle: {},
+		subscriptions: {},
 
 		images: {},
 
@@ -278,6 +289,55 @@ var CustomApplication = (function(){
 	    	}
 	    },
 
+	    /**
+	     * (protected) __notify
+	     *
+	     * Called by the data handler to update the current vehicle data of the application
+	     */
+
+	    __notify: function(id, payload) {
+
+	    	if(this.subscriptions[id]) {
+
+	    		var subscription = this.subscriptions[id], notify = false;
+
+	    		// parse type
+	    		switch(subscription.type) {
+
+	    			case this.CHANGED: 
+
+	    				notify = subscription.changed; 
+	    				break;
+
+	    			case this.GREATER:
+
+	    				notify = subscription.value > subscription.previous; 
+	    				break;
+
+	    			case this.LESSER:
+
+	    				notify = subscription.value < subscription.previous; 
+	    				break;
+
+	    			case this.EQUAL:
+
+	    				notify = subscription.value == subscription.previous; 
+	    				break;
+
+	 	    		default:
+
+	    				notify = true;
+	    				break;
+
+	    		}
+
+	    		// execute
+	    		if(notify) {
+	    			subscription.callback(payload.value, payload);
+	    		}
+	   		}
+	    },
+
 
 	    /**
 		 * (internal) getters
@@ -326,23 +386,32 @@ var CustomApplication = (function(){
 		},
 
 		/**
-		 * (internal) observe
+		 * (internal) subscribe
 		 *
 		 * Observes a specific vehicle data point
 		 */
 
-		observe: function(name, every, flank) {
+		subscribe: function(name, callback, type) {
+
+			if(this.is.fn(callback)) {
+
+				this.subscriptions[name] = {
+					type: type || this.ANY,
+					callback: callback
+				};
+			}
 
 		},
 
 		/**
-		 * (internal) forget
+		 * (internal) unsubscribe
 		 *
 		 * Stops the observer for a specific vehicle data point
 		 */
 
-		forget: function(name) {
+		unsubscribe: function(name) {
 
+			this.subscriptions[name] = false;
 		},
 
 

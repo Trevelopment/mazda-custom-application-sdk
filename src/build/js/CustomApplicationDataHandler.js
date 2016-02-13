@@ -25,6 +25,29 @@
  */
 
 /**
+ * (VehicleData) a collection of mapping 
+ */
+
+var VehicleData = {
+
+	/**
+	 * Constants
+	 */
+
+	KMHMPH: 0,
+
+
+	/*
+	 * Mapping
+	 */
+
+	vehicleSpeed: 'vehicleSpeed',
+
+
+
+};
+
+/**
  * (CustomApplicationDataHandler)
  *
  * This is the data controller that reads the current vehicle data
@@ -38,7 +61,7 @@ var CustomApplicationDataHandler = {
 	 * (Locals)
 	 */
 
-	refreshRate: 800,
+	refreshRate: 960,
 
 	/**
 	 * (Paths)
@@ -65,12 +88,18 @@ var CustomApplicationDataHandler = {
 	],
 
 	/**
+	 * (mapping)
+	 */
+
+	mapping: {
+		vehicleSpeed: 'vehiclespeed',
+	},
+
+	/**
 	 * (Pools)
 	 */
 
-	current: {},
-	buffer: {},
-
+	data: {},
 
 	/**
 	 * (initialize) Initializes some of the core objects
@@ -93,7 +122,14 @@ var CustomApplicationDataHandler = {
 
 		setTimeout(function() {
 
-			this.retrieve();
+			if(CustomApplicationsHandler.currentApplicationId) {
+
+				this.retrieve();
+
+			} else {
+
+				this.next();
+			}
 
 		}.bind(this), this.refreshRate)
 	},
@@ -112,16 +148,10 @@ var CustomApplicationDataHandler = {
 
 			if(loaded >= toload) {
 
-				this.current = this.buffer;
-
-				this.notify();
-
+				this.next();
 			}
 
 		}.bind(this);
-
-		// reset buffer
-		this.buffer = {};
 
 		// build to load list
 		this.tables.map(function(table) {
@@ -163,8 +193,46 @@ var CustomApplicationDataHandler = {
 
 			var parts = line.split(/[\((,)\).*(:)]/);
 
-			// filter by type
-			
+			if(parts.length == 5) {
+
+				// filter by type
+				if(parts[1]) {
+					switch(parts[1].toLowerCase()) {
+
+						case "binary":
+
+							break;
+
+						default:
+							
+							var id = parts[0].toLowerCase(),
+								value = $.trim(parts[4]);
+
+							if(this.mapping[id]) {
+								id = this.mapping[id];
+							}
+
+							if(!this.data[id]) {
+								this.data[id] = {
+									value: null,
+									previous: null,
+									changed: false,
+									type: parts[1],
+									name: parts[0], 
+								}
+							}
+
+							this.data[id].changed = this.data[id] != value;
+							this.data[id].previous = this.data[id].value;
+							this.data[id].value = value;
+
+							CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
+
+							break; 
+
+					}
+				}
+			}
 
 
 		}.bind(this));

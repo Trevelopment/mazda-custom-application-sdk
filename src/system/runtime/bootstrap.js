@@ -45,12 +45,23 @@ var CustomApplication = (function(){
 	CustomApplication.prototype = {
 
 		/**
-		 * Internal arrays
+		 * (constants)
+		 */
+
+		ANY: 0,
+		CHANGED: 1,
+		GREATER: 2,
+		LESSER: 3,
+		EQUAL: 4,
+
+
+		/**
+		 * (arrays)
 		 */
 
 		storages: {},
 
-		vehicle: {},
+		subscriptions: {},
 
 		images: {},
 
@@ -278,6 +289,55 @@ var CustomApplication = (function(){
 	    	}
 	    },
 
+	    /**
+	     * (protected) __notify
+	     *
+	     * Called by the data handler to update the current vehicle data of the application
+	     */
+
+	    __notify: function(id, payload) {
+
+	    	if(this.subscriptions[id]) {
+
+	    		var subscription = this.subscriptions[id], notify = false;
+
+	    		// parse type
+	    		switch(subscription.type) {
+
+	    			case this.CHANGED: 
+
+	    				notify = subscription.changed; 
+	    				break;
+
+	    			case this.GREATER:
+
+	    				notify = subscription.value > subscription.previous; 
+	    				break;
+
+	    			case this.LESSER:
+
+	    				notify = subscription.value < subscription.previous; 
+	    				break;
+
+	    			case this.EQUAL:
+
+	    				notify = subscription.value == subscription.previous; 
+	    				break;
+
+	 	    		default:
+
+	    				notify = true;
+	    				break;
+
+	    		}
+
+	    		// execute
+	    		if(notify) {
+	    			subscription.callback(payload.value, payload);
+	    		}
+	   		}
+	    },
+
 
 	    /**
 		 * (internal) getters
@@ -326,23 +386,32 @@ var CustomApplication = (function(){
 		},
 
 		/**
-		 * (internal) observe
+		 * (internal) subscribe
 		 *
 		 * Observes a specific vehicle data point
 		 */
 
-		observe: function(name, every, flank) {
+		subscribe: function(name, callback, type) {
+
+			if(this.is.fn(callback)) {
+
+				this.subscriptions[name] = {
+					type: type || this.ANY,
+					callback: callback
+				};
+			}
 
 		},
 
 		/**
-		 * (internal) forget
+		 * (internal) unsubscribe
 		 *
 		 * Stops the observer for a specific vehicle data point
 		 */
 
-		forget: function(name) {
+		unsubscribe: function(name) {
 
+			this.subscriptions[name] = false;
 		},
 
 
@@ -397,6 +466,29 @@ var CustomApplication = (function(){
  */
 
 /**
+ * (VehicleData) a collection of mapping 
+ */
+
+var VehicleData = {
+
+	/**
+	 * Constants
+	 */
+
+	KMHMPH: 0,
+
+
+	/*
+	 * Mapping
+	 */
+
+	vehicleSpeed: 'vehicleSpeed',
+
+
+
+};
+
+/**
  * (CustomApplicationDataHandler)
  *
  * This is the data controller that reads the current vehicle data
@@ -410,7 +502,7 @@ var CustomApplicationDataHandler = {
 	 * (Locals)
 	 */
 
-	refreshRate: 800,
+	refreshRate: 960,
 
 	/**
 	 * (Paths)
@@ -437,12 +529,18 @@ var CustomApplicationDataHandler = {
 	],
 
 	/**
+	 * (mapping)
+	 */
+
+	mapping: {
+		vehicleSpeed: 'vehiclespeed',
+	},
+
+	/**
 	 * (Pools)
 	 */
 
-	current: {},
-	buffer: {},
-
+	data: {},
 
 	/**
 	 * (initialize) Initializes some of the core objects
@@ -465,7 +563,14 @@ var CustomApplicationDataHandler = {
 
 		setTimeout(function() {
 
-			this.retrieve();
+			if(CustomApplicationsHandler.currentApplicationId) {
+
+				this.retrieve();
+
+			} else {
+
+				this.next();
+			}
 
 		}.bind(this), this.refreshRate)
 	},
@@ -484,16 +589,10 @@ var CustomApplicationDataHandler = {
 
 			if(loaded >= toload) {
 
-				this.current = this.buffer;
-
-				this.notify();
-
+				this.next();
 			}
 
 		}.bind(this);
-
-		// reset buffer
-		this.buffer = {};
 
 		// build to load list
 		this.tables.map(function(table) {
@@ -535,7 +634,46 @@ var CustomApplicationDataHandler = {
 
 			var parts = line.split(/[\((,)\).*(:)]/);
 
-			console.log(parts);
+			if(parts.length == 5) {
+
+				// filter by type
+				if(parts[1]) {
+					switch(parts[1].toLowerCase()) {
+
+						case "binary":
+
+							break;
+
+						default:
+							
+							var id = parts[0].toLowerCase(),
+								value = $.trim(parts[4]);
+
+							if(this.mapping[id]) {
+								id = this.mapping[id];
+							}
+
+							if(!this.data[id]) {
+								this.data[id] = {
+									value: null,
+									previous: null,
+									changed: false,
+									type: parts[1],
+									name: parts[0], 
+								}
+							}
+
+							this.data[id].changed = this.data[id] != value;
+							this.data[id].previous = this.data[id].value;
+							this.data[id].value = value;
+
+							CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
+
+							break; 
+
+					}
+				}
+			}
 
 
 		}.bind(this));
@@ -1234,6 +1372,20 @@ var CustomApplicationsHandler = {
 		CustomApplicationLog.error(this.__name, "Missing currentApplicationId");
 
 		return false;
+	},
+
+	/**
+	 * (notifyDataChange) notifies the active application about a data change
+	 */
+
+	notifyDataChange: function(id, payload) {
+
+		if(this.currentApplicationId && this.applications[this.currentApplicationId]) {
+
+			this.applications[this.currentApplicationId].__notify(id, payload);
+
+		}
+
 	},
 
 
