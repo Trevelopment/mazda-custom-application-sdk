@@ -22,9 +22,23 @@
  */
  
 body {
-	margin:0;padding:0;
-	font-family: sans-serif;
-	font-size:25px;
+	margin:0;
+	padding:0;
+	font-family: "Tipperary", Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 28px;
+	color: white;
+	overflow: hidden;
+	text-align: left;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.inner {
+	width:100%;
+	height:100%;
+	position:relative;
 }
 
 #mock {
@@ -33,6 +47,7 @@ body {
 	height:480px;
 	position:relative;
 	overflow:hidden;
+	background:url(images/background.jpg) no-repeat center center;
 }
 
 	#mock #header {
@@ -44,22 +59,96 @@ body {
 		height:58px;
 		color:#fff;
 		display:block;
-		font-size:25px;
+		background:rgba(0, 0, 0, 0.8);
 	}
 
-		#mock #header label {
+		#mock #header #title {
 			display:block;
-			padding:0.25em;
+			position:absolute;
+			top:11px;
+			left:100px;
 		}
+
+		#mock #header #home {
+			width:37px;
+			height:37px;
+			cursor:pointer;
+			background:url(images/home.png) no-repeat center center;
+			position:absolute;
+			top:11px;
+			left:11px;
+		}
+
+		#mock #header #domain {
+			width:37px;
+			height:37px;
+			cursor:pointer;
+			position:absolute;
+			background: no-repeat center center;
+			top:11px;
+			left:58px;
+			display:none;
+		}
+
+		#mock #header #clock {
+			position:absolute;
+			right:11px;
+			top:11px;
+		}
+
+	#mock #menu {
+		padding:1em 0.5em;
+		position:absolute;
+		top:60px;
+		width:800px;
+		height:420px;
+	}
+		#mock #menu a {
+			cursor: pointer;
+		}
+
+			#mock #menu a:hover {
+				color: #aaa;
+			}
+
+	#mock #leftbutton {
+		position:absolute;
+		left:0px;
+		top:60px;
+		width:60px;
+		height:420px;
+		background:#222;
+		display:none;
+	}
 
 	#mock #view {
 		position:absolute;
-		top:58px;
+		top:0px;
 		left:0px;
+		width:800px;
+		height:480px;
 		right:0;
 		bottom:0;
 		color:#fff;
+		display:none;
 	}
+
+		#mock #view.showBoundaries {
+			border:1px solid red;
+		}
+
+		#mock #view.statusbar {
+			top:60px;
+			left:0px;
+			height:420px;
+		}
+
+		#mock #view.leftbutton {
+			top:60px;
+			left:60px;
+			height:420px;
+			width:740px;
+		}
 
 		#mock #view #surface {
 			width:100%;
@@ -67,14 +156,5 @@ body {
 			position:relative;
 		}
 
-		#mock #view #menu {
-			padding:1em 0.5em;
-		}
-			#mock #view #menu a {
-				cursor: pointer;
-			}
 
-				#mock #view #menu a:hover {
-					color: #aaa;
-				}
 				

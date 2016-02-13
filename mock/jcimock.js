@@ -37,28 +37,47 @@ var log = {
 // (framework)
 var framework = {
 
+	current: false,
+
 	init: function() {
 
-		this.root = document.getElementById("mock");
+		this.root = $("#mock");
 
-		this.view = document.getElementById("view");
+		this.view = $("#view");
 
-		this.surface = document.getElementById("surface");
+		this.surface = $("#surface");
 
-		this.menu = $(document.getElementById("menu"));
+		this.menu = $("#menu");
 
-		this.createMenu();
+		this.leftButton = $("#leftbutton");
+
+		this.statusBar = $("#statusbar");
+
+		$("#home").bind("click", function() {
+			this.showMenu();
+		}.bind(this));
+
+		this.showMenu();
 
 	},
 
-	createMenu: function() {
+	showMenu: function() {
 
+		if(this.current) {
+			this.current.cleanUp();
+		}
+
+		this.view.fadeOut();
+		this.leftButton.fadeOut();
+		this.statusBar.fadeIn();
 
 		CustomApplicationsHandler.retrieve(function(items) {
 
 
-
 			this.menu.html("");
+
+			this.common.statusBar.setAppName('Applications');
+			this.common.statusBar.setDomainIcon(false);
 
             items.forEach(function(item) {
 
@@ -81,12 +100,36 @@ var framework = {
 	},
 
 	ready: function(callback) {
-		
+
 	},
 
 	common: {
 
 		statusBar: {
+
+			setAppName: function(title) {
+
+				$("#title").html(title);
+
+			},
+
+			setDomainIcon: function(icon) {
+
+				if(icon) {
+					$("#domain").css({"background-image": "url(" + icon + ")"}).show();
+				} else {
+					$("#domain").hide();
+				}
+
+			},
+
+			showHomeBtn: function(show) {
+				if(show) {
+					$("#home").show();
+				} else {
+					$("#home").hide();
+				}
+			},
 
 			clock: {
 
@@ -98,7 +141,7 @@ var framework = {
 
 					 var s = (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
 
-					 document.getElementById("clock").innerHTML = s;
+					 $("#clock").html(s);
 
 					 return s;
 
@@ -152,9 +195,29 @@ var framework = {
 		if(data.msgType == "focusStack") {
 
 			// initialize template
-			var template = new CustomApplicationSurfaceTmplt("system", this.surface, 1);
+			this.current = new CustomApplicationSurfaceTmplt("system", this.surface.get(0), 1);
 
+			switch(true) {
 
+				case this.current.properties.leftButtonVisible:
+					this.statusBar.fadeIn();
+					this.leftButton.fadeIn();
+					this.view.addClass("statusbar leftbutton");
+					break;
+
+				case this.current.properties.showStatusbar:
+					this.statusBar.fadeIn();
+					this.leftButton.fadeOut();
+					this.view.addClass("statusbar").removeClass("leftbutton");
+					break;
+
+				default:
+					this.view.removeClass("statusbar leftbutton");
+					break;
+
+			}
+
+			this.view.fadeIn();
 		}
 	},
 
