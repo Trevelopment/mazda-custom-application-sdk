@@ -77,6 +77,8 @@ var framework = {
 
 		this.statusBar = $("#statusbar");
 
+		this.dataView = $("#dataview");
+
 		$("#home").on("click", function() {
 			this.showMenu();
 		}.bind(this));
@@ -111,7 +113,15 @@ var framework = {
 
             	this.menu.append($("<a/>").attr("appId", item.appData.appId).click(this.execMenu).append(item.title));
 
-                //this._masterApplicationDataList.items.push(item);
+            }.bind(this));
+
+            // pause data handler so we an simulate it
+            CustomApplicationDataHandler.pause();
+
+            // still get the values
+            CustomApplicationDataHandler.retrieve(function(data) {
+
+            	this.setVehicleData(data);
 
             }.bind(this));
 
@@ -207,6 +217,58 @@ var framework = {
         script.src = filename;
         script.onload = callback;
         document.body.appendChild(script);
+	},
+
+	/**
+	 * Vehcile Data
+	 */
+
+	setVehicleData: function(data) {
+
+
+		var groups = [
+			{name: 'All Vehicle Data', values: data}
+		];
+
+		this.dataView.empty();
+
+		groups.forEach(function(group) {
+
+			var groupDiv = $("<div/>").addClass("group").appendTo(this.dataView);
+			$("<span/>").addClass("title").append(group.name).appendTo(groupDiv);
+
+			var container = $("<div/>").addClass("items").appendTo(groupDiv);
+
+			// build data array 
+			var values = $.map(group.values, function(value) {
+				return value;
+			});
+
+			values.sort(function(a, b) {
+				return a.name > b.name ? 1 : -1;
+			});
+
+			// set keys
+			values.forEach(function(value) {
+
+				var item = $("<div/>").addClass("item").appendTo(container);
+
+				$("<span/>").append(value.type == "string" ? "str" : value.type).addClass(value.type).appendTo(item);
+				$("<span/>").append(value.name).appendTo(item);
+
+				var editorContainer = $("<span/>").appendTo(item);
+
+				switch(value.type) {
+					
+					default:
+						var editor = $("<input/>").val(value.value).appendTo(editorContainer);
+						break;
+				}
+
+			}.bind(this));
+
+		}.bind(this));
+
 	},
 
 

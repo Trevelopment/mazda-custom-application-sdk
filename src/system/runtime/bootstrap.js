@@ -511,14 +511,14 @@ var CustomApplicationDataHandler = {
 
 	tables: [
 		{table: 'gps', enabled: false, filter: 'gps'},
-		{table: 'idm', enabled: false},
-		{table: 'idmhistory', enabled: false},
+		{table: 'idm', enabled: true},
+		{table: 'idmhistory', enabled: true},
 		{table: 'vdm', enabled: true},
-		{table: 'vdmhistory', enabled: false},
-		{table: 'vdtcurrent', enabled: false},
-		{table: 'vdthistory', enabled: false},
-		{table: 'vdtpid', enabled: false},
-		{table: 'vdtsettings', enabled: false},
+		{table: 'vdmhistory', enabled: true},
+		{table: 'vdtcurrent', enabled: true},
+		{table: 'vdthistory', enabled: true},
+		{table: 'vdtpid', enabled: true},
+		{table: 'vdtsettings', enabled: true},
 	],
 
 	/**
@@ -541,9 +541,24 @@ var CustomApplicationDataHandler = {
 
 	initialize: function() {
 
-		//this.multicontroller = typeof(Multicontroller) != "undefined" ? new Multicontroller(this.handleControllerEvent) : false;
-
 		this.initialized = true;
+
+		this.next();
+	},
+
+	/**
+	 * (pause)
+	 */
+
+	pause: function() {
+
+		this.paused = true;
+
+	},
+
+	unpause: function() {
+
+		this.paused = false;
 
 		this.next();
 	},
@@ -556,13 +571,16 @@ var CustomApplicationDataHandler = {
 
 		setTimeout(function() {
 
-			if(CustomApplicationsHandler.currentApplicationId) {
+			if(!this.paused) {
 
-				this.retrieve();
+				if(CustomApplicationsHandler.currentApplicationId) {
 
-			} else {
+					this.retrieve();
 
-				this.next();
+				} else {
+
+					this.next();
+				}
 			}
 
 		}.bind(this), this.refreshRate)
@@ -573,7 +591,7 @@ var CustomApplicationDataHandler = {
 	 * (retrieve) loads the data
 	 */
 
-	retrieve: function() {
+	retrieve: function(callback) {
 
 		//CustomApplicationLog.info(this.__name, "Retrieving data tables");	
 
@@ -582,6 +600,12 @@ var CustomApplicationDataHandler = {
 
 			if(loaded >= toload) {
 
+				// notify the callback
+				if(CustomApplicationHelpers.is().fn(callback)) {
+					callback(this.data);
+				}
+
+				// continue
 				this.next();
 			}
 
@@ -596,13 +620,13 @@ var CustomApplicationDataHandler = {
 
 				var location = this.paths.data + table.table;
 
-				//CustomApplicationLog.debug(this.__name, "Preparing table for load", {table: table.table, location: location});	
+				CustomApplicationLog.debug(this.__name, "Preparing table for load", {table: table.table, location: location});	
 
 				$.get(location, function(data) {
 
 					loaded++;
 
-					//CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
+					CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
 
 					this.process(table, data);
 
