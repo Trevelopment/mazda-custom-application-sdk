@@ -141,7 +141,7 @@ var CustomApplicationDataHandler = {
 
 	retrieve: function() {
 
-		CustomApplicationLog.info(this.__name, "Retrieving data tables");	
+		//CustomApplicationLog.info(this.__name, "Retrieving data tables");	
 
 		// prepare
 		var loaded = 0, toload = 0, finish = function() {
@@ -162,13 +162,13 @@ var CustomApplicationDataHandler = {
 
 				var location = this.paths.data + table.table;
 
-				CustomApplicationLog.debug(this.__name, "Preparing table for load", {table: table.table, location: location});	
+				//CustomApplicationLog.debug(this.__name, "Preparing table for load", {table: table.table, location: location});	
 
 				$.get(location, function(data) {
 
 					loaded++;
 
-					CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
+					//CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
 
 					this.process(table, data);
 

@@ -66,7 +66,7 @@ var CustomApplication = (function(){
 		images: {},
 
 		/**
-		 * (protected) __initialie
+		 * (protected) __initialize
 		 *
 		 * Called when the application is initalized first and is reponsible for creating 
 		 * the surface and canvas.
