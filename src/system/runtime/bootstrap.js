@@ -77,6 +77,7 @@ var CustomApplication = (function(){
 
 			// global specific
 			this.is = CustomApplicationHelpers.is();
+			this.sprintr = CustomApplicationHelpers.sprintr;
 
 			// application specific
 			this.settings = this.settings ? this.settings : {};
@@ -900,7 +901,7 @@ var CustomApplicationLog = {
 	 */
 
 	error: function() {
-		this.__message(this.levels.debug, "#FF0000", Array.apply(null, arguments));
+		this.__message(this.levels.error, "#FF0000", Array.apply(null, arguments));
 	},
 
 	/**
@@ -908,7 +909,7 @@ var CustomApplicationLog = {
 	 */
 
 	info: function() {
-		this.__message(this.levels.debug, "#0000FF", Array.apply(null, arguments));
+		this.__message(this.levels.info, "#0000FF", Array.apply(null, arguments));
 	},
 
 	/**
@@ -943,29 +944,22 @@ var CustomApplicationLog = {
 			});
 		}
 
-		/*
-		if(!this.divDebug) {
-			this.divDebug = document.createElement("div");
-			this.divDebug.style.position = "absolute";
-			this.divDebug.style.zIndex = 999999;
-			this.divDebug.style.top = "0px";
-			this.divDebug.style.right = "0px";
-			this.divDebug.style.backgroundColor = "red";
-			this.divDebug.style.color = "white";
-			this.divDebug.style.fontSize = "12px";
-			document.body.appendChild(this.divDebug);
-		}
-
-		var logMsg = document.createElement("div");
-		logMsg.innerHTML = msg.join(" ");
-		this.divDebug.appendChild(logMsg);*/
 		
-		console.log(
-			CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
-			CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
-			"color:black",
-			CustomApplicationHelpers.sprintr("color:{0}", color)
-		);
+		if(typeof(logger) != "undefined") {
+			logger.log(level, values[0], msg.join(" "), color);
+		} 
+
+		/**
+		//Console Logging is disabled by default
+		
+		 console.log(
+				CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
+				CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
+				"color:black",
+				CustomApplicationHelpers.sprintr("color:{0}", color)
+			);
+		}
+		*/
 	}
 
 };

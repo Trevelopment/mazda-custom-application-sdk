@@ -21,17 +21,41 @@
  * If not, see http://www.gnu.org/licenses/
  */
 
+window.onerror = function(message, url, line) {
+	logger.log("ERROR", "Line " + line, message);
+}
+
 // (log)
 var log = {
 
 	addSrcFile: function() {},
 
 	debug: function() {
-		console.log(arguments);
+
+		//console.log(arguments);
 	},
 
 
 };
+
+var logger = {
+
+	log: function(level, id, message, color) {
+
+		var item = $("<div/>");
+
+		item.append($("<span/>").append((new Date()).toLocaleTimeString()));
+		item.append($("<span/>").addClass(level).append(level));
+		item.append($("<span/>").append(id));
+		item.append($("<span/>").addClass(level).append(message));
+
+		$("#output").append(item);
+
+		$("#output").scrollTop($("#output")[0].scrollHeight);
+	},
+
+}	
+
 
 
 // (framework)
@@ -53,7 +77,11 @@ var framework = {
 
 		this.statusBar = $("#statusbar");
 
-		$("#home").bind("click", function() {
+		$("#home").on("click", function() {
+			this.showMenu();
+		}.bind(this));
+
+		$("#leftbutton").on("click", function() {
 			this.showMenu();
 		}.bind(this));
 

@@ -77,6 +77,7 @@ var CustomApplication = (function(){
 
 			// global specific
 			this.is = CustomApplicationHelpers.is();
+			this.sprintr = CustomApplicationHelpers.sprintr;
 
 			// application specific
 			this.settings = this.settings ? this.settings : {};

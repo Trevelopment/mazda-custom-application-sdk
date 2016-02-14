@@ -33,6 +33,7 @@ body {
 	text-align: left;
 	background-position: center;
 	background-repeat: no-repeat;
+	background:#111;
 }
 
 .inner {
@@ -42,30 +43,31 @@ body {
 }
 
 #mock {
-	background:#000;
 	width:800px;
 	height:480px;
 	position:relative;
 	overflow:hidden;
-	background:url(images/background.jpg) no-repeat center center;
+	background:url(images/background.png) no-repeat center center #000;
+	border:1px solid #222;
 }
 
 	#mock #header {
-		border-bottom:2px solid #fff;
 		position:absolute;
 		top:0;
 		left:0;
 		right:0;
-		height:58px;
+		height:64px;
 		color:#fff;
 		display:block;
-		background:rgba(0, 0, 0, 0.8);
+		background:url(images/statusbar.png) no-repeat left top;
+		font-size: 40px;
+		z-index: 10;
 	}
 
 		#mock #header #title {
 			display:block;
 			position:absolute;
-			top:11px;
+			top:10px;
 			left:100px;
 		}
 
@@ -77,6 +79,16 @@ body {
 			position:absolute;
 			top:11px;
 			left:11px;
+		}
+
+		#mock #header #divider {
+			background:url(images/divider.png) no-repeat center center;
+			width:1px;
+			height:58px;
+			position:absolute;
+			top:0px;
+			left:52px;
+
 		}
 
 		#mock #header #domain {
@@ -93,7 +105,7 @@ body {
 		#mock #header #clock {
 			position:absolute;
 			right:11px;
-			top:11px;
+			top:10px;
 		}
 
 	#mock #menu {
@@ -102,10 +114,18 @@ body {
 		top:60px;
 		width:800px;
 		height:420px;
+		font-size:35px;
 	}
 		#mock #menu a {
 			cursor: pointer;
 		}
+
+			#mock #menu a:before {
+				background:url(images/menudivider.png) no-repeat;
+				width:730px;
+				height:1px;
+				display:block;
+			}
 
 			#mock #menu a:hover {
 				color: #aaa;
@@ -114,11 +134,12 @@ body {
 	#mock #leftbutton {
 		position:absolute;
 		left:0px;
-		top:60px;
-		width:60px;
-		height:420px;
-		background:#222;
+		top:64px;
+		width:94px;
+		height:416px;
+		background:url(images/leftbutton.png) no-repeat left top;
 		display:none;
+		z-index:8;
 	}
 
 	#mock #view {
@@ -138,15 +159,15 @@ body {
 		}
 
 		#mock #view.statusbar {
-			top:60px;
+			top:64px;
 			left:0px;
-			height:420px;
+			height:416px;
 		}
 
 		#mock #view.leftbutton {
-			top:60px;
+			top:64px;
 			left:60px;
-			height:420px;
+			height:416px;
 			width:740px;
 		}
 
@@ -156,5 +177,76 @@ body {
 			position:relative;
 		}
 
+#debug {
+	position:absolute;
+	height:480px;
+	left:802px;
+	right:0px;
+	top:0px;
+	background:#151515;
+}
 
-				
+#console {
+	position:absolute;
+	border-top:1px solid #222;
+	top:481px;
+	bottom:0;
+	left:0;
+	right:0;
+	background:#151515;
+	color:#555;
+}
+
+	#console #output {
+		width:100%;
+		height:100%;
+		overflow-y:scroll;
+		font-family: "Lucina Console", sans-serif;
+		font-weight:bold;
+		font-size:12px;
+	}
+
+		#console #output div {
+			padding:2px;
+
+		}
+
+			#console #output div span {
+				margin-right:10px;
+				display:inline-block;
+			}
+
+			#console #output div span:nth-child(1) {
+				width:65px;
+			}
+
+			#console #output div span:nth-child(2) {
+				background:#333;
+				width:60px;
+				text-align:center;
+				padding:2px;
+				font-size:10px;
+			}
+
+				#console #output div span:nth-child(2).DEBUG {
+					background:#0059B2;
+					color:#fff;
+				}
+
+				#console #output div span:nth-child(2).INFO {
+					background:#468C00;
+					color:#fff;
+				}
+
+			#console #output div span:nth-child(3) {
+				background:#666;
+				color:#fff;
+				padding:2px;
+				font-size:10px;
+			}
+
+			#console #output div span:nth-child(4) {
+				color:#bbb;
+			}
+
+
