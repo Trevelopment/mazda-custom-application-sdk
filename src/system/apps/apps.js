@@ -34,5 +34,6 @@
 
 var CustomApplications = [
 	
-	"app.helloworld"
+	"app.helloworld",
+	"app.speedometer",
 ];

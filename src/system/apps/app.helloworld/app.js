@@ -132,18 +132,6 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 		leftButton: true,
 
-		/**
-		 * (backgroundColor) Defines the background color of the application
-		 */
-
-		backgroundColor: "#222222",
-
-		/**
-		 * (textColor) Defines the text color of the application
-		 */
-
-		textColor: "#FFFFFF",
-
 	},
 
 
@@ -238,7 +226,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 */
 
 		// Lets create a label
-		 this.speedLabel = this.element("span", false, false, false, "0", true);
+		this.speedLabel = this.element("span", false, false, false, "0", true);
 
 		// lets add it to the canvas
 		this.element("div", false, "simpleLabel", false, ['Current Speed', this.speedLabel]);

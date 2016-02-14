@@ -118,6 +118,8 @@ body {
 	}
 		#mock #menu a {
 			cursor: pointer;
+			display:block;
+			padding:10px;
 		}
 
 			#mock #menu a:before {
@@ -188,7 +190,7 @@ body {
 
 #console {
 	position:absolute;
-	border-top:1px solid #222;
+	border-top:3px solid #222;
 	top:481px;
 	bottom:0;
 	left:0;
@@ -217,7 +219,7 @@ body {
 			}
 
 			#console #output div span:nth-child(1) {
-				width:65px;
+				width:75px;
 			}
 
 			#console #output div span:nth-child(2) {
@@ -250,3 +252,18 @@ body {
 			}
 
 
+.TemplateFull {
+	position:absolute;
+	top:0;
+	left:0;
+	width:800px;
+	height:480px;
+	z-index:100;
+}
+
+.TemplateWithStatus {
+	position:absolute;
+    top:64px;
+    width: 800px;
+    height: 416px;
+}

@@ -66,7 +66,7 @@ var CustomApplication = (function(){
 		images: {},
 
 		/**
-		 * (protected) __initialie
+		 * (protected) __initialize
 		 *
 		 * Called when the application is initalized first and is reponsible for creating 
 		 * the surface and canvas.
@@ -93,14 +93,6 @@ var CustomApplication = (function(){
 
 				// create surface and set some basic properties
 				this.canvas = $("<div/>").addClass("CustomApplicationCanvas").attr("app", this.id);
-
-				if(this.getSetting("backgroundColor")) {
-					this.canvas.css("background-color", this.getSetting("backgroundColor"));
-				}
-
-				if(this.getSetting("textColor")) {
-					this.canvas.css("color", this.getSetting("textColor"));
-				}
 
 				// finalize and bootup
 				this.__created = true;
@@ -583,7 +575,7 @@ var CustomApplicationDataHandler = {
 
 	retrieve: function() {
 
-		CustomApplicationLog.info(this.__name, "Retrieving data tables");	
+		//CustomApplicationLog.info(this.__name, "Retrieving data tables");	
 
 		// prepare
 		var loaded = 0, toload = 0, finish = function() {
@@ -604,13 +596,13 @@ var CustomApplicationDataHandler = {
 
 				var location = this.paths.data + table.table;
 
-				CustomApplicationLog.debug(this.__name, "Preparing table for load", {table: table.table, location: location});	
+				//CustomApplicationLog.debug(this.__name, "Preparing table for load", {table: table.table, location: location});	
 
 				$.get(location, function(data) {
 
 					loaded++;
 
-					CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
+					//CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
 
 					this.process(table, data);
 

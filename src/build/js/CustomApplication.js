@@ -94,14 +94,6 @@ var CustomApplication = (function(){
 				// create surface and set some basic properties
 				this.canvas = $("<div/>").addClass("CustomApplicationCanvas").attr("app", this.id);
 
-				if(this.getSetting("backgroundColor")) {
-					this.canvas.css("background-color", this.getSetting("backgroundColor"));
-				}
-
-				if(this.getSetting("textColor")) {
-					this.canvas.css("color", this.getSetting("textColor"));
-				}
-
 				// finalize and bootup
 				this.__created = true;
 
