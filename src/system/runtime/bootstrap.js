@@ -510,7 +510,7 @@ var CustomApplicationDataHandler = {
 	 */
 
 	tables: [
-		{table: 'gps', enabled: false, filter: 'gps'},
+		{table: 'gps', enabled: true, filter: 'gps'},
 		{table: 'idm', enabled: true},
 		{table: 'idmhistory', enabled: true},
 		{table: 'vdm', enabled: true},
@@ -526,6 +526,11 @@ var CustomApplicationDataHandler = {
 	 */
 
 	mapping: {
+		gps: {
+			heading: 'gpsHeading',
+			speed: 'gpsSpeed',
+		},	
+
 		vehicleSpeed: 'vehiclespeed',
 	},
 
@@ -644,10 +649,14 @@ var CustomApplicationDataHandler = {
 
 	process: function(table, data) {
 
-		if(table.filter) data = this.filter(data);
+		// split data
+		data = data.split("\n");
 
+		// filter
+		if(table.filter) data = this.filter(data, table.filter);
+	
 		// quick process
-		(data.split("\n")).forEach(function(line, index) {
+		data.forEach(function(line, index) {
 
 			var parts = line.split(/[\((,)\).*(:)]/);
 
@@ -695,6 +704,44 @@ var CustomApplicationDataHandler = {
 
 		}.bind(this));
 	},
+
+	/**
+	 * Filter
+	 */
+
+	filter: function(data, filter) {
+
+		switch(filter) {
+
+			case "gps":
+
+				var result = [], parser = {
+					GPSTimestamp: 2,
+					GPSLatitude: 3,
+					GPSLongitude: 4,
+					GPSAltitude: 5,
+					GPSHeading: 6,
+					GPSVelocity: 7,
+				}
+
+				// assign
+				$.each(parser, function(name, index) {
+
+					if(data[index]) {
+						// parse data
+						var line = $.trim(data[index]).split(" ");
+						if(line[1]) {
+							result.push(name + "(int, 0): " + $.trim(line[1]));
+						}
+					}
+
+				});
+
+				return result;
+				break;
+		}
+
+	}
 
 
 };

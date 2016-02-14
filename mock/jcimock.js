@@ -227,6 +227,7 @@ var framework = {
 
 
 		var groups = [
+			{name: 'GPS'},
 			{name: 'All Vehicle Data', values: data}
 		];
 
