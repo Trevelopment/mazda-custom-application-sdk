@@ -1,3 +1,28 @@
 [app="app.simplespeedometer"] {
 	background:#000;
 }
+	
+	[app="app.simplespeedometer"] div {
+		background:#333;
+		position:absolute;
+		top:50px;
+		left:50px;
+		bottom:50px;
+		right:50px;
+		text-align:center;
+		line-height:300px;
+		font-size:300px;
+		border:5px solid #555;
+		border-radius: 25px;
+	}
+
+	[app="app.simplespeedometer"] span {
+		position:absolute;
+		bottom:60px;
+		left:0;
+		right:0;
+		font-size:20px;
+		color:#fff;
+		text-align:center;
+		display:block;
+	}
