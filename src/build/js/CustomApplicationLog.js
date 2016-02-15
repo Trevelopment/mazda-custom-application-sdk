@@ -38,6 +38,27 @@ var CustomApplicationLog = {
 		error: 'ERROR',
 	},
 
+	enabledLogger: false,
+	enabledConsole: false,
+
+	/**
+	 * (enable) enables the log
+	 */
+
+	enableLogger: function(value) {
+
+		this.enabledLogger = value;
+	},
+
+	/**
+	 * (enable) enables the log
+	 */
+
+	enableConsole: function(value) {
+
+		this.enabledConsole = value;
+	},
+
 	/**
 	 * (debug) debug message
 	 */
@@ -68,48 +89,48 @@ var CustomApplicationLog = {
 
 	__message: function(level, color, values) {
 
-		var msg = [];
-		if(values.length > 1) {
-			values.forEach(function(value, index) {
+		if(this.enabledLogger || this.enabledConsole) {
 
-				if(index > 0) {
+			var msg = [];
+			if(values.length > 1) {
+				values.forEach(function(value, index) {
 
-					switch(true) {
+					if(index > 0) {
 
-						case CustomApplicationHelpers.is().iterable(value):
+						switch(true) {
 
-							CustomApplicationHelpers.iterate(value, function(key, value, obj) {
+							case CustomApplicationHelpers.is().iterable(value):
 
-								msg.push(obj ? CustomApplicationHelpers.sprintr("[{0}={1}]", key, value) : CustomApplicationHelpers.sprintr("[{0}]", value));
+								CustomApplicationHelpers.iterate(value, function(key, value, obj) {
 
-							});
-							break;
+									msg.push(obj ? CustomApplicationHelpers.sprintr("[{0}={1}]", key, value) : CustomApplicationHelpers.sprintr("[{0}]", value));
 
-						default:
-							msg.push(value);
-							break;
+								});
+								break;
+
+							default:
+								msg.push(value);
+								break;
+						}
 					}
-				}
 
-			});
-		}
+				});
+			}
 
+			if(this.enabledLogger && typeof(logger) != "undefined") {
+				logger.log(level, values[0], msg.join(" "), color);
+			} 
+
+			if(this.enabledConsole) {
+				 console.log(
+					CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
+					CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
+					"color:black",
+					CustomApplicationHelpers.sprintr("color:{0}", color)
+				);
+			}
 		
-		if(typeof(logger) != "undefined") {
-			logger.log(level, values[0], msg.join(" "), color);
-		} 
-
-		/**
-		//Console Logging is disabled by default
-		
-		 console.log(
-				CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
-				CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
-				"color:black",
-				CustomApplicationHelpers.sprintr("color:{0}", color)
-			);
 		}
-		*/
 	}
 
 };

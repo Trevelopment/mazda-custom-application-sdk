@@ -1,9 +1,11 @@
 /**
- * JCI Mock Environment
- * Simplifies local development
+ * Custom Applications SDK for Mazda Connect Infotainment System
+ * 
+ * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
+ * that includes an easy to use abstraction layer to the JCI system.
  *
- * Written by Andreas Schwarz (http://github.com/flyandi/mazda-enhanced-compass)
- * Copyright (c) 2015. All rights reserved.
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
+ * Copyright (c) 2016. All rights reserved.
  * 
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
  * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
@@ -19,6 +21,11 @@
  * 
  * You should have received a copy of the GNU General Public License along with this program. 
  * If not, see http://www.gnu.org/licenses/
+ *
+ */
+
+/**
+ * Mock IDE Environment - This needs major cleanup :-)
  */
 
 window.onerror = function(message, url, line) {
@@ -65,6 +72,11 @@ var framework = {
 
 	init: function() {
 
+		// enable logger
+		CustomApplicationLog.enableLogger(true);
+		CustomApplicationLog.enableConsole(true);
+
+		// continue with elements
 		this.root = $("#mock");
 
 		this.view = $("#view");
@@ -87,11 +99,34 @@ var framework = {
 			this.showMenu();
 		}.bind(this));
 
+		// pause data handler so we an simulate it
+        CustomApplicationDataHandler.pause();
+        CustomApplicationDataHandler.retrieve(function(data) {
+
+        	this.setVehicleData(data);
+
+        }.bind(this));
+
+        // finally show menu
 		this.showMenu();
 
 	},
 
 	showMenu: function() {
+
+		this.menu.html("");
+		this.common.statusBar.setAppName('Applications');
+		this.common.statusBar.setDomainIcon(false);
+
+		// load items
+		CustomApplicationsHandler.retrieve(function(items) {
+
+            items.forEach(function(item) {
+
+            	this.menu.append($("<a/>").attr("appId", item.appData.appId).click(this.execMenu).append(item.title));
+
+            }.bind(this));
+        }.bind(this));
 
 		if(this.current) {
 			this.current.cleanUp();
@@ -100,32 +135,6 @@ var framework = {
 		this.view.fadeOut();
 		this.leftButton.fadeOut();
 		this.statusBar.fadeIn();
-
-		CustomApplicationsHandler.retrieve(function(items) {
-
-
-			this.menu.html("");
-
-			this.common.statusBar.setAppName('Applications');
-			this.common.statusBar.setDomainIcon(false);
-
-            items.forEach(function(item) {
-
-            	this.menu.append($("<a/>").attr("appId", item.appData.appId).click(this.execMenu).append(item.title));
-
-            }.bind(this));
-
-            // pause data handler so we an simulate it
-            CustomApplicationDataHandler.pause();
-
-            // still get the values
-            CustomApplicationDataHandler.retrieve(function(data) {
-
-            	this.setVehicleData(data);
-
-            }.bind(this));
-
-        }.bind(this));
 
 	},
 

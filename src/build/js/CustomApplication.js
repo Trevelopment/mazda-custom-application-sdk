@@ -77,12 +77,14 @@ var CustomApplication = (function(){
 			this.settings = this.settings ? this.settings : {};
 
 			// register application subscriptions
-			this.subscribe(VehicleData.general.region, function(value) {
+			this.subscribe(VehicleData.general.region, function(value, payload) {
 
-				this.__region = value;
+				if(this.__region != value) {
+					this.__region = value;
 
-				if(this.is.fn(this.onRegionChange)) {
-					this.onRegionChange(value);
+					if(this.is.fn(this.onRegionChange)) {
+						this.onRegionChange(value);
+					}
 				}
 
 			}.bind(this), this.CHANGED);
@@ -307,23 +309,22 @@ var CustomApplication = (function(){
 	    		switch(subscription.type) {
 
 	    			case this.CHANGED: 
-
-	    				notify = subscription.changed; 
+	    				notify = payload.changed; 
 	    				break;
 
 	    			case this.GREATER:
 
-	    				notify = subscription.value > subscription.previous; 
+	    				notify = payload.value > payload.previous; 
 	    				break;
 
 	    			case this.LESSER:
 
-	    				notify = subscription.value < subscription.previous; 
+	    				notify = payload.value < payload.previous; 
 	    				break;
 
 	    			case this.EQUAL:
 
-	    				notify = subscription.value == subscription.previous; 
+	    				notify = payload.value == payload.previous; 
 	    				break;
 
 	 	    		default:
@@ -410,7 +411,7 @@ var CustomApplication = (function(){
 					// register subscription
 					this.__subscriptions[id] = {
 						id: id,
-						type: type || this.ANY,
+						type: type || this.CHANGED,
 						callback: callback
 					};
 

@@ -77,12 +77,14 @@ var CustomApplication = (function(){
 			this.settings = this.settings ? this.settings : {};
 
 			// register application subscriptions
-			this.subscribe(VehicleData.general.region, function(value) {
+			this.subscribe(VehicleData.general.region, function(value, payload) {
 
-				this.__region = value;
+				if(this.__region != value) {
+					this.__region = value;
 
-				if(this.is.fn(this.onRegionChange)) {
-					this.onRegionChange(value);
+					if(this.is.fn(this.onRegionChange)) {
+						this.onRegionChange(value);
+					}
 				}
 
 			}.bind(this), this.CHANGED);
@@ -307,23 +309,22 @@ var CustomApplication = (function(){
 	    		switch(subscription.type) {
 
 	    			case this.CHANGED: 
-
-	    				notify = subscription.changed; 
+	    				notify = payload.changed; 
 	    				break;
 
 	    			case this.GREATER:
 
-	    				notify = subscription.value > subscription.previous; 
+	    				notify = payload.value > payload.previous; 
 	    				break;
 
 	    			case this.LESSER:
 
-	    				notify = subscription.value < subscription.previous; 
+	    				notify = payload.value < payload.previous; 
 	    				break;
 
 	    			case this.EQUAL:
 
-	    				notify = subscription.value == subscription.previous; 
+	    				notify = payload.value == payload.previous; 
 	    				break;
 
 	 	    		default:
@@ -410,7 +411,7 @@ var CustomApplication = (function(){
 					// register subscription
 					this.__subscriptions[id] = {
 						id: id,
-						type: type || this.ANY,
+						type: type || this.CHANGED,
 						callback: callback
 					};
 
@@ -598,7 +599,7 @@ var CustomApplicationDataHandler = {
 	 * (Locals)
 	 */
 
-	refreshRate: 960,
+	refreshRate: 1000,
 
 	/**
 	 * (Paths)
@@ -713,7 +714,7 @@ var CustomApplicationDataHandler = {
 			}
 			
 			// assign
-			this.data[id].changed = this.data[id] != value;
+			this.data[id].changed = this.data[id].value != value;
 			this.data[id].previous = this.data[id].value;
 			this.data[id].value = value;
 
@@ -745,7 +746,9 @@ var CustomApplicationDataHandler = {
 
 	next: function() {
 
-		setTimeout(function() {
+		clearTimeout(this.currentTimer);
+
+		this.currentTimer = setTimeout(function() {
 
 			if(!this.paused) {
 
@@ -1192,6 +1195,27 @@ var CustomApplicationLog = {
 		error: 'ERROR',
 	},
 
+	enabledLogger: false,
+	enabledConsole: false,
+
+	/**
+	 * (enable) enables the log
+	 */
+
+	enableLogger: function(value) {
+
+		this.enabledLogger = value;
+	},
+
+	/**
+	 * (enable) enables the log
+	 */
+
+	enableConsole: function(value) {
+
+		this.enabledConsole = value;
+	},
+
 	/**
 	 * (debug) debug message
 	 */
@@ -1222,48 +1246,48 @@ var CustomApplicationLog = {
 
 	__message: function(level, color, values) {
 
-		var msg = [];
-		if(values.length > 1) {
-			values.forEach(function(value, index) {
+		if(this.enabledLogger || this.enabledConsole) {
 
-				if(index > 0) {
+			var msg = [];
+			if(values.length > 1) {
+				values.forEach(function(value, index) {
 
-					switch(true) {
+					if(index > 0) {
 
-						case CustomApplicationHelpers.is().iterable(value):
+						switch(true) {
 
-							CustomApplicationHelpers.iterate(value, function(key, value, obj) {
+							case CustomApplicationHelpers.is().iterable(value):
 
-								msg.push(obj ? CustomApplicationHelpers.sprintr("[{0}={1}]", key, value) : CustomApplicationHelpers.sprintr("[{0}]", value));
+								CustomApplicationHelpers.iterate(value, function(key, value, obj) {
 
-							});
-							break;
+									msg.push(obj ? CustomApplicationHelpers.sprintr("[{0}={1}]", key, value) : CustomApplicationHelpers.sprintr("[{0}]", value));
 
-						default:
-							msg.push(value);
-							break;
+								});
+								break;
+
+							default:
+								msg.push(value);
+								break;
+						}
 					}
-				}
 
-			});
-		}
+				});
+			}
 
+			if(this.enabledLogger && typeof(logger) != "undefined") {
+				logger.log(level, values[0], msg.join(" "), color);
+			} 
+
+			if(this.enabledConsole) {
+				 console.log(
+					CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
+					CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
+					"color:black",
+					CustomApplicationHelpers.sprintr("color:{0}", color)
+				);
+			}
 		
-		if(typeof(logger) != "undefined") {
-			logger.log(level, values[0], msg.join(" "), color);
-		} 
-
-		/**
-		//Console Logging is disabled by default
-		
-		 console.log(
-				CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
-				CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
-				"color:black",
-				CustomApplicationHelpers.sprintr("color:{0}", color)
-			);
 		}
-		*/
 	}
 
 };

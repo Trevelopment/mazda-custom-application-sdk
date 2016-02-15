@@ -256,7 +256,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 			this.collectStatistics();
 
-		}.bind(this), 500);
+		}.bind(this), 1000);
 
 		// update graph
 		this.updateSpeedoGraph();
@@ -572,7 +572,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		this.statistics.speeds.push(this.__speed);
 
-		if(this.statistics.speeds.length >= 2) {
+		if(this.statistics.speeds.length >= 5) {
 
 			// calculate average
 			var t = 0;

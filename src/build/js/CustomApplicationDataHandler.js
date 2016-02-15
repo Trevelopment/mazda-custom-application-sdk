@@ -122,7 +122,7 @@ var CustomApplicationDataHandler = {
 	 * (Locals)
 	 */
 
-	refreshRate: 960,
+	refreshRate: 1000,
 
 	/**
 	 * (Paths)
@@ -237,7 +237,7 @@ var CustomApplicationDataHandler = {
 			}
 			
 			// assign
-			this.data[id].changed = this.data[id] != value;
+			this.data[id].changed = this.data[id].value != value;
 			this.data[id].previous = this.data[id].value;
 			this.data[id].value = value;
 
@@ -269,7 +269,9 @@ var CustomApplicationDataHandler = {
 
 	next: function() {
 
-		setTimeout(function() {
+		clearTimeout(this.currentTimer);
+
+		this.currentTimer = setTimeout(function() {
 
 			if(!this.paused) {
 
