@@ -234,19 +234,36 @@ body {
 					font-weight:normal;
 					margin-right:5px;
 					text-align:center;
+					width:30px;
+					background:#777;
+				}
+
+				#debug #dataview div.item span:nth-child(2) {
+					padding:3px;
+					color:#fff;
+					border-radius:2px;
+					font-size:10px;
+					text-transform: uppercase;
+					font-weight:normal;
+					margin-right:5px;
+					text-align:center;
 					width:20px;
 				}
 
-					#debug #dataview div.item span:nth-child(1).string {
+					#debug #dataview div.item span:nth-child(2).string {
 						background:#0059B2;
 
 					}
 
-					#debug #dataview div.item span:nth-child(1).int {
+					#debug #dataview div.item span:nth-child(2).int {
 						background:#468C00;
 					}
 
-				#debug #dataview div.item span:nth-child(2) {
+					#debug #dataview div.item span:nth-child(2).double {
+						background:#FF9326;
+					}
+
+				#debug #dataview div.item span:nth-child(3) {
 					background:#333;
 					width:220px;
 					padding:2px;
@@ -254,16 +271,31 @@ body {
 				}
 
 	
-				#debug #dataview div.item span:nth-child(3) {
+				#debug #dataview div.item span:nth-child(4) {
 					
 				}
 
-					#debug #dataview div.item span:nth-child(3) input {
+					#debug #dataview div.item span:nth-child(4) input {
 						border:0;
 						padding:3px;
 						background:#444;
 						color:#fff;
 						font-size:14px;
+					}
+
+					#debug #dataview div.item span:nth-child(4) input[type=range] {
+						width:87px;
+						float:left;
+					}
+
+					#debug #dataview div.item span:nth-child(4) span.inputlabel {
+						display:inline-block;
+						width:50px;
+						background:#666;
+						text-align:center;
+						font-size:12px;
+						position:relative;
+						top:3px;
 					}
 
 

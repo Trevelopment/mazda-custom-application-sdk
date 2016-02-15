@@ -472,12 +472,29 @@ var VehicleData = {
 
 
 	/*
-	 * Mapping
+	 * Vehicle
 	 */
 
-	vehicleSpeed: 'vehicleSpeed',
+	vehicle: {
 
+		speed: {name: 'VDTVehicleSpeed', friendlyName: 'Vehicle Speed', input: 'range', min: 0, max: 120},
+		rpm: {name: 'VDTEngineSpeed', friendlyName: 'Engine RPM', input: 'range', min: 0, max: 8000},
 
+	},
+
+	/**
+	 * GPS
+	 */
+
+	gps: {
+		latitude: {name: 'GPSLatitude'},
+		longitude: {name: 'GPSLongitude'},
+		altitude: {name: 'GPSAltitude'},
+		heading: {name: 'GPSHeading'},
+		velocity: {name: 'GPSVelocity'},
+		timestamp: {name: 'GPSTimestamp'},
+
+	},
 
 };
 
@@ -510,29 +527,16 @@ var CustomApplicationDataHandler = {
 	 */
 
 	tables: [
-		{table: 'gps', enabled: true, filter: 'gps'},
-		{table: 'idm', enabled: true},
-		{table: 'idmhistory', enabled: true},
-		{table: 'vdm', enabled: true},
-		{table: 'vdmhistory', enabled: true},
-		{table: 'vdtcurrent', enabled: true},
-		{table: 'vdthistory', enabled: true},
-		{table: 'vdtpid', enabled: true},
-		{table: 'vdtsettings', enabled: true},
+		{table: 'gps', prefix: 'GPS', enabled: true, filter: 'gps'},
+		{table: 'idm', prefix: 'IDM', enabled: true},
+		{table: 'idmhistory', prefix: 'IDMH', enabled: true},
+		{table: 'vdm', prefix: 'VDM', enabled: true},
+		{table: 'vdmhistory', prefix: 'VDMH', enabled: true},
+		{table: 'vdtcurrent', prefix: 'VDT', enabled: true},
+		{table: 'vdthistory', prefix: 'VDTH', enabled: true},
+		{table: 'vdtpid', prefix: 'PID', enabled: true},
+		{table: 'vdtsettings', prefix: 'VDTS', enabled: true},
 	],
-
-	/**
-	 * (mapping)
-	 */
-
-	mapping: {
-		gps: {
-			heading: 'gpsHeading',
-			speed: 'gpsSpeed',
-		},	
-
-		vehicleSpeed: 'vehiclespeed',
-	},
 
 	/**
 	 * (Pools)
@@ -551,6 +555,17 @@ var CustomApplicationDataHandler = {
 		this.next();
 	},
 
+
+	/**
+	 * (get) returns a data key
+	 */
+
+	get: function(name) {
+		name = name.toLowerCase();
+
+		return this.data[name] ? this.data[name] : false;
+	},
+
 	/**
 	 * (pause)
 	 */
@@ -558,7 +573,6 @@ var CustomApplicationDataHandler = {
 	pause: function() {
 
 		this.paused = true;
-
 	},
 
 	unpause: function() {
@@ -592,13 +606,14 @@ var CustomApplicationDataHandler = {
 	},
 
 
+
 	/**
 	 * (retrieve) loads the data
 	 */
 
 	retrieve: function(callback) {
 
-		//CustomApplicationLog.info(this.__name, "Retrieving data tables");	
+		CustomApplicationLog.debug(this.__name, "Retrieving data tables");	
 
 		// prepare
 		var loaded = 0, toload = 0, finish = function() {
@@ -660,39 +675,47 @@ var CustomApplicationDataHandler = {
 
 			var parts = line.split(/[\((,)\).*(:)]/);
 
-			if(parts.length == 5) {
+			if(parts.length >= 5) {
 
 				// filter by type
 				if(parts[1]) {
 					switch(parts[1].toLowerCase()) {
 
 						case "binary":
-
 							break;
+
+						case "double":
+
+							parts[4] = parts[4] + (parts[5] ? "." + parts[5] : "");
 
 						default:
 							
-							var id = parts[0].toLowerCase(),
+							var id = $.trim(parts[0]),
 								value = $.trim(parts[4]);
 
-							if(this.mapping[id]) {
-								id = this.mapping[id];
-							}
+							// check prefix
+							if(table.prefix) id = table.prefix + id;
 
+							id = id.toLowerCase();
+
+							// assign
 							if(!this.data[id]) {
 								this.data[id] = {
+									prefix: table.prefix,
 									value: null,
 									previous: null,
 									changed: false,
-									type: parts[1],
-									name: parts[0], 
+									type: $.trim(parts[1]),
+									name: $.trim(parts[0]), 
 								}
 							}
 
+							// update
 							this.data[id].changed = this.data[id] != value;
 							this.data[id].previous = this.data[id].value;
 							this.data[id].value = value;
 
+							// notify
 							CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
 
 							break; 
@@ -716,12 +739,12 @@ var CustomApplicationDataHandler = {
 			case "gps":
 
 				var result = [], parser = {
-					GPSTimestamp: 2,
-					GPSLatitude: 3,
-					GPSLongitude: 4,
-					GPSAltitude: 5,
-					GPSHeading: 6,
-					GPSVelocity: 7,
+					Timestamp: 2,
+					Latitude: 3,
+					Longitude: 4,
+					Altitude: 5,
+					Heading: 6,
+					Velocity: 7,
 				}
 
 				// assign
@@ -731,7 +754,8 @@ var CustomApplicationDataHandler = {
 						// parse data
 						var line = $.trim(data[index]).split(" ");
 						if(line[1]) {
-							result.push(name + "(int, 0): " + $.trim(line[1]));
+							var type = line[0] != "double" ? "int" : "double";
+							result.push(name + " (" + type + ", 4): " + $.trim(line[1]));
 						}
 					}
 

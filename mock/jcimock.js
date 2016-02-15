@@ -225,26 +225,51 @@ var framework = {
 
 	setVehicleData: function(data) {
 
-
+		// create groups
 		var groups = [
-			{name: 'GPS'},
+			{name: 'Vehicle Data', mapping: VehicleData.vehicle},
+			{name: 'GPS', mapping: VehicleData.gps},
 			{name: 'All Vehicle Data', values: data}
 		];
 
+		// clear empty
 		this.dataView.empty();
 
 		groups.forEach(function(group) {
 
+			// prepare mapping to value table
+			if(group.mapping) {
+
+				// get actual values
+				var values = [];
+				$.each(group.mapping, function(name, params) {
+
+					if(params.name) {
+						var tmp = CustomApplicationDataHandler.get(params.name);
+						if(tmp) {
+							params.value = tmp.value;
+							values.push($.extend(params, tmp));
+						}
+					}
+				});
+
+			} else {
+
+				// build data array 
+				var values = $.map(group.values, function(value) {
+					return value;
+				});
+			}
+
+
+			// create group
 			var groupDiv = $("<div/>").addClass("group").appendTo(this.dataView);
 			$("<span/>").addClass("title").append(group.name).appendTo(groupDiv);
 
+			// create group container
 			var container = $("<div/>").addClass("items").appendTo(groupDiv);
 
-			// build data array 
-			var values = $.map(group.values, function(value) {
-				return value;
-			});
-
+			// sort by name
 			values.sort(function(a, b) {
 				return a.name > b.name ? 1 : -1;
 			});
@@ -254,12 +279,32 @@ var framework = {
 
 				var item = $("<div/>").addClass("item").appendTo(container);
 
-				$("<span/>").append(value.type == "string" ? "str" : value.type).addClass(value.type).appendTo(item);
-				$("<span/>").append(value.name).appendTo(item);
+				var tp = value.type;
+				switch(value.type) {
+					case "string": tp= "str"; break;
+					case "double": tp = "dbl"; break;
+					default: tp = "int"; break;
+				}
+
+				$("<span/>").append(value.prefix ? value.prefix : "DATA").addClass(value.prefix).appendTo(item);
+				$("<span/>").append(tp).addClass(value.type).appendTo(item);
+				$("<span/>").append(value.friendlyName ? value.friendlyName : value.name).appendTo(item);
 
 				var editorContainer = $("<span/>").appendTo(item);
 
-				switch(value.type) {
+				switch(value.input) {
+
+					case "range":
+						console.log(value.max);
+						var editor = $("<input/>").attr({type: "range", min: value.min, max: value.max, step: value.step | 1}).val(value.value).appendTo(editorContainer),
+							editorLabel = $("<span/>").addClass("inputlabel").html(value.value).appendTo(editorContainer);
+
+						editor.on("input", function() {
+							editorLabel.html($(this).val());
+						});
+
+						break;
+
 					
 					default:
 						var editor = $("<input/>").val(value.value).appendTo(editorContainer);
