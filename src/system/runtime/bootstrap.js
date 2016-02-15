@@ -290,6 +290,8 @@ var CustomApplication = (function(){
 
 	    __notify: function(id, payload) {
 
+	    	console.log(id);
+
 	    	if(this.subscriptions[id]) {
 
 	    		var subscription = this.subscriptions[id], notify = false;
@@ -388,12 +390,21 @@ var CustomApplication = (function(){
 
 			if(this.is.fn(callback)) {
 
-				this.subscriptions[name] = {
-					type: type || this.ANY,
-					callback: callback
-				};
+				if(this.is.object(name)) name = name.id || false;
+
+				if(name) {
+
+					this.subscriptions[name] = {
+						name: name,
+						type: type || this.ANY,
+						callback: callback
+					};
+
+					return true;
+				}
 			}
 
+			return false;
 		},
 
 		/**
@@ -490,7 +501,7 @@ var VehicleData = {
 		latitude: {name: 'GPSLatitude'},
 		longitude: {name: 'GPSLongitude'},
 		altitude: {name: 'GPSAltitude'},
-		heading: {name: 'GPSHeading'},
+		heading: {name: 'GPSHeading', input: 'range', min: 0, max: 360, step:45},
 		velocity: {name: 'GPSVelocity'},
 		timestamp: {name: 'GPSTimestamp'},
 
@@ -564,6 +575,26 @@ var CustomApplicationDataHandler = {
 		name = name.toLowerCase();
 
 		return this.data[name] ? this.data[name] : false;
+	},
+
+	/**
+	 * (setValue) sets the value of the key
+	 */
+
+	setValue: function(id, value) {
+
+		CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});	
+
+		if(this.data[id]) {
+
+			this.data[id].changed = this.data[id] != value;
+			this.data[id].previous = this.data[id].value;
+			this.data[id].value = value;
+
+			// notify
+			CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
+		}
+
 	},
 
 	/**
@@ -701,6 +732,7 @@ var CustomApplicationDataHandler = {
 							// assign
 							if(!this.data[id]) {
 								this.data[id] = {
+									id: id,
 									prefix: table.prefix,
 									value: null,
 									previous: null,
@@ -711,12 +743,7 @@ var CustomApplicationDataHandler = {
 							}
 
 							// update
-							this.data[id].changed = this.data[id] != value;
-							this.data[id].previous = this.data[id].value;
-							this.data[id].value = value;
-
-							// notify
-							CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
+							this.setValue(id, value);
 
 							break; 
 

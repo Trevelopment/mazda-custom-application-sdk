@@ -295,14 +295,8 @@ var framework = {
 				switch(value.input) {
 
 					case "range":
-						console.log(value.max);
 						var editor = $("<input/>").attr({type: "range", min: value.min, max: value.max, step: value.step | 1}).val(value.value).appendTo(editorContainer),
 							editorLabel = $("<span/>").addClass("inputlabel").html(value.value).appendTo(editorContainer);
-
-						editor.on("input", function() {
-							editorLabel.html($(this).val());
-						});
-
 						break;
 
 					
@@ -310,6 +304,19 @@ var framework = {
 						var editor = $("<input/>").val(value.value).appendTo(editorContainer);
 						break;
 				}
+
+				if(editor) {
+					editor.on("input", function() {
+
+						if(editorLabel) {
+							editorLabel.html($(this).val());
+						}
+
+						// notify customer Handler
+						CustomApplicationDataHandler.setValue(value.id, editor.val());
+					});
+				}
+
 
 			}.bind(this));
 

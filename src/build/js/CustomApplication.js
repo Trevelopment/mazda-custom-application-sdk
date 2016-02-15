@@ -290,6 +290,8 @@ var CustomApplication = (function(){
 
 	    __notify: function(id, payload) {
 
+	    	console.log(id);
+
 	    	if(this.subscriptions[id]) {
 
 	    		var subscription = this.subscriptions[id], notify = false;
@@ -388,12 +390,21 @@ var CustomApplication = (function(){
 
 			if(this.is.fn(callback)) {
 
-				this.subscriptions[name] = {
-					type: type || this.ANY,
-					callback: callback
-				};
+				if(this.is.object(name)) name = name.id || false;
+
+				if(name) {
+
+					this.subscriptions[name] = {
+						name: name,
+						type: type || this.ANY,
+						callback: callback
+					};
+
+					return true;
+				}
 			}
 
+			return false;
 		},
 
 		/**

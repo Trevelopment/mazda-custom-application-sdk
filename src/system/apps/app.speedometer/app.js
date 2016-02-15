@@ -224,6 +224,13 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		// initialize scale
 		this.createSpeedoScale();
 
+		// register events
+		this.subscribe(VehicleData.vehicle.speed, function(value) {
+
+			this.setSpeedPosition(value);
+
+		}.bind(this));
+
 		
 	},
 
