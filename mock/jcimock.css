@@ -188,17 +188,30 @@ body {
 	background:#151515;
 	border-left:3px solid #222;
 }
+	
+	#debug #multicontroller {
+		position:absolute;
+		bottom:0;
+		height:200px;
+		left:0;
+		right:0;
+	}
+
+		#debug #multicontroller #joystick {
+			padding:25px;
+		}
 
 	#debug #dataview {
 		position:absolute;
 		left:0px;
-		top:50px;
-		bottom:0;
+		top:0px;
+		bottom:200px;
 		right:0;
 		overflow-y:scroll;
 		font-family: "Lucina Console", sans-serif;
 		font-weight:bold;
 		font-size:12px;
+		border-bottom:3px solid #222;
 	}
 
 		#console #dataview div.group {
@@ -218,7 +231,8 @@ body {
 		#debug #dataview div.item {
 			background:#333;
 			border-bottom:1px solid #000;
-			padding:2px;
+			padding:4px 2px;
+			height:24px;
 		}
 
 			#debug #dataview div.item span {
@@ -274,17 +288,18 @@ body {
 				#debug #dataview div.item span:nth-child(4) {
 					
 				}
-
+					#debug #dataview div.item span:nth-child(4) select, 
 					#debug #dataview div.item span:nth-child(4) input {
 						border:0;
 						padding:3px;
 						background:#444;
 						color:#fff;
 						font-size:14px;
+						width:150px;
 					}
 
 					#debug #dataview div.item span:nth-child(4) input[type=range] {
-						width:87px;
+						width:89px;
 						float:left;
 					}
 

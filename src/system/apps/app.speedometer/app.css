@@ -155,22 +155,14 @@
 		}
 
 
-[app="app.speedometer"] #speedgraph {
+[app="app.speedometer"] #speedograph {
 	position:absolute;
 	bottom:20px;
 	right:20px;
 	width:260px;
 	height:150px;
 	background:rgba(50, 50, 50, 0.5);
-	box-shadow:rgba(255, 255, 255, 0.3) 0 0 15px;
-}
-
-[app="app.speedometer"] #speedgraph {
-	position:absolute;
-	bottom:20px;
-	right:20px;
-	width:260px;
-	height:150px;
-	background:rgba(50, 50, 50, 0.5);
-	box-shadow:rgba(255, 255, 255, 0.3) 0 0 15px;
+	box-shadow:rgba(255, 255, 255, 0.3) 0 0 15px;  
+    font-size:14px;
+    color:#eee;
 }

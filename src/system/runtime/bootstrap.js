@@ -55,15 +55,6 @@ var CustomApplication = (function(){
 		EQUAL: 4,
 
 
-		/**
-		 * (arrays)
-		 */
-
-		storages: {},
-
-		subscriptions: {},
-
-		images: {},
 
 		/**
 		 * (protected) __initialize
@@ -75,12 +66,28 @@ var CustomApplication = (function(){
 		/* (initialize) */
 		__initialize: function(next) {
 
+			// data arrays
+			this.__subscriptions = {};
+
 			// global specific
 			this.is = CustomApplicationHelpers.is();
 			this.sprintr = CustomApplicationHelpers.sprintr;
 
 			// application specific
 			this.settings = this.settings ? this.settings : {};
+
+			// register application subscriptions
+			this.subscribe(VehicleData.general.region, function(value) {
+
+				this.__region = value;
+
+				if(this.is.fn(this.onRegionChange)) {
+					this.onRegionChange(value);
+				}
+
+			}.bind(this));
+
+			this.__region = CustomApplicationDataHandler.get(VehicleData.general.region, 'na').value;
 
 			// set loader status
 			this.__loaded = false;
@@ -290,11 +297,11 @@ var CustomApplication = (function(){
 
 	    __notify: function(id, payload) {
 
-	    	console.log(id);
+	    	id = id.toLowerCase();
 
-	    	if(this.subscriptions[id]) {
+	    	if(this.__subscriptions[id]) {
 
-	    		var subscription = this.subscriptions[id], notify = false;
+	    		var subscription = this.__subscriptions[id], notify = false;
 
 	    		// parse type
 	    		switch(subscription.type) {
@@ -380,22 +387,29 @@ var CustomApplication = (function(){
 			return this.getSetting('leftButton');
 		},
 
+		getRegion: function() {
+			return this.__region || 'na';
+		},
+
 		/**
 		 * (internal) subscribe
 		 *
 		 * Observes a specific vehicle data point
 		 */
 
-		subscribe: function(name, callback, type) {
+		subscribe: function(id, callback, type) {
 
 			if(this.is.fn(callback)) {
 
-				if(this.is.object(name)) name = name.id || false;
+				if(this.is.object(id)) id = id.id || false;
 
-				if(name) {
+				if(id) {
+					// set all lowercase id
+					id = id.toLowerCase();
 
-					this.subscriptions[name] = {
-						name: name,
+					// register subscription
+					this.__subscriptions[id] = {
+						id: id,
 						type: type || this.ANY,
 						callback: callback
 					};
@@ -413,10 +427,27 @@ var CustomApplication = (function(){
 		 * Stops the observer for a specific vehicle data point
 		 */
 
-		unsubscribe: function(name) {
+		unsubscribe: function(id) {
 
-			this.subscriptions[name] = false;
+			id = id.toLowerCase();
+
+			if(this.__subscriptions[id]) {
+				this.__subscriptions[id] = false;
+			}
 		},
+
+		/**
+		 * (internal) transformValue
+		 *
+		 * Calls a DataTransform object
+		 */
+
+		transformValue: function(value, transformer) {
+
+			return this.is.fn(transformer) ? transformer(value) : value;
+
+		},	
+
 
 
     	/*
@@ -469,18 +500,46 @@ var CustomApplication = (function(){
  *
  */
 
+
+/**
+ * (Predeterminate data)
+ */
+
+var VehicleDataBrand = {
+	7: 'Mazda'
+};
+
+var VehicleDataVehicleType = {
+	109: '3 Sport',
+	110: '3 Touring',
+	111: '3 Grand Touring',
+	112: '6 Sport',
+	113: '6 Touring',  // Maybe right, everythign else is Bogus right now
+	114: '6 Grand Touring',
+};
+
+var VehicleDataRegion = {
+	na: 'North America',
+	eu: 'Europe',
+	jp: 'Japan',
+};
+
+
 /**
  * (VehicleData) a collection of mapping 
  */
 
 var VehicleData = {
 
-	/**
-	 * Constants
+	/*
+	 * General
 	 */
 
-	KMHMPH: 0,
-
+	general: {
+		brand: {id:'VDTSBrand', friendlyName: 'Vehicle Brand', input: 'list', values: VehicleDataBrand},
+		type: {id:'VDTSVehicle_Type', friendlyName: 'Vehicle Type', input: 'list', values: VehicleDataVehicleType},
+		region: {id: 'SYSRegion', friendlyName: 'Region', input: 'list', values: VehicleDataRegion},
+	},
 
 	/*
 	 * Vehicle
@@ -488,8 +547,8 @@ var VehicleData = {
 
 	vehicle: {
 
-		speed: {name: 'VDTVehicleSpeed', friendlyName: 'Vehicle Speed', input: 'range', min: 0, max: 120},
-		rpm: {name: 'VDTEngineSpeed', friendlyName: 'Engine RPM', input: 'range', min: 0, max: 8000},
+		speed: {id: 'VDTVehicleSpeed', friendlyName: 'Vehicle Speed', input: 'range', min: 0, max: 240},
+		rpm: {id: 'VDTEngineSpeed', friendlyName: 'Engine RPM', input: 'range', min: 0, max: 8000},
 
 	},
 
@@ -498,16 +557,32 @@ var VehicleData = {
 	 */
 
 	gps: {
-		latitude: {name: 'GPSLatitude'},
-		longitude: {name: 'GPSLongitude'},
-		altitude: {name: 'GPSAltitude'},
-		heading: {name: 'GPSHeading', input: 'range', min: 0, max: 360, step:45},
-		velocity: {name: 'GPSVelocity'},
-		timestamp: {name: 'GPSTimestamp'},
+		latitude: {id: 'GPSLatitude', friendlyName: 'Latitude'},
+		longitude: {id: 'GPSLongitude', friendlyName: 'Longitude'},
+		altitude: {id: 'GPSAltitude', friendlyName: 'Altitude'},
+		heading: {id: 'GPSHeading', friendlyName: 'Heading', input: 'range', min: 0, max: 360, step:45},
+		velocity: {id: 'GPSVelocity', friendlyName: 'Velocity'},
+		timestamp: {id: 'GPSTimestamp', friendlyName: 'Timestmap'},
 
 	},
 
 };
+
+
+/**
+ * (PreProcessors) Data processers
+ */
+
+var CustomApplicationDataProcessors = {
+
+	vdtvehiclespeed: function(value) {
+
+		return value * 0.01;
+	},
+
+
+};
+
 
 /**
  * (CustomApplicationDataHandler)
@@ -534,19 +609,24 @@ var CustomApplicationDataHandler = {
 	},
 
 	/**
-	 * (Tables)
+	 * (Tables) 
 	 */
 
 	tables: [
-		{table: 'gps', prefix: 'GPS', enabled: true, filter: 'gps'},
-		{table: 'idm', prefix: 'IDM', enabled: true},
-		{table: 'idmhistory', prefix: 'IDMH', enabled: true},
-		{table: 'vdm', prefix: 'VDM', enabled: true},
-		{table: 'vdmhistory', prefix: 'VDMH', enabled: true},
-		{table: 'vdtcurrent', prefix: 'VDT', enabled: true},
-		{table: 'vdthistory', prefix: 'VDTH', enabled: true},
-		{table: 'vdtpid', prefix: 'PID', enabled: true},
-		{table: 'vdtsettings', prefix: 'VDTS', enabled: true},
+		{table: 'sys', prefix: 'SYS', enabled: true, data: {
+
+			region: {type: 'int', value: 'na'},
+
+		}},
+		{table: 'gps', prefix: 'GPS', enabled: true, file: true, filter: 'gps'},
+		{table: 'idm', prefix: 'IDM', enabled: true, file: true},
+		{table: 'idmhistory', prefix: 'IDMH', enabled: true, file: true},
+		{table: 'vdm', prefix: 'VDM', enabled: true, file: true},
+		{table: 'vdmhistory', prefix: 'VDMH', enabled: true, file: true},
+		{table: 'vdtcurrent', prefix: 'VDT', enabled: true, file: true},
+		{table: 'vdthistory', prefix: 'VDTH', enabled: true, file: true},
+		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true},
+		{table: 'vdtsettings', prefix: 'VDTS', enabled: true, file: true},
 	],
 
 	/**
@@ -571,10 +651,42 @@ var CustomApplicationDataHandler = {
 	 * (get) returns a data key
 	 */
 
-	get: function(name) {
-		name = name.toLowerCase();
+	get: function(id, _default) {
 
-		return this.data[name] ? this.data[name] : false;
+		if(CustomApplicationHelpers.is().object(id)) {
+			id = id.id
+		}
+
+		var id = id.toLowerCase();
+
+		return this.data[id] ? this.data[id] : {value: _default ? _default : null};
+	},
+
+	/** 
+	 * (registerValue) adds a new value
+	 */
+
+	registerValue: function(table, params) {
+
+		// check preq
+		if(!params.name) return;
+
+		// create id
+		var id = ((table.prefix ? table.prefix : "") + params.name).toLowerCase();
+
+		// check id
+		if(!this.data[id]) {
+
+			this.data[id] = $.extend({}, params, {
+				id: id,
+				prefix: table.prefix,
+				value: null,
+				previous: null,
+				changed: false,
+			});
+		}
+
+		return id;
 	},
 
 	/**
@@ -583,10 +695,24 @@ var CustomApplicationDataHandler = {
 
 	setValue: function(id, value) {
 
-		CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});	
+		//CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});	
 
 		if(this.data[id]) {
 
+			// automatic converter
+			if($.isNumeric(value)) {
+
+				if(parseInt(value) == value) {
+					value = parseInt(value);
+				} else {
+					value = parseFloat(value);
+				}
+
+			} else {
+				value = $.trim(value);
+			}
+			
+			// assign
 			this.data[id].changed = this.data[id] != value;
 			this.data[id].previous = this.data[id].value;
 			this.data[id].value = value;
@@ -639,7 +765,7 @@ var CustomApplicationDataHandler = {
 
 
 	/**
-	 * (retrieve) loads the data
+	 * (retrieve) updates the data by reparsing the values
 	 */
 
 	retrieve: function(callback) {
@@ -667,99 +793,135 @@ var CustomApplicationDataHandler = {
 
 			if(table.enabled) {
 
+				// update counter
 				toload++;
 
-				var location = this.paths.data + table.table;
+				// loading
+				CustomApplicationLog.debug(this.__name, "Preparing table for parsing", {table: table.table});	
 
-				CustomApplicationLog.debug(this.__name, "Preparing table for load", {table: table.table, location: location});	
+				// process table by type
+				switch(true) {
 
-				$.get(location, function(data) {
+					/**
+					 * From preparsed
+					 */
 
-					loaded++;
+					case CustomApplicationHelpers.is().object(table.data):
 
-					CustomApplicationLog.debug(this.__name, "Loaded table", {table: table.table, loaded: loaded, toload: toload});	
+						$.each(table.data, function(name, params) {
 
-					this.process(table, data);
+							params.name = name;
 
-					finish();
+							var id = this.registerValue(table, params);
 
-				}.bind(this));
+							if(params.value) this.setValue(id, params.value);
+
+						}.bind(this));
+
+						// update counter
+						loaded++;
+
+						// continue
+						finish();
+
+						break;
+
+					/**
+					 * From file
+					 */
+					case table.file:
+
+						// prepare variables
+						var location = this.paths.data + table.table;
+
+						CustomApplicationLog.debug(this.__name, "Loading table data from file", {table: table.table, location: location});
+
+						// load
+						$.get(location, function(data) {
+
+							// update counter
+							loaded++;
+
+							CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
+
+							// execute parser
+							this.__parseFileData(table, data);
+
+							// continue
+							finish();
+
+						}.bind(this));
+
+						break;
+
+					default:
+
+						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});	
+
+						// just finish 
+						loaded++;
+
+						// continue
+						finish();
+						break;
+				}
 			}
 		}.bind(this));		
 	},
 
 
 	/**
-	 * (process)
+	 * (__parseFileData) parses data loaded from file
 	 */
 
-	process: function(table, data) {
+	__parseFileData: function(table, data) {
 
 		// split data
 		data = data.split("\n");
 
 		// filter
-		if(table.filter) data = this.filter(data, table.filter);
+		if(table.filter) data = this.__filterFileData(data, table.filter);
 	
 		// quick process
 		data.forEach(function(line, index) {
 
 			var parts = line.split(/[\((,)\).*(:)]/);
 
-			if(parts.length >= 5) {
+			if(parts.length >= 5 && parts[1]) {
 
-				// filter by type
-				if(parts[1]) {
-					switch(parts[1].toLowerCase()) {
+				switch(parts[1].toLowerCase()) {
 
-						case "binary":
-							break;
+					case "binary":
+						break;
 
-						case "double":
+					case "double":
 
-							parts[4] = parts[4] + (parts[5] ? "." + parts[5] : "");
+						parts[4] = parts[4] + (parts[5] ? "." + parts[5] : "");
 
-						default:
-							
-							var id = $.trim(parts[0]),
-								value = $.trim(parts[4]);
+					default:
 
-							// check prefix
-							if(table.prefix) id = table.prefix + id;
+						// register value
+						var id = this.registerValue(table, {
+							name: $.trim(parts[0]),
+							type: $.trim(parts[1]),
+						});
 
-							id = id.toLowerCase();
+						// update value
+						this.setValue(id, $.trim(parts[4]));
 
-							// assign
-							if(!this.data[id]) {
-								this.data[id] = {
-									id: id,
-									prefix: table.prefix,
-									value: null,
-									previous: null,
-									changed: false,
-									type: $.trim(parts[1]),
-									name: $.trim(parts[0]), 
-								}
-							}
-
-							// update
-							this.setValue(id, value);
-
-							break; 
-
-					}
+						break; 
 				}
+			
 			}
-
 
 		}.bind(this));
 	},
 
 	/**
-	 * Filter
+	 * (__filterFileData) filters data
 	 */
 
-	filter: function(data, filter) {
+	__filterFileData: function(data, filter) {
 
 		switch(filter) {
 
@@ -792,10 +954,38 @@ var CustomApplicationDataHandler = {
 				break;
 		}
 
-	}
+	},
+};
 
+/**
+ * DataTransformation
+ */
+
+var DataTransform = {
+
+	/**
+	 * (toMPH) returns the MPH of the KM/h value
+	 */
+
+	toMPH: function(value) {
+
+		return Math.round(value * 0.621371);
+
+	},
+
+
+	/**
+	 * (scaleValue) takes two different scale ranges and recalculates the value
+	 */
+
+
+	scaleValue: function( value, r1, r2 ) { 
+    	return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
+	},
 
 };
+
+
 
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System

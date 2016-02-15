@@ -232,12 +232,13 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		this.element("div", false, "simpleLabel", false, ['Current Speed', this.speedLabel]);
 		
 		// lets get the speed assigned to it
+		/*
 		this.subscribe(VehicleData.vehicleSpeed, function(speed) {
 
 			// another cool thing is that we can convert our speed from km/h to mp/h very easy
 
 			this.speedLabel = VehicleData.transform(speed, VehicleData.KMHMPH) + " mph/h";
-		}.bind(this));
+		}.bind(this));*/
 
 	},
 

@@ -227,6 +227,7 @@ var framework = {
 
 		// create groups
 		var groups = [
+			{name: 'General', mapping: VehicleData.general},
 			{name: 'Vehicle Data', mapping: VehicleData.vehicle},
 			{name: 'GPS', mapping: VehicleData.gps},
 			{name: 'All Vehicle Data', values: data}
@@ -242,10 +243,10 @@ var framework = {
 
 				// get actual values
 				var values = [];
-				$.each(group.mapping, function(name, params) {
+				$.each(group.mapping, function(id, params) {
 
-					if(params.name) {
-						var tmp = CustomApplicationDataHandler.get(params.name);
+					if(params.id) {
+						var tmp = CustomApplicationDataHandler.get(params.id);
 						if(tmp) {
 							params.value = tmp.value;
 							values.push($.extend(params, tmp));
@@ -293,6 +294,20 @@ var framework = {
 				var editorContainer = $("<span/>").appendTo(item);
 
 				switch(value.input) {
+
+					case "list":
+						var editor = $("<select/>").appendTo(editorContainer);
+
+						// build list
+						$.each(value.values, function(k, v) {
+
+							editor.append($("<option/>").val(k).append(v));
+
+						});
+
+						editor.val(value.value);
+
+						break;
 
 					case "range":
 						var editor = $("<input/>").attr({type: "range", min: value.min, max: value.max, step: value.step | 1}).val(value.value).appendTo(editorContainer),

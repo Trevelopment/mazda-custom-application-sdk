@@ -135,11 +135,14 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 	scales: {
 
-		northamerica: {
+		na: {
 			unit: 'mph',
 			unitLabel: 'MPH',
+			transformSpeed: DataTransform.toMPH,
 			scaleMin: 0,	// 0  = 0mph
 			scaleMax: 13,	// 12 = 120mph
+			scaleMinSpeed: 0,
+			scaleMaxSpeed: 120,
 			scaleStep: 10,  // every 10 miles / hour
 			scaleAngle: 148, 
 			scaleRadius: 170,
@@ -150,12 +153,14 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 			scaleHeight: 241,
 		},
 
-		europe: {
+		eu: {
 			unit: 'kmh',
 			unitLabel: 'km/h',
 			scaleMin: 0,	// 0  = 0mph
-			scaleMax: 13,	// 12 = 120mph
-			scaleStep: 20,  // every 10 miles / hour
+			scaleMax: 13,	// 12 = 120km/h
+			scaleMinSpeed: 0,
+			scaleMaxSpeed: 240,
+			scaleStep: 20,  // every 20 km/h
 			scaleAngle: 148, 
 			scaleRadius: 170,
 			scaleOffsetStep: 4.6,
@@ -171,14 +176,15 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	// default scale
 	scale: false,
 
+
 	/**
-	 * Text Gauges
+	 * Statistics 
 	 */
 
-	textGauges: {
-
-
-
+	statistics: {
+		topSpeed: 0,
+		speeds: [],
+		averageSpeeds: [],
 	},
 
 
@@ -196,9 +202,6 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 	created: function() {
 
-		// set scale by default
-		this.scale = this.scales.northamerica;
-
 		// create speedometer panel
 		this.speedoMeter = $("<div/>").attr("id", "speedometer").appendTo(this.canvas);
 
@@ -208,21 +211,20 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		this.speedoIndicator = $("<div/>").attr("id", "speedoindicator").appendTo(this.canvas);
 
-		this.speedoCurrent = $("<div/>").attr("id", "speedocurrent").appendTo(this.canvas);
+		this.speedoCurrent = $("<div/>").append("0").attr("id", "speedocurrent").appendTo(this.canvas);
 
 		this.speedoDialText =  $("<div/>").attr("id", "speedodialtext").appendTo(this.canvas);
+
+		this.speedoGraph = $("<canvas/>").attr({id: "speedograph", width: 260, height: 150}).appendTo(this.canvas);
 
 		// create gps
 		this.createGPSPanel();
 
-		// create text gaugaes
-		this.createTextGauges();
-
-		// create graph plot
-		this.createSpeedGraph();
+		// updates speed 
+		this.updateSpeedoGraph();
 
 		// initialize scale
-		this.createSpeedoScale();
+		this.updateSpeedoScale();
 
 		// register events
 		this.subscribe(VehicleData.vehicle.speed, function(value) {
@@ -231,6 +233,11 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		}.bind(this));
 
+		this.subscribe(VehicleData.gps.heading, function(value) {
+
+			this.setGPSHeading(value);
+
+		}.bind(this));
 		
 	},
 
@@ -244,6 +251,15 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 	focused: function() {
 
+		// start collection
+		this.collectorTimer = setInterval(function() {
+
+			this.collectStatistics();
+
+		}.bind(this), 500);
+
+		// update graph
+		this.updateSpeedoGraph();
 
 	},
 
@@ -258,6 +274,9 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	 */
 	
 	lost: function() {
+
+		// stop collection
+		clearInterval(this.collectorTimer);
 
 	},
 
@@ -278,22 +297,16 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	},
 
 	/**
-	 * (createSpeedGraph)
+	 * (event) onRegionChange
+	 *
+	 * Called when the region changes
 	 */
 
-	createSpeedGraph: function() {
+	onRegionChange: function(region) {
 
-		this.speedGraph = $("<div/>").attr("id", "speedgraph").appendTo(this.canvas);	
+		this.updateSpeedoScale();
 
-	},
-
-	/**
-	 * (createTextGauges)
-	 */
-
-	createTextGauges: function() {
-
-	
+		this.updateSpeedoGraph();
 
 	},
 
@@ -336,19 +349,101 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		});
 	},
 
+
 	/**
-	 * (createSpeedoScale)
+	 * (updateSpeedoGraph)
 	 */
 
-	createSpeedoScale: function(scale) {
-
-		// clear main container
-		this.speedoDialText.empty();
+	updateSpeedoGraph: function() {
 
 		// prepare
-		var scale = scale ? scale : this.scale,
+		var region = this.getRegion(),
+			scale = this.scales[region] || this.scales.na,
+			canvas = this.speedoGraph.get(0),
+			ctx = canvas.getContext('2d');
+
+		// clear
+		canvas.width = canvas.width;
+
+		// create divider
+		ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+		ctx.lineWidth = 2;
+		ctx.setLineDash([2, 2]);
+		ctx.beginPath();
+		ctx.moveTo(0, 75);
+		ctx.lineTo(260, 75);
+		ctx.stroke();
+
+		// draw graph
+		if(this.statistics.averageSpeeds.length) {
+
+			var ds = Math.round(260 / (this.statistics.averageSpeeds.length));
+
+			ctx.strokeStyle = "rgba(255, 40, 25, 0.9)";
+			ctx.setLineDash([0, 0]);
+			ctx.lineWidth = 3;
+			ctx.beginPath();
+
+			this.statistics.averageSpeeds.forEach(function(avg, index) {
+
+				var x = 260 - (index * ds), 
+					y = 120 - DataTransform.scaleValue(avg, [0, 240], [0, 90]);
+
+				if(index == 0) {
+					ctx.moveTo(x, y);
+				} else {
+					ctx.lineTo(x, y);
+				}
+
+			});
+			ctx.stroke();
+
+		}
+
+
+		// draw labels
+		ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+		ctx.font = "17px Tipperary, Arial, Helvetica, sans-serif";
+		ctx.fillText(scale.scaleMaxSpeed, 5, 20);
+		ctx.fillText(scale.scaleMinSpeed, 5, 140);
+
+		// draw unit display
+
+
+		// create divider
+		$("<div/>").addClass("divider").appendTo(this.speedoGraph);
+
+		// show
+		this.speedoGraph.fadeIn('fast');
+	
+	},
+
+	/**
+	 * (updateSpeedoScale)
+	 */
+
+	updateSpeedoScale: function() {
+
+		// hide old content
+		if(this.hasSpeedoDialText) {
+			this.speedoDialText.fadeOut('fast', function() {
+				this.hasSpeedoDialText = false;
+				this.updateSpeedoScale();
+			}.bind(this));
+			return;
+		}
+
+		// clear main container
+		this.speedoDialText.empty().hide();
+
+		// prepare
+		var region = this.getRegion(),
+			scale = this.scales[region] || this.scales.na,
 			container = $("<div/>").addClass("container").appendTo(this.speedoDialText),
 			fields = [];
+
+		// set scale
+		this.scale = scale;
 
 		// create scale			
 		for(var s = scale.scaleMin; s < scale.scaleMax; s++) {
@@ -361,6 +456,13 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		// also update some other containers
 		this.speedoUnit.html(scale.unitLabel);
+
+		this.speedoDialText.fadeIn('fast');
+
+		this.setSpeedPosition(this.__speed);
+
+		// update content
+		this.hasSpeedoDialText = true;
 
 		// return the container
 		return container;
@@ -417,6 +519,27 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 	setSpeedPosition: function(speed) {
 
+		// prepare
+		speed = speed || 0;
+		this.__speed = speed;
+
+		// update statistics
+		if(speed > this.statistics.topSpeed) {
+			this.statistics.topSpeed = speed;
+		}
+
+		// get localized reference speed
+		var refSpeed = this.transformValue(this.__speed, this.scale.transformSpeed);
+		if(refSpeed < this.scale.scaleMinSpeed) refSpeed = this.scale.scaleMinSpeed
+		if(refSpeed > this.scale.scaleMaxSpeed) refSpeed = this.scale.scaleMaxSpeed;
+
+		// calculate speed on scale
+		speed = DataTransform.scaleValue(refSpeed, [this.scale.scaleMinSpeed, this.scale.scaleMaxSpeed], [0, 240]);
+		
+		// set label
+		this.speedoCurrent.html(refSpeed);
+
+		// update dial
 		if(speed < 0) speed = 0;
 		if(speed > 240) speed = 240;
 
@@ -434,13 +557,43 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 	setGPSHeading: function(heading) {
 
-		// 0 = North, 180 = South
-
+		// 0 = North, 180 = Souths
 		this.gpsPanel.css({
 			transform: 'rotate(' + heading + 'deg)'
 		});
 	},
 
+
+	/**
+	 * (collectStatistics) starts collecting statistics and redraws the graph
+	 */
+
+	collectStatistics: function() {
+
+		this.statistics.speeds.push(this.__speed);
+
+		if(this.statistics.speeds.length >= 2) {
+
+			// calculate average
+			var t = 0;
+			this.statistics.speeds.forEach(function(v) { t += v;});
+
+			var avg = Math.round(t / this.statistics.speeds.length);
+
+			// push to average list
+			this.statistics.averageSpeeds.unshift(avg);
+
+			if(this.statistics.averageSpeeds.length > 15) {
+				this.statistics.averageSpeeds.pop();
+			}
+
+			this.statistics.speeds = [];
+
+			// update display
+			this.updateSpeedoGraph();
+		}
+
+	},
 
 
 

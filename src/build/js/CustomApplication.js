@@ -55,15 +55,6 @@ var CustomApplication = (function(){
 		EQUAL: 4,
 
 
-		/**
-		 * (arrays)
-		 */
-
-		storages: {},
-
-		subscriptions: {},
-
-		images: {},
 
 		/**
 		 * (protected) __initialize
@@ -75,12 +66,28 @@ var CustomApplication = (function(){
 		/* (initialize) */
 		__initialize: function(next) {
 
+			// data arrays
+			this.__subscriptions = {};
+
 			// global specific
 			this.is = CustomApplicationHelpers.is();
 			this.sprintr = CustomApplicationHelpers.sprintr;
 
 			// application specific
 			this.settings = this.settings ? this.settings : {};
+
+			// register application subscriptions
+			this.subscribe(VehicleData.general.region, function(value) {
+
+				this.__region = value;
+
+				if(this.is.fn(this.onRegionChange)) {
+					this.onRegionChange(value);
+				}
+
+			}.bind(this));
+
+			this.__region = CustomApplicationDataHandler.get(VehicleData.general.region, 'na').value;
 
 			// set loader status
 			this.__loaded = false;
@@ -290,11 +297,11 @@ var CustomApplication = (function(){
 
 	    __notify: function(id, payload) {
 
-	    	console.log(id);
+	    	id = id.toLowerCase();
 
-	    	if(this.subscriptions[id]) {
+	    	if(this.__subscriptions[id]) {
 
-	    		var subscription = this.subscriptions[id], notify = false;
+	    		var subscription = this.__subscriptions[id], notify = false;
 
 	    		// parse type
 	    		switch(subscription.type) {
@@ -380,22 +387,29 @@ var CustomApplication = (function(){
 			return this.getSetting('leftButton');
 		},
 
+		getRegion: function() {
+			return this.__region || 'na';
+		},
+
 		/**
 		 * (internal) subscribe
 		 *
 		 * Observes a specific vehicle data point
 		 */
 
-		subscribe: function(name, callback, type) {
+		subscribe: function(id, callback, type) {
 
 			if(this.is.fn(callback)) {
 
-				if(this.is.object(name)) name = name.id || false;
+				if(this.is.object(id)) id = id.id || false;
 
-				if(name) {
+				if(id) {
+					// set all lowercase id
+					id = id.toLowerCase();
 
-					this.subscriptions[name] = {
-						name: name,
+					// register subscription
+					this.__subscriptions[id] = {
+						id: id,
 						type: type || this.ANY,
 						callback: callback
 					};
@@ -413,10 +427,27 @@ var CustomApplication = (function(){
 		 * Stops the observer for a specific vehicle data point
 		 */
 
-		unsubscribe: function(name) {
+		unsubscribe: function(id) {
 
-			this.subscriptions[name] = false;
+			id = id.toLowerCase();
+
+			if(this.__subscriptions[id]) {
+				this.__subscriptions[id] = false;
+			}
 		},
+
+		/**
+		 * (internal) transformValue
+		 *
+		 * Calls a DataTransform object
+		 */
+
+		transformValue: function(value, transformer) {
+
+			return this.is.fn(transformer) ? transformer(value) : value;
+
+		},	
+
 
 
     	/*
