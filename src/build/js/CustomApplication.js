@@ -85,7 +85,7 @@ var CustomApplication = (function(){
 					this.onRegionChange(value);
 				}
 
-			}.bind(this));
+			}.bind(this), this.CHANGED);
 
 			this.__region = CustomApplicationDataHandler.get(VehicleData.general.region, 'na').value;
 
