@@ -336,8 +336,12 @@ var framework = {
 							editorLabel.html($(this).val());
 						}
 
+						var v = editor.val();
+
+						if(value.factor) v = v / value.factor; 
+
 						// notify customer Handler
-						CustomApplicationDataHandler.setValue(value.id, editor.val());
+						CustomApplicationDataHandler.setValue(value.id, v);
 					});
 				}
 

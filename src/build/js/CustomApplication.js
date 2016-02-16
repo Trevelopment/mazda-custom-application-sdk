@@ -336,7 +336,10 @@ var CustomApplication = (function(){
 
 	    		// execute
 	    		if(notify) {
-	    			subscription.callback(payload.value, payload);
+	    			subscription.callback(payload.value, $.extend({}, 
+	    				this.__subscriptions[id], 
+	    				payload
+	    			));
 	    		}
 	   		}
 	    },
@@ -402,18 +405,22 @@ var CustomApplication = (function(){
 
 			if(this.is.fn(callback)) {
 
-				if(this.is.object(id)) id = id.id || false;
+				var o = {};
+				if(this.is.object(id)) {
+					o = id;
+					id = o.id || false;
+				} 
 
 				if(id) {
 					// set all lowercase id
 					id = id.toLowerCase();
 
 					// register subscription
-					this.__subscriptions[id] = {
+					this.__subscriptions[id] = $.extend({}, o, {
 						id: id,
 						type: type || this.CHANGED,
 						callback: callback
-					};
+					});
 
 					return true;
 				}

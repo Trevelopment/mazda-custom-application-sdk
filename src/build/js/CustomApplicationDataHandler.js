@@ -71,8 +71,8 @@ var VehicleData = {
 
 	vehicle: {
 
-		speed: {id: 'VDTVehicleSpeed', friendlyName: 'Vehicle Speed', input: 'range', min: 0, max: 240},
-		rpm: {id: 'VDTEngineSpeed', friendlyName: 'Engine RPM', input: 'range', min: 0, max: 8000},
+		speed: {id: 'VDTVehicleSpeed', friendlyName: 'Vehicle Speed', input: 'range', min: 0, max: 240, factor: 0.01},
+		rpm: {id: 'VDTEngineSpeed', friendlyName: 'Engine RPM', input: 'range', min: 0, max: 8000, factor: 2.25},
 
 	},
 
@@ -102,6 +102,11 @@ var CustomApplicationDataProcessors = {
 	vdtvehiclespeed: function(value) {
 
 		return Math.round(value * 0.01);
+	},
+
+	vdtenginespeed: function(value) {
+
+		return Math.round(value * 2.25);
 	},
 
 

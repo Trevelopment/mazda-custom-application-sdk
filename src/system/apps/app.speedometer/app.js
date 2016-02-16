@@ -209,6 +209,15 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		this.speedoDial = $("<div/>").attr("id", "speedodial").appendTo(this.canvas);
 
+		this.speedoRPM = $("<div/>").attr("id", "speedorpm").appendTo(this.canvas);
+		this.speedoRPMIndicator = $("<div/>").addClass("circle").appendTo(this.speedoRPM);
+		
+		this.speedoRPMLabel = $("<label/>").css({
+			position:'absolute',
+			right:0,
+			top:0,
+		}).hide().appendTo(this.canvas);
+
 		this.speedoIndicator = $("<div/>").attr("id", "speedoindicator").appendTo(this.canvas);
 
 		this.speedoCurrent = $("<div/>").append("0").attr("id", "speedocurrent").appendTo(this.canvas);
@@ -236,6 +245,12 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		this.subscribe(VehicleData.gps.heading, function(value) {
 
 			this.setGPSHeading(value);
+
+		}.bind(this));
+
+		this.subscribe(VehicleData.vehicle.rpm, function(value, params) {
+
+			this.setRPMPosition(value, params);
 
 		}.bind(this));
 		
@@ -545,9 +560,19 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		speed = -120 + (speed);
 
-		this.speedoIndicator.css({
-			transform: 'rotate(' + speed + 'deg)'
+		// stop current animation
+		if(this.speedoIndicatorAnimation) {
+			this.speedoIndicatorAnimation.stop();
+		}
+		this.speedoIndicatorAnimation = $({deg: this.__oldspeed || 0}).stop().animate({deg: speed}, {
+			duration: 1000,
+			step: function(d) {
+				this.speedoIndicator.css({
+					transform: 'rotate(' + d + 'deg)'
+				});
+			}.bind(this)
 		});
+		this.__oldspeed = speed;
 	},
 
 
@@ -561,6 +586,43 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		this.gpsPanel.css({
 			transform: 'rotate(' + heading + 'deg)'
 		});
+	},
+
+	/**
+	 * (setRPMPosition)
+	 */
+
+	setRPMPosition: function(rpm, params) {
+
+		this.speedoRPMLabel.html(rpm);
+		// min 
+		if(rpm < 1000) {
+			rpm = 0;
+
+		} else {
+			// calculate value
+			rpm = 80 + DataTransform.scaleValue(rpm, [params.min, params.max], [0, 100]);
+		}
+
+		if(rpm == this.__oldrpm) return; // no update for that
+
+		// stop current animation
+		if(this.speedoRPMIndicatorAnimation) {
+			this.speedoRPMIndicatorAnimation.stop();
+		}
+		this.speedoRPMIndicatorAnimation = $({deg: this.__oldrpm || 0}).stop().animate({deg: rpm}, {
+			duration: 1000,
+			step: function(d) {
+
+				this.speedoRPMIndicator.css({
+					transform: 'rotate(' + d + 'deg)',
+					opacity: DataTransform.scaleValue(d, [0, 180], [0.5, 1])
+				});
+
+			}.bind(this)
+		});
+		
+		this.__oldrpm = rpm;
 	},
 
 

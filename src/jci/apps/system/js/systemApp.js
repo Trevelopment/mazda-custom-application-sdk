@@ -2330,7 +2330,7 @@ systemApp.prototype._prepareCustomApplications = function()
     this.CustomApplicationLoadCount = 0;
     setTimeout(function() {
         this._loadCustomApplications();
-    }.bind(this), 5000); // first attempt wait 5s - the system might be booting still anyway
+    }.bind(this), 10000); // first attempt wait 10s - the system might be booting still anyway
 
 }
 
@@ -2354,8 +2354,8 @@ systemApp.prototype._loadCustomApplications = function()
 
                     this.CustomApplicationLoadCount = this.CustomApplicationLoadCount + 1;
 
-                    // 10 attempts or we forget it
-                    if(this.CustomApplicationLoadCount < 10) {
+                    // 20 attempts or we forget it
+                    if(this.CustomApplicationLoadCount < 20) {
                         
                         this._loadCustomApplications();
                     }
