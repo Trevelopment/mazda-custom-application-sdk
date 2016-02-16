@@ -215,16 +215,16 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		this.speedoDialText =  $("<div/>").attr("id", "speedodialtext").appendTo(this.canvas);
 
-		this.speedoGraph = $("<canvas/>").attr({id: "speedograph", width: 260, height: 150}).appendTo(this.canvas);
+		//this.speedoGraph = $("<canvas/>").attr({id: "speedograph", width: 260, height: 150}).appendTo(this.canvas);
 
 		// create gps
 		this.createGPSPanel();
 
-		// updates speed 
-		this.updateSpeedoGraph();
-
 		// initialize scale
 		this.updateSpeedoScale();
+
+		// updates speed 
+		//this.updateSpeedoGraph();
 
 		// register events
 		this.subscribe(VehicleData.vehicle.speed, function(value) {
@@ -252,14 +252,14 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	focused: function() {
 
 		// start collection
-		this.collectorTimer = setInterval(function() {
+		/*this.collectorTimer = setInterval(function() {
 
 			this.collectStatistics();
 
-		}.bind(this), 1000);
+		}.bind(this), 1000);*/
 
 		// update graph
-		this.updateSpeedoGraph();
+		//this.updateSpeedoGraph();
 
 	},
 
@@ -306,7 +306,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		this.updateSpeedoScale();
 
-		this.updateSpeedoGraph();
+		//this.updateSpeedoGraph();
 
 	},
 
@@ -569,6 +569,8 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	 */
 
 	collectStatistics: function() {
+
+		return;
 
 		this.statistics.speeds.push(this.__speed);
 

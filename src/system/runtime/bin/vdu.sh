@@ -35,29 +35,36 @@ OUTPUT=/tmp/root/casdk
 # GPS Position
 dbus-send --print-reply --address=unix:path=/tmp/dbus_service_socket --type=method_call --dest=com.jci.lds.data /com/jci/lds/data com.jci.lds.data.GetPosition > ${OUTPUT}-gps
 
+# Vehicle VDT Data
+echo "" > ${OUTPUT}-vdt
+
+smdb-read -v -n vdm_vdt_current_data -e VehicleSpeed >> ${OUTPUT}-vdt
+smdb-read -v -n vdm_vdt_current_data -e EngineSpeed >> ${OUTPUT}-vdt
+
+
 # Vehicle VDM Data
-smdb-read -v -n vdm_vdm > ${OUTPUT}-vdm
+#smdb-read -v -n vdm > ${OUTPUT}-vdm
 
 # Vehicle VDM History Data
-smdb-read -v -n vdm_history_data > ${OUTPUT}-vdmhistory
+#smdb-read -v -n vdm_history_data > ${OUTPUT}-vdmhistory
 
 # Vehicle VDM PID Data
-smdb-read -v -n vdm_vdt_pid_data > ${OUTPUT}-vdtpid
+#smdb-read -v -n vdm_vdt_pid_data > ${OUTPUT}-vdtpid
 
 # Vehicle VDT Current Data
-smdb-read -v -n vdm_vdt_current_data > ${OUTPUT}-vdtcurrent
+#smdb-read -v -n vdm_vdt_current_data > ${OUTPUT}-vdtcurrent
 
-# Vehicle VDT History Data 
-smdb-read -v -n vdm_vdt_history_data > ${OUTPUT}-vdthistory
+# Vehicle VDT History Data - disabled currently
+# smdb-read -v -n vdm_vdt_history_data > ${OUTPUT}-vdthistory
 
 # Vehicle VDT Settings
-smdb-read -v -n vdm_vdt_settings_data > ${OUTPUT}-vdtsettings
+#smdb-read -v -n vdm_vdt_settings_data > ${OUTPUT}-vdtsettings
 
 # Vehicle IDM Data
-smdb-read -v -n vdm_idm > ${OUTPUT}-idm
+#smdb-read -v -n vdm_idm > ${OUTPUT}-idm
 
 # Vehicle IDM History
-smdb-read -v -n vdm_idm_history > ${OUTPUT}-idmhistory
+#smdb-read -v -n vdm_idm_history > ${OUTPUT}-idmhistory
 
 #smdb-read -v -n vdm_vdt_current_data -e VehicleSpeed >> vdm_vdt_current_data-VehicleSpeed.txt
 #smdb-read -v -n vdm_vdt_current_data -e EngineSpeed >> vdm_vdt_current_data-EngineSpeed.txt

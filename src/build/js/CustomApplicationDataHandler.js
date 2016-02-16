@@ -101,7 +101,7 @@ var CustomApplicationDataProcessors = {
 
 	vdtvehiclespeed: function(value) {
 
-		return value * 0.01;
+		return Math.round(value * 0.01);
 	},
 
 
@@ -129,7 +129,7 @@ var CustomApplicationDataHandler = {
 	 */
 
 	paths: {
-		data: 'apps/system/custom/runtime/data/casdk-',
+		data: 'apps/system/customdata/casdk-',
 	},
 
 	/**
@@ -139,18 +139,19 @@ var CustomApplicationDataHandler = {
 	tables: [
 		{table: 'sys', prefix: 'SYS', enabled: true, data: {
 
-			region: {type: 'int', value: 'na'},
+			region: {type: 'string', value: 'na'},
 
 		}},
 		{table: 'gps', prefix: 'GPS', enabled: true, file: true, filter: 'gps'},
-		{table: 'idm', prefix: 'IDM', enabled: true, file: true},
-		{table: 'idmhistory', prefix: 'IDMH', enabled: true, file: true},
-		{table: 'vdm', prefix: 'VDM', enabled: true, file: true},
-		{table: 'vdmhistory', prefix: 'VDMH', enabled: true, file: true},
-		{table: 'vdtcurrent', prefix: 'VDT', enabled: true, file: true},
-		{table: 'vdthistory', prefix: 'VDTH', enabled: true, file: true},
-		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true},
-		{table: 'vdtsettings', prefix: 'VDTS', enabled: true, file: true},
+		{table: 'idm', prefix: 'IDM', enabled: false, file: true},
+		{table: 'idmhistory', prefix: 'IDMH', enabled: false, file: true},
+		{table: 'vdm', prefix: 'VDM', enabled: false, file: true},
+		{table: 'vdt', prefix: 'VDT', enabled: true, file: true},
+		{table: 'vdmhistory', prefix: 'VDMH', enabled: false, file: true},
+		{table: 'vdtcurrent', prefix: 'VDTC', enabled: false, file: true},
+		{table: 'vdthistory', prefix: 'VDTH', enabled: false, file: true},
+		{table: 'vdtpid', prefix: 'PID', enabled: false, file: true},
+		{table: 'vdtsettings', prefix: 'VDTS', enabled: false, file: true},
 	],
 
 	/**
@@ -234,6 +235,11 @@ var CustomApplicationDataHandler = {
 
 			} else {
 				value = $.trim(value);
+			}
+
+			// check pre processor
+			if(CustomApplicationDataProcessors[id]) {
+				value = CustomApplicationDataProcessors[id](value);
 			}
 			
 			// assign
