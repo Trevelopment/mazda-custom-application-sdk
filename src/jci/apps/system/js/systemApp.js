@@ -2330,7 +2330,7 @@ systemApp.prototype._prepareCustomApplications = function()
     this.CustomApplicationLoadCount = 0;
     setTimeout(function() {
         this._loadCustomApplications();
-    }.bind(this), 10000); // first attempt wait 10s - the system might be booting still anyway
+    }.bind(this), 15000); // first attempt wait 15s - the system might be booting still anyway
 
 }
 
@@ -2347,26 +2347,28 @@ systemApp.prototype._loadCustomApplications = function()
             
             }.bind(this));
 
-            // clear timeout
             setTimeout(function() {
 
                 if(typeof(CustomApplicationsHandler) == "undefined") {
 
                     this.CustomApplicationLoadCount = this.CustomApplicationLoadCount + 1;
 
-                    // 20 attempts or we forget it
+                    // 20 attempts or we forget it - that's almost 3min
                     if(this.CustomApplicationLoadCount < 20) {
                         
                         this._loadCustomApplications();
                     }
                 }
 
-            }.bind(this), 2500);
+            }.bind(this), 10000);
 
         }
 
     } catch(e) {
         // if this fails, we won't attempt again because there could be issues with the actual handler
+        setTimeout(function() {
+            this._loadCustomApplications();
+        }.bind(this), 10000);
     }
 };
 
