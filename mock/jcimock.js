@@ -242,6 +242,7 @@ var framework = {
 		var groups = [
 			{name: 'General', mapping: VehicleData.general},
 			{name: 'Vehicle Data', mapping: VehicleData.vehicle},
+			{name: 'Vehicle Temperatures', mapping: VehicleData.temperature},
 			{name: 'GPS', mapping: VehicleData.gps},
 			{name: 'All Vehicle Data', values: data}
 		];

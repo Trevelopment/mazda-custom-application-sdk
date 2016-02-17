@@ -135,7 +135,6 @@ var CustomApplication = (function(){
 			}.bind(this);
 
 			// loader
-
 			if(this.is.object(this.require) && !this.__loaded) {
 
 				// load javascripts

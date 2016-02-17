@@ -25,21 +25,11 @@
 #
 
 # 
-# This will dump all vehicle data, every second 
+# This updates the less frequent values with an update rate of 60s
 #
 
 # Initialization
 OUTPUT=/tmp/root/casdk
-
-
-# GPS Position
-dbus-send --print-reply --address=unix:path=/tmp/dbus_service_socket --type=method_call --dest=com.jci.lds.data /com/jci/lds/data com.jci.lds.data.GetPosition > ${OUTPUT}-gps
-
-# Vehicle VDT Data
-echo "" > ${OUTPUT}-vdt
-
-smdb-read -v -n vdm_vdt_current_data -e VehicleSpeed >> ${OUTPUT}-vdt
-smdb-read -v -n vdm_vdt_current_data -e EngineSpeed >> ${OUTPUT}-vdt
 
 
 # Vehicle VDM Data

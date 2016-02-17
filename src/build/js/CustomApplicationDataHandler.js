@@ -50,7 +50,7 @@ var VehicleDataRegion = {
 
 
 /**
- * (VehicleData) a collection of mapping 
+ * (VehicleData) a collection of useful mappings 
  */
 
 var VehicleData = {
@@ -65,7 +65,7 @@ var VehicleData = {
 		region: {id: 'SYSRegion', friendlyName: 'Region', input: 'list', values: VehicleDataRegion},
 	},
 
-	/*
+	/**
 	 * Vehicle
 	 */
 
@@ -73,8 +73,19 @@ var VehicleData = {
 
 		speed: {id: 'VDTVehicleSpeed', friendlyName: 'Vehicle Speed', input: 'range', min: 0, max: 240, factor: 0.01},
 		rpm: {id: 'VDTEngineSpeed', friendlyName: 'Engine RPM', input: 'range', min: 0, max: 8000, factor: 2.25},
-
+		fuelgauge: {id: 'VDTFuelGaugePosition', friendlyName: 'Fuel Gauge Position', input: 'range', min: 0, max: 255},
 	},
+
+	/**
+	 * Temperature
+	 */
+
+	temperature: {
+		outside: {id: 'VDTCOut-CarTemperature', friendlyName: 'Outside Temperature'},
+		intake: {id: 'PIDIntakeAirTemperature', friendlyName: 'Intake Air Temperature'},
+		coolant: {id: 'PIDEngineCoolantTemperature', friendlyName: 'Engine Coolant Temperature'},
+	},
+
 
 	/**
 	 * GPS
@@ -142,21 +153,71 @@ var CustomApplicationDataHandler = {
 	 */
 
 	tables: [
+
+		/** 
+		 * (internal) non-file tables
+		 *
+		 * These are internal tables that can be used by the subscription handlers
+		 */
+
 		{table: 'sys', prefix: 'SYS', enabled: true, data: {
 
 			region: {type: 'string', value: 'na'},
 
 		}},
-		{table: 'gps', prefix: 'GPS', enabled: true, file: true, filter: 'gps'},
-		{table: 'idm', prefix: 'IDM', enabled: false, file: true},
-		{table: 'idmhistory', prefix: 'IDMH', enabled: false, file: true},
-		{table: 'vdm', prefix: 'VDM', enabled: false, file: true},
-		{table: 'vdt', prefix: 'VDT', enabled: true, file: true},
+
+
+		/** 
+		 * (file) file based tables
+		 *
+		 * Most tables only need to be loaded once when the car is started. 
+		 */ 
+		 
+		/**
+		 * Frequent updated tables (1s refresh rate)
+		 */
+
+		// VDT - This table contains the most time sensitive values likes speed, rpm, etc
+		{table: 'vdt', prefix: 'VDT', enabled: true, file: true, update: 1},
+
+		// GPS 
+		{table: 'gps', prefix: 'GPS', enabled: true, file: true, filter: 'gps', update: 1},
+
+
+		/**
+		 * Less frequent updated tables (60s refresh rate)
+		 */
+		
+		// Vehicle Data Transfer data
+		{table: 'vdtcurrent', prefix: 'VDTC', enabled: true, file: true, update: 60},
+
+		// Vehcile 
+		{table: 'vdthistory', prefix: 'VDTH', enabled: true, file: true},
+
+		/**
+		 * More less frequent updated tables (5min refresh rate)
+		 */
+
+		// VDM - ECO and Energy Management data  - Disabled by default
+		{table: 'vdm', prefix: 'VDM', enabled: false, file: true, update: 300},
+
+		// VDM History - ECO and Energy Management data
 		{table: 'vdmhistory', prefix: 'VDMH', enabled: false, file: true},
-		{table: 'vdtcurrent', prefix: 'VDTC', enabled: false, file: true},
-		{table: 'vdthistory', prefix: 'VDTH', enabled: false, file: true},
-		{table: 'vdtpid', prefix: 'PID', enabled: false, file: true},
-		{table: 'vdtsettings', prefix: 'VDTS', enabled: false, file: true},
+
+
+		/**
+		 * One time loaded tables
+		 */
+
+		// Ignition Diagnostic Monitor 
+		{table: 'idm', prefix: 'IDM', enabled: true, file: true, update: false},
+
+		// Ignition Diagnostic Monitor History 
+		{table: 'idmhistory', prefix: 'IDMH', enabled: true, file: true, update: false},
+
+		
+		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true},
+		{table: 'vdtsettings', prefix: 'VDTS', enabled: true, file: true},
 	],
 
 	/**
