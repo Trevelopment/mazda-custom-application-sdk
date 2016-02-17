@@ -678,12 +678,15 @@ var CustomApplicationDataHandler = {
 		/**
 		 * Less frequent updated tables (60s refresh rate)
 		 */
+
+		// Vehicle Data Transfer data
+		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true},
 		
 		// Vehicle Data Transfer data
-		{table: 'vdtcurrent', prefix: 'VDTC', enabled: true, file: true, update: 60},
+		{table: 'vdtcurrent', prefix: 'VDTC', enabled: false, file: true, update: 60},
 
-		// Vehcile 
-		{table: 'vdthistory', prefix: 'VDTH', enabled: true, file: true},
+		// Vehicle Data Transfer data 
+		{table: 'vdthistory', prefix: 'VDTH', enabled: false, file: true},
 
 		/**
 		 * More less frequent updated tables (5min refresh rate)
@@ -701,14 +704,12 @@ var CustomApplicationDataHandler = {
 		 */
 
 		// Ignition Diagnostic Monitor 
-		{table: 'idm', prefix: 'IDM', enabled: true, file: true, update: false},
+		{table: 'idm', prefix: 'IDM', enabled: false, file: true, update: false},
 
 		// Ignition Diagnostic Monitor History 
-		{table: 'idmhistory', prefix: 'IDMH', enabled: true, file: true, update: false},
+		{table: 'idmhistory', prefix: 'IDMH', enabled: false, file: true, update: false},
 
-		
-		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true},
-		{table: 'vdtsettings', prefix: 'VDTS', enabled: true, file: true},
+		{table: 'vdtsettings', prefix: 'VDTS', enabled: false, file: true},
 	],
 
 	/**
