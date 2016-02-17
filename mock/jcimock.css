@@ -192,20 +192,153 @@ body {
 	#debug #multicontroller {
 		position:absolute;
 		bottom:0;
-		height:200px;
+		height:250px;
 		left:0;
 		right:0;
+		background:#222;
 	}
 
-		#debug #multicontroller #joystick {
-			padding:25px;
+		#debug #multicontroller #panel {
+			position: absolute;
+			left:290px;
+			top:15px;
+			font-size:14px;
 		}
+
+			#debug #multicontroller #panel span {
+				display:block;
+				background:#555;
+				width:100px;
+				padding:5px;
+				margin-bottom:3px;
+				border-radius:2px;
+				font-size:12px;
+				font-weight:bold;
+			} 
+
+				#debug #multicontroller #panel span.hit {
+					animation-name: flash;
+    				animation-duration: 400ms;
+    				animation-iteration-count: 1;
+    				animation-timing-function: ease-in-out;
+				}    
+
+				@keyframes flash {
+					0% {
+						background:#FF5C26;
+					}
+
+					100% {
+						background:#555;
+					}
+				}
+
+
+		#debug #multicontroller #joystick {
+			background:url(images/mc-bottom.png) no-repeat;		
+			width:270px;
+			height:250px;
+			position:absolute;
+			top:0px;
+			left:0px;
+		}
+
+			#debug #multicontroller #joystick div.wheel {
+				position:absolute;
+				top:82px;
+				left:64px;
+				width:145px;
+				height:145px;
+			}
+
+				#debug #multicontroller #joystick div.wheel.base {
+					background:url(images/mc-wheel.png);
+					transform:rotate(90deg);
+				}
+
+				#debug #multicontroller #joystick div.wheel.direction {
+					background:url(images/mc-direction.png);
+					display:none;
+				}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=top] {
+						transform:rotate(0deg);
+					}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=left] {
+						transform:rotate(-90deg);
+					}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=right] {
+						transform:rotate(90deg);
+					}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=bottom] {
+						transform:rotate(180deg);
+					}
+
+				#debug #multicontroller #joystick span.hitarea {
+					display:block;
+					position:absolute;
+					/*border:1px solid red;*/
+					z-index: 3;
+				}
+
+					#debug #multicontroller #joystick span.hitarea.home {
+						width:68px;
+						height:70px;
+						top:9px;
+						left:102px;
+					}
+						#debug #multicontroller #joystick span.hitarea.home.hit {
+							background:url(images/mc-hitarea-homebutton.png) no-repeat center center;
+						}
+
+					#debug #multicontroller #joystick span.hitarea.return {
+						width:85px;
+						height:127px;
+						top:108px;
+						left:8px;
+					}
+
+						#debug #multicontroller #joystick span.hitarea.return.hit {
+							background:url(images/mc-hitarea-returnbutton.png) no-repeat center center;
+						}
+
+					#debug #multicontroller #joystick span.hitarea.wheel {
+						z-index: 5;
+						border-color: green;
+					}
+
+						#debug #multicontroller #joystick span.hitarea.wheel.top,
+						#debug #multicontroller #joystick span.hitarea.wheel.bottom {
+							width:100px;
+							height:40px;
+							left:85px;
+							top:60px;
+						}
+
+							#debug #multicontroller #joystick span.hitarea.wheel.bottom {
+								top:200px;
+							}
+
+						#debug #multicontroller #joystick span.hitarea.wheel.left,
+						#debug #multicontroller #joystick span.hitarea.wheel.right {
+							width:40px;
+							height:100px;
+							top:100px;
+							left:45px;
+						} 
+
+							#debug #multicontroller #joystick span.hitarea.wheel.right {
+								left:185px;
+							}
 
 	#debug #dataview {
 		position:absolute;
 		left:0px;
 		top:0px;
-		bottom:200px;
+		bottom:250px;
 		right:0;
 		overflow-y:scroll;
 		font-family: "Lucina Console", sans-serif;

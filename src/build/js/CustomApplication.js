@@ -79,13 +79,7 @@ var CustomApplication = (function(){
 			// register application subscriptions
 			this.subscribe(VehicleData.general.region, function(value, payload) {
 
-				if(this.__region != value) {
-					this.__region = value;
-
-					if(this.is.fn(this.onRegionChange)) {
-						this.onRegionChange(value);
-					}
-				}
+				this.setRegion(value);
 
 			}.bind(this), this.CHANGED);
 
@@ -251,6 +245,9 @@ var CustomApplication = (function(){
 
 	    __handleControllerEvent: function(eventId) {
 
+	    	// log
+	    	CustomApplicationLog.info(this.id, "Received Multicontroller Event", {eventId:eventId});
+
 	    	// pass to application
 	    	if(this.is.fn(this.onControllerEvent)) {
 
@@ -349,10 +346,6 @@ var CustomApplication = (function(){
 		 * (internal) getters
 		 */
 
-		/**
-		 * (settings)
-		 */
-
 		getSetting: function(name, _default) {
 			return this.settings[name] ? this.settings[name] : (_default ? _default : false);
 		},
@@ -393,6 +386,21 @@ var CustomApplication = (function(){
 
 		getRegion: function() {
 			return this.__region || 'na';
+		},
+
+		/**
+		 * (internal) setters
+		 */
+
+		setRegion: function(region) {
+
+			if(this.__region != region) {
+				this.__region = region;
+
+				if(this.is.fn(this.onRegionChange)) {
+					this.onRegionChange(region);
+				}
+			}
 		},
 
 		/**

@@ -30,31 +30,30 @@
 		<div class="inner">
 			<div id="dataview"></div>
 			<div id="multicontroller">
-				<div id="joystick" style="width:30%">
-				  <svg width="100%" height="100%" viewBox="0 0 100 100">
-				    <defs>
-				      <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-				        <stop offset="0%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
-				        <stop offset="100%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
-				      </linearGradient>
-				      <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
-				        <stop offset="0%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
-				        <stop offset="100%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
-				      </linearGradient>
-				      <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
-				        <stop offset="0%" style="stop-color:rgb(168,168,168);stop-opacity:1" />
-				        <stop offset="100%" style="stop-color:rgb(239,239,239);stop-opacity:1" />
-				      </linearGradient>
-				    </defs>
-				    <circle cx="50" cy="50" r="50" fill="url(#grad1)" />
-				    <circle cx="50" cy="50" r="47" fill="url(#grad2)" stroke="black" stroke-width="1.5px" />
-				    <circle cx="50" cy="50" r="44" fill="url(#grad3)" />
-				    <circle cx="50" cy="50" r="20" fill="#cccccc" stroke="black" stroke-width="1px" />
-				    <path d="M50,14 54,22 46,22Z" fill="rgba(0,0,0,0.8)" onclick="alert('UP');" />
-				    <path d="M50,86 54,78 46,78Z" fill="rgba(0,0,0,0.8)" onclick="alert('DOWN');" />
-				    <path d="M14,50 22,54 22,46Z" fill="rgba(0,0,0,0.8)" onclick="alert('LEFT');" />
-				    <path d="M86,50 78,54 78,46Z" fill="rgba(0,0,0,0.8)" onclick="alert('RIGHT');" />
-				  </svg>
+				<div class="inner">
+					<div id="joystick">
+						<div class="inner">
+							<div class="wheel base"></div>
+							<div class="wheel direction"></div>
+							<span class="hitarea home" event="home"></span>
+							<span class="hitarea return" event="goBack"></span>
+							<span class="hitarea wheel top" direction="top" event="upStart"></span>
+							<span class="hitarea wheel left" direction="left" event="leftStart"></span>
+							<span class="hitarea wheel right" direction="right" event="rightStart"></span>
+							<span class="hitarea wheel bottom" direction="bottom" event="downStart"></span>
+							
+						</div>
+					</div>
+					<div id="panel">
+						<span event="cw">Wheel CW</span>
+						<span event="ccw">Wheel CCW</span>
+						<span event="selectStart">Select</span>
+						<span event="upStart">Up</span>
+						<span event="leftStart">Left</span>
+						<span event="rightStart">Right</span>
+						<span event="downStart">Down</span>
+						<span event="goBack">Back</span>
+					</div>
 				</div>
 			</div>
 		</div>

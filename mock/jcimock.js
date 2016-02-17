@@ -99,6 +99,9 @@ var framework = {
 			this.showMenu();
 		}.bind(this));
 
+		// initialize multi controller
+		this.initializeMultiController();
+
 		// pause data handler so we an simulate it
         CustomApplicationDataHandler.pause();
         CustomApplicationDataHandler.retrieve(function(data) {
@@ -130,6 +133,7 @@ var framework = {
 
 		if(this.current) {
 			this.current.cleanUp();
+			this.current = false;
 		}
 
 		this.view.fadeOut();
@@ -389,6 +393,158 @@ var framework = {
 			}
 
 			this.view.fadeIn();
+		}
+	},
+
+
+	/**
+	 * (MultiController)
+	 */
+
+	initializeMultiController: function() {
+
+		var that = this;
+
+		this.multicontroller = $("#multicontroller");
+
+		// initialize hit areas for direction
+		this.multicontroller.on("mousedown", "span.hitarea", function(event) {
+
+			// set hit
+			$(this).addClass("hit");
+
+			// set direction
+			var direction = $(this).attr("direction");
+			if(direction) that.setMultiControllerDirection(direction);
+
+		});
+
+		// initialize hit areas for direction
+		this.multicontroller.on("mouseup mouseleave", "span.hitarea", function(event) {
+
+			// remove hit
+			$(this).removeClass("hit");
+
+			// clear direction
+			var direction = $(this).attr("direction");
+			if(direction) that.setMultiControllerDirection(false);
+
+			// notify
+			if(event.type == "mouseup") {
+				that.notifyMultiController($(this).attr("event"));
+			}
+		});
+
+
+		// initialize wheel turn
+		var base = this.multicontroller.find("div.wheel.base"),
+			baseMoved = false,
+			baseEnabled = false,
+			wheelPosition = 0;
+			position = false;
+
+		base.on("mousedown", function(event) {
+			baseEnabled = true;
+			baseMoved = false;
+			position = {
+				x: event.clientX,
+				y: event.clientY
+			};
+		});
+
+		base.on("mousemove", function(e) {
+			if(baseEnabled) {
+
+				baseMoved = true;
+
+				var event = false,
+					dx = position.x - e.clientX,
+					dy = position.y - e.clientY,
+					treshold = 10;
+
+
+				if(Math.abs(dx) > treshold || Math.abs(dy) > treshold) {
+
+					switch(true) {
+
+						/** ccw **/
+
+						// left
+						case (Math.abs(dx) > Math.abs(dy) && dx > 0):
+						// down
+						case (Math.abs(dy) > Math.abs(dx) && dy < 0):
+
+							wheelPosition -= 45;
+							if(wheelPosition < 0) wheelPosition = 360 + wheelPosition;
+							event = "ccw";
+							break;
+
+						/** cw **/
+		
+						// right
+						case (Math.abs(dx) > Math.abs(dy) && dx < 0):
+						// up
+						case (Math.abs(dy) > Math.abs(dx) && dy > 0):
+
+							wheelPosition += 45;
+							if(wheelPosition > 360) wheelPosition -= 360;
+							event = "cw";
+							break;
+					}
+
+					// notify
+					if(event) {
+
+						// set wheel 
+						base.css("transform", "rotate(" + wheelPosition + "deg)");
+
+						// reset position
+						position = {
+							x: e.clientX,
+							y: e.clientY
+						};
+
+						// notify
+						that.notifyMultiController(event);
+					}
+				}
+			}
+		});
+
+		base.on("mouseup mouseleave", function(event) {
+
+			if(baseEnabled && !baseMoved) {
+				that.notifyMultiController("selectStart");
+			}
+			baseEnabled = false;
+		});
+
+	},
+
+	setMultiControllerDirection: function(direction) {
+		if(!direction) {
+			this.multicontroller.find("div.wheel.direction").hide();
+			this.multicontroller.find("div.wheel.base").show();
+		} else {
+			this.multicontroller.find("div.wheel.direction").attr("direction", direction).show();
+			this.multicontroller.find("div.wheel.base").hide();
+		}
+	},
+
+	notifyMultiController: function(event) {
+		if(event == "home") {
+			this.showMenu();
+		} else {
+
+			// show controller event in panel
+			var pb = this.multicontroller.find("#panel [event=" + event + "]").addClass("hit");
+			setTimeout(function() {
+				pb.removeClass("hit");
+			}, 450);
+
+			if(this.current) {
+				this.current.handleControllerEvent(event);
+			}
 		}
 	},
 

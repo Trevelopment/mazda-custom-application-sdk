@@ -132,10 +132,7 @@ CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
 
 CustomApplicationSurfaceTmplt.prototype.handleControllerEvent = function(eventID)
 {
-    log.debug("handleController() called, eventID: " + eventID);
-
     this.application.__handleControllerEvent(eventID);
-
 }
 
 

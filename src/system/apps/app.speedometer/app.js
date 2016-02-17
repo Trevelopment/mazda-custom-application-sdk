@@ -307,8 +307,19 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 	onControllerEvent: function(eventId) {
 
-		// Look above where we create this.label
-		// Here is where we assign the value!
+		switch(eventId) {
+
+
+			case "selectStart":
+
+				var region = this.getRegion() == "na" ? "eu" : "na";
+
+				this.setRegion(region);
+
+				break;
+
+		}
+
 	},
 
 	/**
