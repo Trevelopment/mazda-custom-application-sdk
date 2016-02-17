@@ -97,7 +97,7 @@ var VehicleData = {
 		altitude: {id: 'GPSAltitude', friendlyName: 'Altitude'},
 		heading: {id: 'GPSHeading', friendlyName: 'Heading', input: 'range', min: 0, max: 360, step:45},
 		velocity: {id: 'GPSVelocity', friendlyName: 'Velocity'},
-		timestamp: {id: 'GPSTimestamp', friendlyName: 'Timestmap'},
+		timestamp: {id: 'GPSTimestamp', friendlyName: 'Timestamp'},
 
 	},
 
