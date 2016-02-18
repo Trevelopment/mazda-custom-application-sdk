@@ -25,21 +25,14 @@
 #
 
 # 
-# This updates the one time loaded table
+# This updates the less frequent values with an update rate of 300s
 #
 
 # Initialization
 OUTPUT=/tmp/root/casdk
 
-# Vehicle VDT History Data - disabled currently
-smdb-read -v -n vdm_vdt_history_data > ${OUTPUT}-vdthistory
+# Vehicle VDM Data
+smdb-read -v -n vdm > ${OUTPUT}-vdm
 
-# Vehicle VDT Settings
-smdb-read -v -n vdm_vdt_settings_data > ${OUTPUT}-vdtsettings
-
-# Vehicle IDM Data
-smdb-read -v -n vdm_idm > ${OUTPUT}-idm
-
-# Vehicle IDM History
-smdb-read -v -n vdm_idm_history > ${OUTPUT}-idmhistory
-
+# Vehicle VDM History Data
+smdb-read -v -n vdm_history_data > ${OUTPUT}-vdmhistory
