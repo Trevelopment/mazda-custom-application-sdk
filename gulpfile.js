@@ -32,13 +32,55 @@ var
     gulp = require('gulp'),
     less = require('gulp-less'),
     concat = require('gulp-concat'),
-    runSequence = require('run-sequence');
+    runSequence = require('run-sequence'),
+    del = require('del');
 
 /**
  * ::configuration
  */
 
-var output = "build/";
+var output = "./build/",
+    input = "./src/";
+
+
+/**
+ * (build) local apps
+ *
+ * These tasks handle the copy and build of the local apps
+ */
+
+var appsPathInput = "./apps/",
+    appsPathOutput = output + 'apps/system/casdk/apps/';
+
+
+// (cleanup)
+gulp.task('apps-cleanup', function () {  
+    return del(
+        [appsPathOutput + '**/*']
+    );
+});
+
+// (copy)
+gulp.task('apps-copy', function () {  
+
+    return gulp.src(appsPathInput + "**/*", {base: appsPathInput})
+        .pipe(gulp.dest(appsPathOutput));
+});
+
+// (register)
+gulp.task('apps-register', function() {
+    return;
+});
+
+// (build)
+gulp.task('build-apps', function(callback) {
+    runSequence(    
+        'apps-cleanup',
+        'apps-copy',
+        'apps-register',
+        callback
+    );
+}); 
 
 
 /**
@@ -47,44 +89,69 @@ var output = "build/";
  * These task build the run time system for the micro framework
  */
 
-var runtimePath =  "src/runtime/";
+var runtimePathInput =  input + "runtime/",
+    runtimePathOutput = output + 'apps/system/casdk/runtime/';
 
-gulp.task('runtime-cleanup', function () {
+// (cleanup)
+gulp.task('runtime-cleanup', function () {  
+    return del(
+        [runtimePathOutput + '**/*']
+    );
+});
 
-  
+// (skeleton)
+gulp.task('runtime-skeleton', function() {
+
+    return gulp.src(runtimePathInput + "skeleton/**/*", {base: runtimePathInput + "skeleton"})
+        .pipe(gulp.dest(runtimePathOutput));
+});
+
+// (surface)
+gulp.task('runtime-surface', function() {
+
+    return gulp.src(runtimePathInput + "surface/**/*", {base: runtimePathInput + "surface"})
+        .pipe(gulp.dest(runtimePathOutput + "surface/"));
 });
 
 
 // (less)
 gulp.task('runtime-less', function () {
 
-    return gulp.src(runtimePath + "less/")
+    return gulp.src(runtimePathInput + "less/*", {base: runtimePathInput + "less"})
         .pipe(concat('runtime.css'))
         .pipe(less())
-        .pipe(gulp.dest(output));
+        .pipe(gulp.dest(runtimePathOutput));
 });
 
 
 // (Concatenate & Minify)
 gulp.task('runtime-js', function () {
 
-    return gulp.src(runtimePath + "js/")
+    return gulp.src(runtimePathInput + "js/*", {base: runtimePathInput + "js"})
         .pipe(concat('runtime.js'))
-        .pipe(gulp.dest(output));
+        .pipe(gulp.dest(runtimePathOutput));
 });
+
+// (build)
+gulp.task('build-runtime', function(callback) {
+    runSequence(    
+        'runtime-cleanup',
+        'runtime-skeleton',
+        'runtime-surface',
+        'runtime-less',
+        'runtime-js',
+        callback
+    );
+}); 
 
 
 /** 
- * ::Commands
+ * Common Commands
  */
 
 // Default Task
 gulp.task('default', function (callback) {
 
-    runSequence(
-        'dist-js',
-        'dist-less',
-        callback
-    );
+    
 
 });
