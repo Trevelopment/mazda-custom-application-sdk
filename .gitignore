@@ -1,2 +1,3 @@
 tmp/
-assets/
+npm_modules/
+build/
