@@ -70,10 +70,27 @@ var VehicleData = {
 	 */
 
 	vehicle: {
-
 		speed: {id: 'VDTVehicleSpeed', friendlyName: 'Vehicle Speed', input: 'range', min: 0, max: 240, factor: 0.01},
 		rpm: {id: 'VDTEngineSpeed', friendlyName: 'Engine RPM', input: 'range', min: 0, max: 8000, factor: 2.25},
-		fuelgauge: {id: 'VDTFuelGaugePosition', friendlyName: 'Fuel Gauge Position', input: 'range', min: 0, max: 255},
+		odometer: {id: 'VDTCOdocount', friendlyName: 'Odocount'},
+		batterylevel: {id: 'VDTCBattery_StateOfCharge', friendlyName: 'Battery Level'},
+	},
+
+	/**
+	 * Fuel
+	 */
+
+	fuel: {
+		position: {id: 'VDTFuelGaugePosition', friendlyName: 'Fuel Gauge Position'},
+		averageconsumption: {id: 'VDTDrv1AvlFuelE', friendlyName: 'Average Fuel Consumption'},
+	},
+
+	/**
+	 * Engine
+	 */
+
+	engine: {
+		brakefluidpressure: {id: 'PIDBrakeFluidLineHydraulicPressure', friendlyName: 'Brake Fluid Pressure'},
 	},
 
 	/**
@@ -82,7 +99,7 @@ var VehicleData = {
 
 	temperature: {
 		outside: {id: 'VDTCOut-CarTemperature', friendlyName: 'Outside Temperature'},
-		intake: {id: 'PIDIntakeAirTemperature', friendlyName: 'Intake Air Temperature'},
+		intake: {id: 'VDTDR_IntakeAirTemp', friendlyName: 'Intake Air Temperature'},
 		coolant: {id: 'PIDEngineCoolantTemperature', friendlyName: 'Engine Coolant Temperature'},
 	},
 
@@ -189,36 +206,39 @@ var CustomApplicationDataHandler = {
 		 */
 
 		// Vehicle Data Transfer data
-		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true},
+		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true, update: 60},
 		
 		// Vehicle Data Transfer data
-		{table: 'vdtcurrent', prefix: 'VDTC', enabled: false, file: true, update: 60},
+		{table: 'vdtcurrent', prefix: 'VDTC', enabled: true, file: true, update: 60},
 
-		// Vehicle Data Transfer data 
-		{table: 'vdthistory', prefix: 'VDTH', enabled: false, file: true},
 
 		/**
 		 * More less frequent updated tables (5min refresh rate)
 		 */
 
-		// VDM - ECO and Energy Management data  - Disabled by default
+		// VDM - ECO and Energy Management data (disabled)
 		{table: 'vdm', prefix: 'VDM', enabled: false, file: true, update: 300},
 
 		// VDM History - ECO and Energy Management data
-		{table: 'vdmhistory', prefix: 'VDMH', enabled: false, file: true},
+		{table: 'vdmhistory', prefix: 'VDMH', enabled: false, file: true, update: 300},
 
 
 		/**
 		 * One time loaded tables
 		 */
 
-		// Ignition Diagnostic Monitor 
+		// Vehicle Setting
+		{table: 'vdtsettings', prefix: 'VDTS', enabled: true, file: true, update: false},
+
+		// Ignition Diagnostic Monitor (disabled)
 		{table: 'idm', prefix: 'IDM', enabled: false, file: true, update: false},
 
-		// Ignition Diagnostic Monitor History 
+		// Ignition Diagnostic Monitor History (disabled)
 		{table: 'idmhistory', prefix: 'IDMH', enabled: false, file: true, update: false},
 
-		{table: 'vdtsettings', prefix: 'VDTS', enabled: false, file: true},
+		// Vehicle Data Transfer data (disabled)
+		{table: 'vdthistory', prefix: 'VDTH', enabled: false, file: true, update: false},
+		
 	],
 
 	/**
@@ -569,6 +589,16 @@ var DataTransform = {
 	toMPH: function(value) {
 
 		return Math.round(value * 0.621371);
+
+	},
+
+	/**
+	 * (toMPG) returns the MPG of the L/100km value
+	 */
+
+	toMPG: function(value) {
+
+		return Math.round(value * 2.3521458);
 
 	},
 

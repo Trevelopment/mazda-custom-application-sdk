@@ -41,3 +41,5 @@ echo "" > ${OUTPUT}-vdt
 smdb-read -v -n vdm_vdt_current_data -e VehicleSpeed >> ${OUTPUT}-vdt
 smdb-read -v -n vdm_vdt_current_data -e EngineSpeed >> ${OUTPUT}-vdt
 smdb-read -v -n vdm_vdt_current_data -e FuelGaugePosition >> ${OUTPUT}-vdt
+smdb-read -v -n vdm -e Drv1AvlFuelE >> ${OUTPUT}-vdt
+
