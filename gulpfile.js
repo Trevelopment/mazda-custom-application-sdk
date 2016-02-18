@@ -38,52 +38,38 @@ var
  * ::configuration
  */
 
-var jsPath = [
-    'js/*'
-];
-
-var lessPath = [
-    'less/*'
-];
-
-var output = "../system/runtime/";
+var output = "build/";
 
 
 /**
- * ::cleanup
+ * (build) runtime system
+ *
+ * These task build the run time system for the micro framework
  */
 
+var runtimePath =  "src/runtime/";
 
-// (less)
-gulp.task('cleanup', function () {
+gulp.task('runtime-cleanup', function () {
 
-    return gulp.src(lessPath)
-        .pipe(concat('bootstrap.css'))
-        .pipe(less())
-        .pipe(gulp.dest(output));
+  
 });
 
 
-/**
- * ::bootstrap.js
- */
-
-
 // (less)
-gulp.task('system-less', function () {
+gulp.task('runtime-less', function () {
 
-    return gulp.src(lessPath)
-        .pipe(concat('bootstrap.css'))
+    return gulp.src(runtimePath + "less/")
+        .pipe(concat('runtime.css'))
         .pipe(less())
         .pipe(gulp.dest(output));
 });
 
 
 // (Concatenate & Minify)
-gulp.task('system-js', function () {
+gulp.task('runtime-js', function () {
 
-    return gulp.src(jsPath)
-        .pipe(concat('bootstrap.js'))
+    return gulp.src(runtimePath + "js/")
+        .pipe(concat('runtime.js'))
         .pipe(gulp.dest(output));
 });
 
