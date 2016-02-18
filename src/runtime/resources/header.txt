@@ -1,7 +1,7 @@
 /**
- * Custom Applications SDK for Mazda Connect Infotainment System
+ * Custom Application SDK for Mazda Connect Infotainment System
  * 
- * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
+ * A micro framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
  * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)

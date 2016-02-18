@@ -1,10 +1,10 @@
 /**
- * Enhanced Applications for Mazda Connect Infotainment
+ * Custom Application SDK for Mazda Connect Infotainment System
  * 
- * A helper to bring custom applications into the Mazda Connect Infotainment System without
- * writing custom on screen functionality.
+ * A micro framework that allows to write custom applications for the Mazda Connect Infotainment System
+ * that includes an easy to use abstraction layer to the JCI system.
  *
- * Written by Andreas Schwarz (http://github.com/flyandi/mazda-enhanced-applications)
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
  * Copyright (c) 2016. All rights reserved.
  * 
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
@@ -25,7 +25,7 @@
  */
 
 /**
- * This is the build file for the mini framework
+ * This is the build file for the micro framework
  */
 
 var
@@ -50,12 +50,27 @@ var output = "../system/runtime/";
 
 
 /**
- * ::tasks
+ * ::cleanup
  */
 
 
 // (less)
-gulp.task('dist-less', function () {
+gulp.task('cleanup', function () {
+
+    return gulp.src(lessPath)
+        .pipe(concat('bootstrap.css'))
+        .pipe(less())
+        .pipe(gulp.dest(output));
+});
+
+
+/**
+ * ::bootstrap.js
+ */
+
+
+// (less)
+gulp.task('system-less', function () {
 
     return gulp.src(lessPath)
         .pipe(concat('bootstrap.css'))
@@ -65,7 +80,7 @@ gulp.task('dist-less', function () {
 
 
 // (Concatenate & Minify)
-gulp.task('dist-js', function () {
+gulp.task('system-js', function () {
 
     return gulp.src(jsPath)
         .pipe(concat('bootstrap.js'))
@@ -76,7 +91,6 @@ gulp.task('dist-js', function () {
 /** 
  * ::Commands
  */
-
 
 // Default Task
 gulp.task('default', function (callback) {
