@@ -4,20 +4,26 @@
   "version": "1.0.0",
   "homepage": "http://flyandi.github.io/mazda-custom-application-sdk/",
   "author": "flyandi <flyandi@yahoo.com>",
-  "bin": {
-  	"casdk": "./bin/casdk.js"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flyandi/mazda-custom-application-sdk"
   },
-  "dependencies": {
+  "bin": {
+    "casdk": "./bin/casdk.js"
+  },
+  "devDependencies": {
+    "appjs": "~0.0.20",
     "del": "~2.2.0",
+    "electron-builder": "^2.7.2",
+    "electron-packager": "^5.2.1",
+    "grunt-build-atom-shell": "^2.1.1",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-less": "^3.0.5",
-    "run-sequence": "^1.1.5",
+    "gulp-open": "^1.0.0",
     "gulp-webserver": "^0.9.1",
-    "gulp-open": "^1.0.0"
-  },
-  "engines": {
-    "node": ">= 0.9"
+    "rimraf": "^2.4.3",
+    "run-sequence": "^1.1.5",
   },
   "scripts": {
     "build-runtime": "gulp build-runtime"
