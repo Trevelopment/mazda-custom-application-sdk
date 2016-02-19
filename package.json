@@ -14,6 +14,7 @@
   "devDependencies": {
     "appjs": "~0.0.20",
     "del": "~2.2.0",
+    "electron": "^0.4.1",
     "electron-builder": "^2.7.2",
     "electron-packager": "^5.2.1",
     "grunt-build-atom-shell": "^2.1.1",
@@ -23,12 +24,20 @@
     "gulp-open": "^1.0.0",
     "gulp-webserver": "^0.9.1",
     "rimraf": "^2.4.3",
-    "run-sequence": "^1.1.5",
+    "run-sequence": "^1.1.5"
   },
   "scripts": {
     "build-runtime": "gulp build-runtime",
-    "ide-pack:osx": "electron-packager . MyApp --platform=darwin --arch=x64 --version=0.36.7 --icon=assets/MyApp.icns --out=dist --ignore=dist",
-    "ide-build:osx": "npm run pack:osx && electron-builder dist/osx/MyApp.app --platform=osx --out=\"dist/osx\" --config=config.json"
+    "dev": "electron ./src/ide",
+    "clean": "rm -rf ./dist/ide",
+    "clean:osx": "rm -rf ./dist/ide/osx",
+    "clean:win": "rm -rf ./dist/ide/win",
+    "pack": "npm run clean && npm run pack:osx && npm run pack:win",
+    "pack:osx": "npm run clean:osx && electron-packager ./src/ide \"Mazda Custom Application IDE\" --out=dist/ide/osx --platform=darwin --arch=x64 --version=0.36.7 --icon=src/assets/osx/icon.icns",
+    "pack:win": "npm run clean:win && electron-packager ./src/ide \"Mazda Custom Application IDE\" --out=dist/ide/win --platform=win32 --arch=ia32 --version=0.36.7 --icon=src/assets/win/icon.ico",
+    "build": "npm run build:osx && npm run build:win",
+    "build:osx": "npm run pack:osx && electron-builder \"dist/ide/osx/Mazda Custom Application IDE.app\" --platform=osx --out=\"dist/ide/osx\" --config=builder.json",
+    "build:win": "npm run pack:win && electron-builder \"dist/ide/win/Mazda Custom Application IDE-win32\" --platform=win --out=\"dist/ide/win\" --config=builder.json"
   },
   "license": "GPL"
 }

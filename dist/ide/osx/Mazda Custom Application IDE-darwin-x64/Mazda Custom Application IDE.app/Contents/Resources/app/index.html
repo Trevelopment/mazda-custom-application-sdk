@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="casdk.js"></script>
+	<script src="lib/jquery.js"></script>
+	<script src="apps/system/casdk/runtime/runtime.js"></script>
+	<script src="apps/system/casdk/runtime/surface/CustomApplicationSurfaceTmplt/js/CustomApplicationSurfaceTmplt.js"></script>
+	<link rel="stylesheet" href="casdk.css" />
+	<link rel="stylesheet" href="apps/system/casdk/runtime/surface/CustomApplicationSurfaceTmplt/css/CustomApplicationSurfaceTmplt.css" />
+	<title>Custom Applications SDK - Mazda Infotainment</title>
+</head>
+<body>
+	<div id="mock">
+		<div id="header">
+			<div class="inner">
+				<div id="home"></div>
+				<div id="divider"></div>
+				<div id="domain"></div>
+				<div id="title"></div>
+				<div id="clock"></div>
+			</div>
+		</div>
+		<div id="menu"></div>
+		<div id="leftbutton"></div>
+		<div id="view">
+			<div id="surface"></div>
+		</div>
+	</div>
+	<div id="debug">
+		<div class="inner">
+			<div id="dataview"></div>
+			<div id="multicontroller">
+				<div class="inner">
+					<div id="joystick">
+						<div class="inner">
+							<div class="wheel base"></div>
+							<div class="wheel direction"></div>
+							<span class="hitarea home" event="home"></span>
+							<span class="hitarea return" event="goBack"></span>
+							<span class="hitarea wheel top" direction="top" event="upStart"></span>
+							<span class="hitarea wheel left" direction="left" event="leftStart"></span>
+							<span class="hitarea wheel right" direction="right" event="rightStart"></span>
+							<span class="hitarea wheel bottom" direction="bottom" event="downStart"></span>
+						</div>
+					</div>
+					<div id="panel">
+						<span event="cw">Wheel CW</span>
+						<span event="ccw">Wheel CCW</span>
+						<span event="selectStart">Select</span>
+						<span event="upStart">Up</span>
+						<span event="leftStart">Left</span>
+						<span event="rightStart">Right</span>
+						<span event="downStart">Down</span>
+						<span event="goBack">Back</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="console">
+		<div id="output">
+			
+		</div>
+	</div>
+	<script>
+		framework.init();
+	</script>
+</body>
+</html>

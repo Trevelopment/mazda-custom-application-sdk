@@ -1,0 +1,10 @@
+method return sender=:1.115 -> dest=:1.130 reply_serial=2
+   int32 1
+   uint64 1455176881
+   double 33.5957
+   double -117.747
+   int32 112
+   double 0
+   double 0
+   double 1
+   double 1.4

@@ -1,0 +1,534 @@
+/**
+ * JCI Mock Environment
+ * Simplifies local development
+ *
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-enhanced-compass)
+ * Copyright (c) 2015. All rights reserved.
+ * 
+ * WARNING: The installation of this application requires modifications to your Mazda Connect system.
+ * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
+ * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ * License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. 
+ * If not, see http://www.gnu.org/licenses/
+ */
+ 
+body {
+	margin:0;
+	padding:0;
+	font-family: "Tipperary", Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 28px;
+	color: white;
+	overflow: hidden;
+	text-align: left;
+	background-position: center;
+	background-repeat: no-repeat;
+	background:#111;
+}
+
+.inner {
+	width:100%;
+	height:100%;
+	position:relative;
+}
+
+#mock {
+	width:800px;
+	height:480px;
+	position:relative;
+	overflow:hidden;
+	background:url(images/background.png) no-repeat center center #000;
+	border:1px solid #222;
+}
+
+	#mock #header {
+		position:absolute;
+		top:0;
+		left:0;
+		right:0;
+		height:64px;
+		color:#fff;
+		display:block;
+		background:url(images/statusbar.png) no-repeat left top;
+		font-size: 40px;
+		z-index: 10;
+	}
+
+		#mock #header #title {
+			display:block;
+			position:absolute;
+			top:10px;
+			left:100px;
+		}
+
+		#mock #header #home {
+			width:37px;
+			height:37px;
+			cursor:pointer;
+			background:url(images/home.png) no-repeat center center;
+			position:absolute;
+			top:11px;
+			left:11px;
+		}
+
+		#mock #header #divider {
+			background:url(images/divider.png) no-repeat center center;
+			width:1px;
+			height:58px;
+			position:absolute;
+			top:0px;
+			left:52px;
+
+		}
+
+		#mock #header #domain {
+			width:37px;
+			height:37px;
+			cursor:pointer;
+			position:absolute;
+			background: no-repeat center center;
+			top:11px;
+			left:58px;
+			display:none;
+		}
+
+		#mock #header #clock {
+			position:absolute;
+			right:11px;
+			top:10px;
+		}
+
+	#mock #menu {
+		padding:1em 0.5em;
+		position:absolute;
+		top:60px;
+		width:800px;
+		height:420px;
+		font-size:35px;
+	}
+		#mock #menu a {
+			cursor: pointer;
+			display:block;
+			padding:10px;
+		}
+
+			#mock #menu a:before {
+				background:url(images/menudivider.png) no-repeat;
+				width:730px;
+				height:1px;
+				display:block;
+			}
+
+			#mock #menu a:hover {
+				color: #aaa;
+			}
+
+	#mock #leftbutton {
+		position:absolute;
+		left:0px;
+		top:64px;
+		width:94px;
+		height:416px;
+		background:url(images/leftbutton.png) no-repeat left top;
+		display:none;
+		z-index:8;
+	}
+
+	#mock #view {
+		position:absolute;
+		top:0px;
+		left:0px;
+		width:800px;
+		height:480px;
+		right:0;
+		bottom:0;
+		color:#fff;
+		display:none;
+	}
+
+		#mock #view.showBoundaries {
+			border:1px solid red;
+		}
+
+		#mock #view.statusbar {
+			top:64px;
+			left:0px;
+			height:416px;
+		}
+
+		#mock #view.leftbutton {
+			top:64px;
+			left:60px;
+			height:416px;
+			width:740px;
+		}
+
+		#mock #view #surface {
+			width:100%;
+			height:100%;
+			position:relative;
+		}
+
+#debug {
+	position:absolute;
+	bottom:0;
+	left:802px;
+	right:0px;
+	top:0px;
+	background:#151515;
+	border-left:3px solid #222;
+}
+	
+	#debug #multicontroller {
+		position:absolute;
+		bottom:0;
+		height:250px;
+		left:0;
+		right:0;
+		background:#222;
+	}
+
+		#debug #multicontroller #panel {
+			position: absolute;
+			left:290px;
+			top:15px;
+			font-size:14px;
+		}
+
+			#debug #multicontroller #panel span {
+				display:block;
+				background:#555;
+				width:100px;
+				padding:5px;
+				margin-bottom:3px;
+				border-radius:2px;
+				font-size:12px;
+				font-weight:bold;
+			} 
+
+				#debug #multicontroller #panel span.hit {
+					animation-name: flash;
+    				animation-duration: 400ms;
+    				animation-iteration-count: 1;
+    				animation-timing-function: ease-in-out;
+				}    
+
+				@keyframes flash {
+					0% {
+						background:#FF5C26;
+					}
+
+					100% {
+						background:#555;
+					}
+				}
+
+
+		#debug #multicontroller #joystick {
+			background:url(images/mc-bottom.png) no-repeat;		
+			width:270px;
+			height:250px;
+			position:absolute;
+			top:0px;
+			left:0px;
+		}
+
+			#debug #multicontroller #joystick div.wheel {
+				position:absolute;
+				top:82px;
+				left:64px;
+				width:145px;
+				height:145px;
+			}
+
+				#debug #multicontroller #joystick div.wheel.base {
+					background:url(images/mc-wheel.png);
+					transform:rotate(90deg);
+				}
+
+				#debug #multicontroller #joystick div.wheel.direction {
+					background:url(images/mc-direction.png);
+					display:none;
+				}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=top] {
+						transform:rotate(0deg);
+					}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=left] {
+						transform:rotate(-90deg);
+					}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=right] {
+						transform:rotate(90deg);
+					}
+
+					#debug #multicontroller #joystick div.wheel.direction[direction=bottom] {
+						transform:rotate(180deg);
+					}
+
+				#debug #multicontroller #joystick span.hitarea {
+					display:block;
+					position:absolute;
+					/*border:1px solid red;*/
+					z-index: 3;
+				}
+
+					#debug #multicontroller #joystick span.hitarea.home {
+						width:68px;
+						height:70px;
+						top:9px;
+						left:102px;
+					}
+						#debug #multicontroller #joystick span.hitarea.home.hit {
+							background:url(images/mc-hitarea-homebutton.png) no-repeat center center;
+						}
+
+					#debug #multicontroller #joystick span.hitarea.return {
+						width:85px;
+						height:127px;
+						top:108px;
+						left:8px;
+					}
+
+						#debug #multicontroller #joystick span.hitarea.return.hit {
+							background:url(images/mc-hitarea-returnbutton.png) no-repeat center center;
+						}
+
+					#debug #multicontroller #joystick span.hitarea.wheel {
+						z-index: 5;
+						border-color: green;
+					}
+
+						#debug #multicontroller #joystick span.hitarea.wheel.top,
+						#debug #multicontroller #joystick span.hitarea.wheel.bottom {
+							width:100px;
+							height:40px;
+							left:85px;
+							top:60px;
+						}
+
+							#debug #multicontroller #joystick span.hitarea.wheel.bottom {
+								top:200px;
+							}
+
+						#debug #multicontroller #joystick span.hitarea.wheel.left,
+						#debug #multicontroller #joystick span.hitarea.wheel.right {
+							width:40px;
+							height:100px;
+							top:100px;
+							left:45px;
+						} 
+
+							#debug #multicontroller #joystick span.hitarea.wheel.right {
+								left:185px;
+							}
+
+	#debug #dataview {
+		position:absolute;
+		left:0px;
+		top:0px;
+		bottom:250px;
+		right:0;
+		overflow-y:scroll;
+		font-family: "Lucina Console", sans-serif;
+		font-weight:bold;
+		font-size:12px;
+		border-bottom:3px solid #222;
+	}
+
+		#console #dataview div.group {
+			margin-right:10px;
+
+		}
+			#debug #dataview div.group span.title {
+				padding:2px;
+				display:block;
+				font-size:14px;
+				text-transform: uppercase;
+				background:#555;
+				padding:5px;
+				border-bottom:1px solid #000;
+			}
+
+		#debug #dataview div.item {
+			background:#333;
+			border-bottom:1px solid #000;
+			padding:4px 2px;
+			height:24px;
+		}
+
+			#debug #dataview div.item span {
+				display:inline-block;
+			}
+
+				#debug #dataview div.item span:nth-child(1) {
+					padding:3px;
+					color:#fff;
+					border-radius:2px;
+					font-size:10px;
+					text-transform: uppercase;
+					font-weight:normal;
+					margin-right:5px;
+					text-align:center;
+					width:30px;
+					background:#777;
+				}
+
+				#debug #dataview div.item span:nth-child(2) {
+					padding:3px;
+					color:#fff;
+					border-radius:2px;
+					font-size:10px;
+					text-transform: uppercase;
+					font-weight:normal;
+					margin-right:5px;
+					text-align:center;
+					width:20px;
+				}
+
+					#debug #dataview div.item span:nth-child(2).string {
+						background:#0059B2;
+
+					}
+
+					#debug #dataview div.item span:nth-child(2).int {
+						background:#468C00;
+					}
+
+					#debug #dataview div.item span:nth-child(2).double {
+						background:#FF9326;
+					}
+
+				#debug #dataview div.item span:nth-child(3) {
+					background:#333;
+					width:220px;
+					padding:2px;
+					font-size:12px;
+				}
+
+	
+				#debug #dataview div.item span:nth-child(4) {
+					
+				}
+					#debug #dataview div.item span:nth-child(4) select, 
+					#debug #dataview div.item span:nth-child(4) input {
+						border:0;
+						padding:3px;
+						background:#444;
+						color:#fff;
+						font-size:14px;
+						width:150px;
+					}
+
+					#debug #dataview div.item span:nth-child(4) input[type=range] {
+						width:89px;
+						float:left;
+					}
+
+					#debug #dataview div.item span:nth-child(4) span.inputlabel {
+						display:inline-block;
+						width:50px;
+						background:#666;
+						text-align:center;
+						font-size:12px;
+						position:relative;
+						top:3px;
+					}
+
+
+#console {
+	position:absolute;
+	border-top:3px solid #222;
+	top:481px;
+	bottom:0;
+	left:0;
+	width:802px;
+	background:#151515;
+	color:#555;
+}
+
+	#console #output {
+		width:100%;
+		height:100%;
+		overflow:scroll;
+		font-family: "Lucina Console", sans-serif;
+		font-weight:bold;
+		font-size:12px;
+		white-space: nowrap;
+	}
+
+		#console #output div {
+			padding:2px;
+
+		}
+
+			#console #output div span {
+				margin-right:10px;
+				display:inline-block;
+			}
+
+			#console #output div span:nth-child(1) {
+				width:75px;
+			}
+
+			#console #output div span:nth-child(2) {
+				background:#333;
+				width:60px;
+				text-align:center;
+				padding:2px;
+				font-size:10px;
+			}
+
+				#console #output div span:nth-child(2).DEBUG {
+					background:#0059B2;
+					color:#fff;
+				}
+
+				#console #output div span:nth-child(2).INFO {
+					background:#468C00;
+					color:#fff;
+				}
+
+				#console #output div span:nth-child(2).ERROR {
+					background:#D93600;
+					color:#fff;
+				}
+
+			#console #output div span:nth-child(3) {
+				background:#666;
+				color:#fff;
+				padding:2px;
+				font-size:10px;
+			}
+
+			#console #output div span:nth-child(4) {
+				color:#bbb;
+			}
+
+
+.TemplateFull {
+	position:absolute;
+	top:0;
+	left:0;
+	width:800px;
+	height:480px;
+	z-index:100;
+}
+
+.TemplateWithStatus {
+	position:absolute;
+    top:64px;
+    width: 800px;
+    height: 416px;
+}
