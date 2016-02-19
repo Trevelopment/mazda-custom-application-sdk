@@ -1,30 +1,37 @@
 /**
- * JCI Mock Environment
- * Simplifies local development
+ * Custom Applications SDK for Mazda Connect Infotainment System
  *
- * Written by Andreas Schwarz (http://github.com/flyandi/mazda-enhanced-compass)
- * Copyright (c) 2015. All rights reserved.
- * 
+ * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
+ * that includes an easy to use abstraction layer to the JCI system.
+ *
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
+ * Copyright (c) 2016. All rights reserved.
+ *
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
  * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
  * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. 
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/
+ *
  */
- 
+
+/**
+ * Mazda Infotainment Simulator
+ */
+
 body {
 	margin:0;
 	padding:0;
-	font-family: "Tipperary", Arial, Helvetica, sans-serif;
+	font-family: Tipperary, sans-serif;
 	font-weight: normal;
 	font-style: normal;
 	font-size: 28px;
@@ -47,7 +54,7 @@ body {
 	height:480px;
 	position:relative;
 	overflow:hidden;
-	background:url(images/background.png) no-repeat center center #000;
+	background:url(../images/background.png) no-repeat center center #000;
 	border:1px solid #222;
 }
 
@@ -59,7 +66,7 @@ body {
 		height:64px;
 		color:#fff;
 		display:block;
-		background:url(images/statusbar.png) no-repeat left top;
+		background:url(../images/statusbar.png) no-repeat left top;
 		font-size: 40px;
 		z-index: 10;
 	}
@@ -75,14 +82,14 @@ body {
 			width:37px;
 			height:37px;
 			cursor:pointer;
-			background:url(images/home.png) no-repeat center center;
+			background:url(../images/home.png) no-repeat center center;
 			position:absolute;
 			top:11px;
 			left:11px;
 		}
 
 		#mock #header #divider {
-			background:url(images/divider.png) no-repeat center center;
+			background:url(../images/divider.png) no-repeat center center;
 			width:1px;
 			height:58px;
 			position:absolute;
@@ -123,7 +130,7 @@ body {
 		}
 
 			#mock #menu a:before {
-				background:url(images/menudivider.png) no-repeat;
+				background:url(../images/menudivider.png) no-repeat;
 				width:730px;
 				height:1px;
 				display:block;
@@ -139,7 +146,7 @@ body {
 		top:64px;
 		width:94px;
 		height:416px;
-		background:url(images/leftbutton.png) no-repeat left top;
+		background:url(../images/leftbutton.png) no-repeat left top;
 		display:none;
 		z-index:8;
 	}
@@ -234,105 +241,7 @@ body {
 				}
 
 
-		#debug #multicontroller #joystick {
-			background:url(images/mc-bottom.png) no-repeat;		
-			width:270px;
-			height:250px;
-			position:absolute;
-			top:0px;
-			left:0px;
-		}
-
-			#debug #multicontroller #joystick div.wheel {
-				position:absolute;
-				top:82px;
-				left:64px;
-				width:145px;
-				height:145px;
-			}
-
-				#debug #multicontroller #joystick div.wheel.base {
-					background:url(images/mc-wheel.png);
-					transform:rotate(90deg);
-				}
-
-				#debug #multicontroller #joystick div.wheel.direction {
-					background:url(images/mc-direction.png);
-					display:none;
-				}
-
-					#debug #multicontroller #joystick div.wheel.direction[direction=top] {
-						transform:rotate(0deg);
-					}
-
-					#debug #multicontroller #joystick div.wheel.direction[direction=left] {
-						transform:rotate(-90deg);
-					}
-
-					#debug #multicontroller #joystick div.wheel.direction[direction=right] {
-						transform:rotate(90deg);
-					}
-
-					#debug #multicontroller #joystick div.wheel.direction[direction=bottom] {
-						transform:rotate(180deg);
-					}
-
-				#debug #multicontroller #joystick span.hitarea {
-					display:block;
-					position:absolute;
-					/*border:1px solid red;*/
-					z-index: 3;
-				}
-
-					#debug #multicontroller #joystick span.hitarea.home {
-						width:68px;
-						height:70px;
-						top:9px;
-						left:102px;
-					}
-						#debug #multicontroller #joystick span.hitarea.home.hit {
-							background:url(images/mc-hitarea-homebutton.png) no-repeat center center;
-						}
-
-					#debug #multicontroller #joystick span.hitarea.return {
-						width:85px;
-						height:127px;
-						top:108px;
-						left:8px;
-					}
-
-						#debug #multicontroller #joystick span.hitarea.return.hit {
-							background:url(images/mc-hitarea-returnbutton.png) no-repeat center center;
-						}
-
-					#debug #multicontroller #joystick span.hitarea.wheel {
-						z-index: 5;
-						border-color: green;
-					}
-
-						#debug #multicontroller #joystick span.hitarea.wheel.top,
-						#debug #multicontroller #joystick span.hitarea.wheel.bottom {
-							width:100px;
-							height:40px;
-							left:85px;
-							top:60px;
-						}
-
-							#debug #multicontroller #joystick span.hitarea.wheel.bottom {
-								top:200px;
-							}
-
-						#debug #multicontroller #joystick span.hitarea.wheel.left,
-						#debug #multicontroller #joystick span.hitarea.wheel.right {
-							width:40px;
-							height:100px;
-							top:100px;
-							left:45px;
-						} 
-
-							#debug #multicontroller #joystick span.hitarea.wheel.right {
-								left:185px;
-							}
+		
 
 	#debug #dataview {
 		position:absolute;
@@ -470,7 +379,6 @@ body {
 
 		#console #output div {
 			padding:2px;
-
 		}
 
 			#console #output div span {
@@ -488,6 +396,7 @@ body {
 				text-align:center;
 				padding:2px;
 				font-size:10px;
+				border-radius:2px;
 			}
 
 				#console #output div span:nth-child(2).DEBUG {
@@ -506,10 +415,11 @@ body {
 				}
 
 			#console #output div span:nth-child(3) {
-				background:#666;
+				background:#515151;
 				color:#fff;
 				padding:2px;
 				font-size:10px;
+				border-radius:2px;
 			}
 
 			#console #output div span:nth-child(4) {

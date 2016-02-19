@@ -1,0 +1,39 @@
+@font-face {
+  font-family: 'Tipperary';
+  src: url('Tipperary.ttf')  format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tipperary';
+  src: url('TipperaryBold.ttf')  format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tipperary';
+  src: url('TipperaryBoldItalic.ttf')  format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Tipperary';
+  src: url('TipperaryItalic.ttf')  format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Tipperary';
+  src: url('TipperarySemibold.ttf')  format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Tipperary';
+  src: url('TipperarySemiboldItalic.ttf')  format('truetype');
+  font-weight: 500;
+  font-style: italic;
+}

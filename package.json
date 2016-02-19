@@ -12,32 +12,31 @@
     "casdk": "./bin/casdk.js"
   },
   "devDependencies": {
-    "appjs": "~0.0.20",
     "del": "~2.2.0",
     "electron": "^0.4.1",
     "electron-builder": "^2.7.2",
     "electron-packager": "^5.2.1",
+    "electron-prebuilt": "^0.36.7",
     "grunt-build-atom-shell": "^2.1.1",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-less": "^3.0.5",
     "gulp-open": "^1.0.0",
     "gulp-webserver": "^0.9.1",
-    "rimraf": "^2.4.3",
     "run-sequence": "^1.1.5"
   },
   "scripts": {
     "build-runtime": "gulp build-runtime",
-    "dev": "electron ./src/ide",
-    "clean": "rm -rf ./dist/ide",
-    "clean:osx": "rm -rf ./dist/ide/osx",
-    "clean:win": "rm -rf ./dist/ide/win",
+    "simulator": "electron ./src/simulator",
+    "clean": "rm -rf ./dist/simulator",
+    "clean:osx": "rm -rf ./dist/simulator/osx",
+    "clean:win": "rm -rf ./dist/simulator/win",
     "pack": "npm run clean && npm run pack:osx && npm run pack:win",
-    "pack:osx": "npm run clean:osx && electron-packager ./src/ide \"Mazda Custom Application IDE\" --out=dist/ide/osx --platform=darwin --arch=x64 --version=0.36.7 --icon=src/assets/osx/icon.icns",
-    "pack:win": "npm run clean:win && electron-packager ./src/ide \"Mazda Custom Application IDE\" --out=dist/ide/win --platform=win32 --arch=ia32 --version=0.36.7 --icon=src/assets/win/icon.ico",
+    "pack:osx": "npm run clean:osx && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --out=dist/simulator/osx --platform=darwin --arch=x64 --version=0.36.7 --icon=src/assets/osx/icon.icns",
+    "pack:win": "npm run clean:win && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --out=dist/simulator/win --platform=win32 --arch=ia32 --version=0.36.7 --icon=src/assets/win/icon.ico",
     "build": "npm run build:osx && npm run build:win",
-    "build:osx": "npm run pack:osx && electron-builder \"dist/ide/osx/Mazda Custom Application IDE.app\" --platform=osx --out=\"dist/ide/osx\" --config=builder.json",
-    "build:win": "npm run pack:win && electron-builder \"dist/ide/win/Mazda Custom Application IDE-win32\" --platform=win --out=\"dist/ide/win\" --config=builder.json"
+    "build:osx": "npm run pack:osx && electron-builder \"dist/simulator/osx/Mazda Infotainment Simulator.app\" --platform=osx --out=\"dist/simulator/osx\" --config=builder.json",
+    "build:win": "npm run pack:win && electron-builder \"dist/simulator/win/Mazda Infotainment Simulator\" --platform=win --out=\"dist/simulator/win\" --config=builder.json"
   },
   "license": "GPL"
 }

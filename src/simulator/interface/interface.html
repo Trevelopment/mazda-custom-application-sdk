@@ -1,0 +1,104 @@
+<!--
+/**
+ * Custom Applications SDK for Mazda Connect Infotainment System
+ *
+ * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
+ * that includes an easy to use abstraction layer to the JCI system.
+ *
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
+ * Copyright (c) 2016. All rights reserved.
+ *
+ * WARNING: The installation of this application requires modifications to your Mazda Connect system.
+ * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
+ * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see http://www.gnu.org/licenses/
+ *
+ */
+
+/**
+ * Mazda Infotainment Simulator (Interface)
+ */
+
+ <link rel="stylesheet" href="apps/system/casdk/runtime/surface/CustomApplicationSurfaceTmplt/css/CustomApplicationSurfaceTmplt.css" />
+ <script src="apps/system/casdk/runtime/runtime.js"></script>
+<script src="apps/system/casdk/runtime/surface/CustomApplicationSurfaceTmplt/js/CustomApplicationSurfaceTmplt.js"></script>
+
+-->
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="../vendor/jquery.js"></script>
+
+	<script src="logger.js"></script>
+	<script src="framework.js"></script>
+	<script src="multicontroller.js"></script>
+	<script src="interface.js"></script>
+
+	<link rel="stylesheet" href="../fonts/fonts.css" />
+	<link rel="stylesheet" href="multicontroller.css" />
+	<link rel="stylesheet" href="interface.css" />
+</head>
+<body>
+	<div id="mock">
+		<div id="header">
+			<div class="inner">
+				<div id="home"></div>
+				<div id="divider"></div>
+				<div id="domain"></div>
+				<div id="title">Simulator</div>
+				<div id="clock"></div>
+			</div>
+		</div>
+		<div id="menu"></div>
+		<div id="leftbutton"></div>
+		<div id="view">
+			<div id="surface"></div>
+		</div>
+	</div>
+	<div id="debug">
+		<div class="inner">
+			<div id="dataview"></div>
+			<div id="multicontroller">
+				<div class="inner">
+					<div id="joystick">
+						<div class="inner">
+							<div class="wheel base"></div>
+							<div class="wheel direction"></div>
+							<span class="hitarea home" event="home"></span>
+							<span class="hitarea return" event="goBack"></span>
+							<span class="hitarea wheel top" direction="top" event="upStart"></span>
+							<span class="hitarea wheel left" direction="left" event="leftStart"></span>
+							<span class="hitarea wheel right" direction="right" event="rightStart"></span>
+							<span class="hitarea wheel bottom" direction="bottom" event="downStart"></span>
+						</div>
+					</div>
+					<div id="panel">
+						<span event="cw">Wheel CW</span>
+						<span event="ccw">Wheel CCW</span>
+						<span event="selectStart">Select</span>
+						<span event="upStart">Up</span>
+						<span event="leftStart">Left</span>
+						<span event="rightStart">Right</span>
+						<span event="downStart">Down</span>
+						<span event="goBack">Back</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="console">
+		<div id="output">
+		</div>
+	</div>
+</body>
+</html>
