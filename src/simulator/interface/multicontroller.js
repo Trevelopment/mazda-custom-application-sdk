@@ -172,20 +172,58 @@
 		},
 
 		notifyMultiController: function(event) {
-			if(event == "home") {
-				Interface.showAppMenu();
-			} else {
 
-				// show controller event in panel
-				var pb = this.multicontroller.find("#panel [event=" + event + "]").addClass("hit");
-				setTimeout(function() {
-					pb.removeClass("hit");
-				}, 450);
+			switch(true) {
 
-				// pass to current
-				if(framework.current) {
-					framework.current.handleControllerEvent(event);
-				}
+				case Interface.inAppMenu:
+
+					// mini handler for app menu
+					switch(event) {
+
+						case "upStart":
+
+							Interface.menuIndex -= 1;
+							if(Interface.menuIndex < 0) Interface.menuIndex = Interface.maxMenuIndex - 1;
+							break;
+
+						case "downStart":
+
+							Interface.menuIndex += 1;
+							if(Interface.menuIndex >= Interface.maxMenuIndex) Interface.menuIndex = 0;
+							break;
+
+						case "selectStart":
+
+							return Interface.invokeApplication(Interface.menuIndexAppId);
+
+							break;
+
+					}
+
+					// assign
+					Interface.setAppMenuFocus(true);
+
+					break;
+
+				default:
+
+					if(event == "home") {
+						Interface.showAppMenu();
+					} else {
+
+						// show controller event in panel
+						var pb = this.multicontroller.find("#panel [event=" + event + "]").addClass("hit");
+						setTimeout(function() {
+							pb.removeClass("hit");
+						}, 450);
+
+						// pass to current
+						if(framework.current) {
+							framework.current.handleControllerEvent(event);
+						}
+					}
+
+					break;
 			}
 		},
 	};

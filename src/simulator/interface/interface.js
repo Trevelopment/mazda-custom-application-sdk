@@ -28,7 +28,6 @@
  * NPM/Node Integration
  */
 
-var BLA = "FOO";
 
 
 /**
@@ -47,6 +46,8 @@ var BLA = "FOO";
 		// statuses
 		runtimeLoaded: false,
 		appsLoaded: false,
+
+		inAppMenu: false,
 
 		/**
 		 * (initialize)
@@ -69,7 +70,7 @@ var BLA = "FOO";
 
 			this.surface = $("#surface");
 
-			this.menu = $("#menu");
+			this.menu = $("#menuitems");
 
 			this.leftButton = $("#leftbutton");
 
@@ -231,13 +232,33 @@ var BLA = "FOO";
 
 			// prepare menu
 			this.menu.html("");
-            this.applications.forEach(function(item) {
+            this.applications.forEach(function(item, index) {
 
-            	this.menu.append($("<a/>").attr("appId", item.appData.appId).on("click", function() {
-            		this.invokeApplication(item.appData.appId);
-            	}.bind(this)).append(item.title));
+            	this.menu.append($("<a/>").attr({
+            		appId: item.appData.appId,
+            		menuIndex: index,
+            	
+            	}).on({
+            	
+            		click: function() {
+            	
+            			this.invokeApplication(item.appData.appId);
+            	
+            		}.bind(this),
+            	
+            	}).hover(function() {
+        			
+        			this.menuIndex = index;
+        			this.setAppMenuFocus();
+
+        		}.bind(this)).append(item.title));
 
             }.bind(this));
+
+            // select first
+            this.menuIndex = 0;
+            this.maxMenuIndex = this.applications.length;
+            this.setAppMenuFocus();
 
             // reset view
 			this.view.fadeOut();
@@ -248,6 +269,28 @@ var BLA = "FOO";
 			// update view
 			framework.common.statusBar.setAppName('Applications');
 			framework.common.statusBar.setDomainIcon(false);
+
+			this.inAppMenu = true;
+
+		},
+
+		/**
+		 * setAppMenuFocus
+		 */
+
+		setAppMenuFocus: function(mc) {
+
+			// clear
+			this.menu.find(".focus").removeClass("focus");
+
+			// set new
+			var item = this.menu.find("[menuIndex=" + this.menuIndex + "]").addClass("focus");
+
+			this.menuIndexAppId = item.attr("appId");
+
+			if(mc) {
+				this.menu.scrollTop(item.position().top);
+			}
 
 		},
 
@@ -265,6 +308,8 @@ var BLA = "FOO";
 
 			// run application
 			CustomApplicationsHandler.run(appId);
+
+			this.inAppMenu = false;
 		},
 
 

@@ -38,7 +38,7 @@
 body {
 	margin:0;
 	padding:0;
-	font-family: Tipperary, sans-serif;
+	font-family: "Tipperary", sans-serif;
 	font-weight: normal;
 	font-style: normal;
 	font-size: 28px;
@@ -75,14 +75,15 @@ body {
 		display:block;
 		background:url(../images/statusbar.png) no-repeat left top;
 		font-size: 40px;
-		z-index: 10;
+		z-index: 15;
 	}
 
 		#mock #header #title {
 			display:block;
 			position:absolute;
-			top:10px;
+			top:8px;
 			left:100px;
+			font-weight:500;
 		}
 
 		#mock #header #home {
@@ -123,29 +124,44 @@ body {
 		}
 
 	#mock #menu {
-		padding:1em 0.5em;
 		position:absolute;
-		top:60px;
+		top:64px;
 		width:800px;
-		height:420px;
+		height:416px;
 		font-size:35px;
 	}
-		#mock #menu a {
-			cursor: pointer;
-			display:block;
-			padding:10px;
+		#mock #menu #menublocker {
+			position:absolute;
+			top:0;
+			left:0;
+			bottom:0;
+			width:93px;
+			background:url(../images/appmenu-left.png) no-repeat left top;
+			z-index:5;
+
 		}
 
-			#mock #menu a:before {
-				background:url(../images/menudivider.png) no-repeat;
-				width:730px;
-				height:1px;
-				display:block;
-			}
+		#mock #menuitems {
+			z-index:2;
+			position:absolute;
+			left:0px;
+			top:15px;
+			bottom:0;
+			right:0;
+			overflow-y:scroll;
 
-			#mock #menu a:hover {
-				color: #aaa;
-			}
+		}
+
+			#mock #menuitems a {
+				cursor: pointer;
+				display:block;
+				padding:10px;
+				padding-left:150px;
+				background:url(../images/appmenu-divider.png) no-repeat center bottom;
+			}	
+				#mock #menuitems a.focus {
+					background:url(../images/appmenu-divider.png) no-repeat center bottom, url(../images/appmenu-focus.png) no-repeat left center;
+				}
 
 	#mock #leftbutton {
 		position:absolute;
@@ -168,6 +184,7 @@ body {
 		bottom:0;
 		color:#fff;
 		display:none;
+		z-index: 10;
 	}
 
 		#mock #view.showBoundaries {

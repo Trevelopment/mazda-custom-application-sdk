@@ -97,6 +97,7 @@
 		#multicontroller #joystick div.wheel.base {
 			background:url(../images/mc-wheel.png);
 			transform:rotate(90deg);
+			cursor:pointer;
 		}
 
 		#multicontroller #joystick div.wheel.direction {
@@ -125,6 +126,7 @@
 			position:absolute;
 			/*border:1px solid red;*/
 			z-index: 3;
+			cursor:pointer;
 		}
 
 			#multicontroller #joystick span.hitarea.home {
