@@ -47,7 +47,7 @@ var CustomApplicationsHandler = {
 	paths: {
 		framework: 'apps/system/casdk/runtime/',
 		applications: 'apps/system/casdk/apps/',
-		library: 'apps/system/casdk/runtime/library/'
+		vendor: 'apps/system/casdk/runtime/vendor/'
 	},
 
 	/**
@@ -81,10 +81,9 @@ var CustomApplicationsHandler = {
 			if(!this.initialized) this.initialize();
 
 			// load libraries
+			CustomApplicationResourceLoader.loadJavascript("jquery.js", this.paths.vendor, function() {
 
-			CustomApplicationResourceLoader.loadJavascript("jquery.js", this.paths.library, function() {
-
-				CustomApplicationResourceLoader.loadCSS("bootstrap.css", this.paths.framework, function() {
+				CustomApplicationResourceLoader.loadCSS("runtime.css", this.paths.framework, function() {
 
 					CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
 
@@ -178,7 +177,7 @@ var CustomApplicationsHandler = {
 			CustomApplicationLog.error(this.__name, "Failed to launch application because framework is not available", {id: id});
 
 			return false;
-		
+
 		}
 
 		CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
@@ -254,17 +253,17 @@ var CustomApplicationsHandler = {
 			});
 
 			return {
-				appData : { 
-					appName : 'custom_' + application.getId(), 
-					isVisible : true, 
+				appData : {
+					appName : 'custom_' + application.getId(),
+					isVisible : true,
 					mmuiEvent : 'ExecuteCustomApplication',
-					appId: application.getId(),         
-				}, 
+					appId: application.getId(),
+				},
 				title: application.getTitle(),
 				text1Id : application.getTitle(),
-				disabled : false,  
-				itemStyle : 'style01', 
-				hasCaret : false 
+				disabled : false,
+				itemStyle : 'style01',
+				hasCaret : false
 			};
 
 		}.bind(this));

@@ -28,6 +28,13 @@
  * Mazda Infotainment Simulator
  */
 
+* {
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-app-region: no-drag; 
+	cursor:default;
+}
+
 body {
 	margin:0;
 	padding:0;
@@ -195,53 +202,7 @@ body {
 	background:#151515;
 	border-left:3px solid #222;
 }
-	
-	#debug #multicontroller {
-		position:absolute;
-		bottom:0;
-		height:250px;
-		left:0;
-		right:0;
-		background:#222;
-	}
 
-		#debug #multicontroller #panel {
-			position: absolute;
-			left:290px;
-			top:15px;
-			font-size:14px;
-		}
-
-			#debug #multicontroller #panel span {
-				display:block;
-				background:#555;
-				width:100px;
-				padding:5px;
-				margin-bottom:3px;
-				border-radius:2px;
-				font-size:12px;
-				font-weight:bold;
-			} 
-
-				#debug #multicontroller #panel span.hit {
-					animation-name: flash;
-    				animation-duration: 400ms;
-    				animation-iteration-count: 1;
-    				animation-timing-function: ease-in-out;
-				}    
-
-				@keyframes flash {
-					0% {
-						background:#FF5C26;
-					}
-
-					100% {
-						background:#555;
-					}
-				}
-
-
-		
 
 	#debug #dataview {
 		position:absolute;

@@ -25,6 +25,13 @@
  */
 
 /**
+ * NPM/Node Integration
+ */
+
+var BLA = "FOO";
+
+
+/**
  * Interface
  */
 
@@ -33,18 +40,27 @@
 
 	Interface = {
 
-		current: false,
+		/**
+		 * Privates
+		 */
+
+		// statuses
+		runtimeLoaded: false,
+		appsLoaded: false,
+
+		/**
+		 * (initialize)
+		 *
+		 * Initializes the interface and simulator
+		 */
 
 		initialize: function() {
-
-			console.log($("#output"));
 
 			// startup console
 			Logger.info("Starting up");
 
-			// enable logger
-			//CustomApplicationLog.enableLogger(true);
-			//CustomApplicationLog.enableConsole(true);
+			// ready framework
+			framework.ready();
 
 			// assign elements
 			this.root = $("#interface");
@@ -63,149 +79,197 @@
 
 			// assign core actions to static elements
 			$("#home").on("click", function() {
-				this.showMenu();
+				this.showAppMenu();
 			}.bind(this));
 
 			$("#leftbutton").on("click", function() {
-				this.showMenu();
+				this.showAppMenu();
 			}.bind(this));
 
 			// initialize multi controller
 			Multicontroller.initialize();
 
+			// try to load runtime
+			this.loadRuntime(function() {
 
-			// pause data handler so we an simulate it
-	        /*CustomApplicationDataHandler.pause();
-	        CustomApplicationDataHandler.retrieve(function(data) {
+				// runtime was loaded
+				this.loadApplications(function() {
 
-	        	this.setVehicleData(data);
+					// show app menu
+					this.showAppMenu();
 
-	        }.bind(this));
+				}.bind(this));
 
-	        // finally show menu
-			this.showMenu();*/
+			}.bind(this));
 
-		},
+			// register ipc messages
+			var ipc = require('ipc');
 
-		showMenu: function() {
+			ipc.on('runtimeLocation', function(location) {
+				localStorage.setItem("runtimeLocation", location);
+				this.loadRuntime();
+		    }.bind(this));
 
-			this.menu.html("");
-			this.common.statusBar.setAppName('Applications');
-			this.common.statusBar.setDomainIcon(false);
+		    ipc.on('appsLocation', function(location) {
+				localStorage.setItem("appsLocation", location);
+				this.loadApplications();
+		    }.bind(this));
 
-			// load items
-			CustomApplicationsHandler.retrieve(function(items) {
-
-	            items.forEach(function(item) {
-
-	            	this.menu.append($("<a/>").attr("appId", item.appData.appId).click(this.execMenu).append(item.title));
-
-	            }.bind(this));
-	        }.bind(this));
-
-			if(this.current) {
-				this.current.cleanUp();
-				this.current = false;
-			}
-
-			this.view.fadeOut();
-			this.leftButton.fadeOut();
-			this.statusBar.fadeIn();
-
-		},
-
-		execMenu: function() {
-
-			var id = $(this).attr("appId");
-
-			CustomApplicationsHandler.run(id);
-
-		},
-
-		ready: function(callback) {
-
-		},
-
-		common: {
-
-			statusBar: {
-
-				setAppName: function(title) {
-
-					$("#title").html(title);
-
-				},
-
-				setDomainIcon: function(icon) {
-
-					if(icon) {
-						$("#domain").css({"background-image": "url(" + icon + ")"}).show();
-					} else {
-						$("#domain").hide();
-					}
-
-				},
-
-				showHomeBtn: function(show) {
-					if(show) {
-						$("#home").show();
-					} else {
-						$("#home").hide();
-					}
-				},
-
-				clock: {
-
-					innerHTML: false,
-
-					_update: function() {
-						 var today = new Date(), h = today.getHours(), m = today.getMinutes();
-
-
-						 var s = (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
-
-						 $("#clock").html(s);
-
-						 return s;
-
-					},
-				}
-
-			},
-
-		},
-
-		loadControl: function(appId, controlId, controlName) {
-
-			// initialize
-			var controlName = controlName || (controlId + 'Ctrl'),
-				path = "apps/" + appId +"/controls/" + controlId + '/';
-
-			// create resources
-			this.loadCSS(path + 'css/' + controlName + '.css');
-			this.loadJS(path + 'js/' + controlName + '.js');
-
-		},
-
-		loadCSS: function(filename, callback) {
-			var css = document.createElement('link');
-	        css.rel = "stylesheet";
-	        css.type = "text/css";
-	        css.href = filename;
-	        css.onload = callback;
-	        document.body.appendChild(css);
-		},
-
-		loadJS: function(filename, callback) {
-			var script = document.createElement('script');
-	        script.type = 'text/javascript';
-	        script.src = filename;
-	        script.onload = callback;
-	        document.body.appendChild(script);
 		},
 
 		/**
-		 * Vehcile Data
+		 * (loadRuntime)
+		 */
+
+		loadRuntime: function(callback) {
+
+			this.runtimeLoaded = false;
+
+			var runtimeLocation = localStorage.getItem("runtimeLocation");
+
+			// check
+			if(!runtimeLocation)
+				return Logger.error("You need to select the location of the runtime package first.");
+
+			// load runtime
+			Logger.info(sprintr("Loading runtime from {0}", runtimeLocation));
+
+			// reset
+			window.CustomApplicationsHandler = false;
+
+			// load runtime.js
+			framework.loadJS("file://" + runtimeLocation + "/runtime.js", function() {
+
+				// load CustomApplicationSurfaceTmplt
+				framework.loadJS("file://" + runtimeLocation + "/surface/CustomApplicationSurfaceTmplt/js/CustomApplicationSurfaceTmplt.js", function() {
+
+					if(typeof(CustomApplicationsHandler) == "undefined")
+						return Logger.error("Error while loading the runtime package.");
+
+					// enable logger
+					CustomApplicationLog.enableLogger(true);
+
+					// overwrite paths
+					CustomApplicationsHandler.paths.framework = "file://" + runtimeLocation + "/";
+					CustomApplicationsHandler.paths.vendor = "file://" + runtimeLocation + "/vendor/";
+
+					// load data
+
+			       	CustomApplicationDataHandler.pause();
+			       	CustomApplicationDataHandler.paths.data = "file://" + __dirname + "/../data/casdk-";
+
+			       	Logger.info("Attempting to load vehicle mock data");
+			        CustomApplicationDataHandler.retrieve(function(data) {
+			        	this.setVehicleData(data);
+			        }.bind(this));
+
+					// done
+					this.runtimeLoaded = true;
+
+					// callback
+					if(Is.fn(callback)) callback();
+
+				}.bind(this));
+
+			}.bind(this));
+		},
+
+		/**
+		 * (loadApplications)
+		 */
+
+		loadApplications: function(callback) {
+
+			// sanity check
+			if(!this.runtimeLoaded || typeof(CustomApplicationsHandler) == "undefined")
+				return Logger.error("Error while loading applications. No runtime system was loaded.");
+
+			this.appsLoaded = false;
+			this.applications = false;
+
+			var appsLocation = localStorage.getItem("appsLocation");
+
+			// check
+			if(!appsLocation)
+				return Logger.error("You need to select the location of the applications first.");
+
+			// override applications handler
+			CustomApplicationsHandler.paths.applications = "file://" + appsLocation + "/";
+
+			// load runtime
+			Logger.info(sprintr("Loading applications from {0}", appsLocation));
+
+			// load applications
+			CustomApplicationsHandler.retrieve(function(items) {
+
+				this.applications = items;
+
+				this.appsLoaded = true;
+
+				if(Is.fn(callback)) callback();
+
+	        }.bind(this));
+		},
+
+
+		/**
+		 * (showAppMenu)
+		 *
+		 * Renders the application list
+		 */
+
+		showAppMenu: function() {
+
+			// sanity check
+			if(!this.appsLoaded || !this.applications) return;
+
+			// clear last application
+			localStorage.setItem("lastRunApplication", false);
+
+			// cleanup framework
+			framework.cleanup();
+
+			// prepare menu
+			this.menu.html("");
+            this.applications.forEach(function(item) {
+
+            	this.menu.append($("<a/>").attr("appId", item.appData.appId).on("click", function() {
+            		this.invokeApplication(item.appData.appId);
+            	}.bind(this)).append(item.title));
+
+            }.bind(this));
+
+            // reset view
+			this.view.fadeOut();
+			this.menu.fadeIn();
+			this.leftButton.fadeOut();
+			this.statusBar.fadeIn();
+
+			// update view
+			framework.common.statusBar.setAppName('Applications');
+			framework.common.statusBar.setDomainIcon(false);
+
+		},
+
+		/**
+		 * (invokeApplication)
+		 */
+
+		invokeApplication: function(appId) {
+
+			// fadeout menu
+			this.menu.fadeOut();
+
+			// update last run application
+			localStorage.setItem("lastRunApplication", appId);
+
+			// run application
+			CustomApplicationsHandler.run(appId);
+		},
+
+
+		/**
+		 * Vehicle Data
 		 */
 
 		setVehicleData: function(data) {
@@ -223,6 +287,7 @@
 			// clear empty
 			this.dataView.empty();
 
+			// rebuild vehicle data
 			groups.forEach(function(group) {
 
 				// prepare mapping to value table
@@ -243,7 +308,7 @@
 
 				} else {
 
-					// build data array 
+					// build data array
 					var values = $.map(group.values, function(value) {
 						return value;
 					});

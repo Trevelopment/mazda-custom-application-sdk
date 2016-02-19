@@ -115,7 +115,7 @@
 								break;
 
 							/** cw **/
-			
+
 							// right
 							case (Math.abs(dx) > Math.abs(dy) && dx < 0):
 							// up
@@ -130,7 +130,7 @@
 						// notify
 						if(event) {
 
-							// set wheel 
+							// set wheel
 							base.css("transform", "rotate(" + wheelPosition + "deg)");
 
 							// reset position
@@ -154,6 +154,11 @@
 				baseEnabled = false;
 			});
 
+			// initialize panel
+			this.multicontroller.find("#panel").on("click", "span", function() {
+				that.notifyMultiController($(this).attr("event"));
+			}.bind(this));
+
 		},
 
 		setMultiControllerDirection: function(direction) {
@@ -168,7 +173,7 @@
 
 		notifyMultiController: function(event) {
 			if(event == "home") {
-				this.showMenu();
+				Interface.showAppMenu();
 			} else {
 
 				// show controller event in panel
@@ -177,8 +182,9 @@
 					pb.removeClass("hit");
 				}, 450);
 
-				if(this.current) {
-					this.current.handleControllerEvent(event);
+				// pass to current
+				if(framework.current) {
+					framework.current.handleControllerEvent(event);
 				}
 			}
 		},

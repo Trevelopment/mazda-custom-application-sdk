@@ -35,11 +35,15 @@
 var app = require('app'),
     BrowserWindow = require('browser-window'),
     Menu = require('menu'),
+    Dialog = require('dialog'),
     mainWindow = null;
 
 // Start crash reporter
 require('crash-reporter').start();
 
+/**
+ * (Storage)
+ */
 
 /**
  * (app)
@@ -58,7 +62,7 @@ app.on('ready', function() {
 
   // Create the main window
   mainWindow = new BrowserWindow({
-    width: 1220,
+    width: 1280,
     height:755,
     title: app.getName(),
     resizable: false,
@@ -104,14 +108,30 @@ var BuildAppMenu = function() {
           label: 'Choose Runtime Location',
           accelerator: 'CmdOrCtrl+P',
           click: function() {
-            require('electron').dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]});
+
+            var result = Dialog.showOpenDialog({
+              title: 'Choose Runtime Location',
+              properties: ['openDirectory']
+            });
+
+            if(result && result[0]) {
+              mainWindow.webContents.send('runtimeLocation', result[0]);
+            }
           }
         },
         {
-          label: 'Choose Application Location',
+          label: 'Choose Applications Location',
           accelerator: 'CmdOrCtrl+O',
           click: function() {
-            require('electron').dialog.showOpenDialog({ properties: [ 'openFile', 'openDirectory', 'multiSelections' ]});
+
+            var result = Dialog.showOpenDialog({
+                title: 'Choose Applictions Location',
+                properties: ['openDirectory']
+              });
+
+            if(result && result[0]) {
+              mainWindow.webContents.send('appsLocation', result[0]);
+            }
           }
         },
         {

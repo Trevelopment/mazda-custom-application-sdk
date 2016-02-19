@@ -28,13 +28,62 @@
  * Multicontroller CSs
  */
 
+#multicontroller {
+	position:absolute;
+	bottom:0;
+	height:250px;
+	left:0;
+	right:0;
+	background:#222;
+}
+
+	#multicontroller #panel {
+		position: absolute;
+		left:325px;
+		top:15px;
+		font-size:14px;
+	}
+
+		#multicontroller #panel span {
+			display:block;
+			background:#515151;
+			width:100px;
+			padding:5px;
+			margin-bottom:3px;
+			border-radius:2px;
+			font-size:12px;
+			font-weight:bold;
+			cursor:pointer;
+		}
+
+			#multicontroller #panel span:hover {
+				background-color:#717171;
+			}
+
+			#multicontroller #panel span.hit {
+				animation-name: flash;
+				animation-duration: 400ms;
+				animation-iteration-count: 1;
+				animation-timing-function: ease-in-out;
+			}
+
+			@keyframes flash {
+				0% {
+					background:#FF5C26;
+				}
+
+				100% {
+					background:#515151;
+				}
+			}
+
 #multicontroller #joystick {
 	background:url(../images/mc-bottom.png) no-repeat;
 	width:270px;
 	height:250px;
 	position:absolute;
 	top:0px;
-	left:0px;
+	left:20px;
 }
 
 	#multicontroller #joystick div.wheel {

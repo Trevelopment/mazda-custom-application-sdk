@@ -70,8 +70,8 @@
 	 * Global Error
 	 */
 	onerror = function(message, url, line) {
-
-		Logger.log("ERROR", Logger.defaultId + ": Line " + line, message);
+		console.log(this);
+		Logger.log("ERROR", Logger.defaultId + ":" + url.replace(/^.*[\\\/]/, '') +":" + line, message);
 
 	};
 

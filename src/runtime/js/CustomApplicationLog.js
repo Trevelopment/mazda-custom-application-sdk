@@ -117,9 +117,9 @@ var CustomApplicationLog = {
 				});
 			}
 
-			if(this.enabledLogger && typeof(logger) != "undefined") {
-				logger.log(level, values[0], msg.join(" "), color);
-			} 
+			if(this.enabledLogger && typeof(Logger) != "undefined") {
+				Logger.log(level, values[0], msg.join(" "), color);
+			}
 
 			if(this.enabledConsole) {
 				 console.log(
