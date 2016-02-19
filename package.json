@@ -26,7 +26,9 @@
     "run-sequence": "^1.1.5",
   },
   "scripts": {
-    "build-runtime": "gulp build-runtime"
+    "build-runtime": "gulp build-runtime",
+    "ide-pack:osx": "electron-packager . MyApp --platform=darwin --arch=x64 --version=0.36.7 --icon=assets/MyApp.icns --out=dist --ignore=dist",
+    "ide-build:osx": "npm run pack:osx && electron-builder dist/osx/MyApp.app --platform=osx --out=\"dist/osx\" --config=config.json"
   },
   "license": "GPL"
 }
