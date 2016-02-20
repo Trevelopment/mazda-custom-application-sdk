@@ -372,10 +372,40 @@ body {
 		z-index:2;
 	}
 
+		#console #consolebar #actions {
+			list-style:none;
+			position:absolute;
+			left:0;
+			top:1px;
+			margin:0;
+			padding:0;
+			border-right:1px solid #0E0F0F;
+		}
+
+			#console #consolebar #actions li {
+				float:left;
+				margin:0;
+				padding:0;
+				cursor: pointer;
+				margin-right:5px;
+			}
+
+				#console #consolebar #actions li.icon {
+					width:32px;
+					height:32px;
+				}
+
+					#console #consolebar #actions li.icon.refresh {
+						background:url(../images/refresh.svg) no-repeat center center;
+						background-size:32px 32pxs;
+						fill:#fff;
+					}
+
+
 		#console #consolebar #levelbuttons {
 			list-style:none;
 			position:absolute;
-			left:10px;
+			left:100px;
 			top:8px;
 			margin:0;
 			padding:0;

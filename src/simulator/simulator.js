@@ -141,7 +141,8 @@ var BuildAppMenu = function() {
           label: 'Reload Runtime'
         },
         {
-          label: 'Reload Applications'
+          label: 'Reload Applications',
+          accelerator: 'CmdOrCtrl+R'
         },
         {
           type: 'separator'
