@@ -173,6 +173,15 @@
 
 		notifyMultiController: function(event) {
 
+			// visualize event
+			var pb = this.multicontroller.find("#panel [event=" + event + "]").addClass("hit");
+			setTimeout(function() {
+				pb.removeClass("hit");
+			}, 450);
+
+
+			// switch by type
+
 			switch(true) {
 
 				case Interface.inAppMenu:
@@ -210,12 +219,6 @@
 					if(event == "home") {
 						Interface.showAppMenu();
 					} else {
-
-						// show controller event in panel
-						var pb = this.multicontroller.find("#panel [event=" + event + "]").addClass("hit");
-						setTimeout(function() {
-							pb.removeClass("hit");
-						}, 450);
 
 						// pass to current
 						if(framework.current) {

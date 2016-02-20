@@ -34,7 +34,7 @@
 	height:250px;
 	left:0;
 	right:0;
-	background:#222;
+	background:#1E252B;
 }
 
 	#multicontroller #panel {
@@ -46,7 +46,7 @@
 
 		#multicontroller #panel span {
 			display:block;
-			background:#515151;
+			background:#333940;
 			width:100px;
 			padding:5px;
 			margin-bottom:3px;
@@ -57,7 +57,7 @@
 		}
 
 			#multicontroller #panel span:hover {
-				background-color:#717171;
+				background-color:#616469;
 			}
 
 			#multicontroller #panel span.hit {
