@@ -52,9 +52,11 @@
 
 		log: function(level, id, message, color) {
 
-			var item = $("<div/>");
+			var item = $("<div/>").attr("level", level);
 
-			item.append($("<span/>").append((new Date()).toLocaleTimeString()));
+			var d = new Date();
+
+			item.append($("<span/>").append(sprintr("{0}:{1}:{2}", d.getHours(), d.getMinutes(), d.getSeconds())));
 			item.append($("<span/>").addClass(level).append(level));
 			item.append($("<span/>").append(id));
 			item.append($("<span/>").addClass(level).append(message));
@@ -74,6 +76,37 @@
 		Logger.log("ERROR", Logger.defaultId + ":" + url.replace(/^.*[\\\/]/, '') +":" + line, message);
 
 	};
+
+	/**
+	 * Initialize console
+	 */
+
+	$(function() {
+
+		$("#levelbuttons").on("click", "li", function() {
+
+			var level = $(this).attr("level");
+
+			if(!level) {
+				$("#output").find("div").show();
+			} else {
+				$("#output").find("div").hide();
+				$("#output").find("div[level=" + level + "]").show();
+			}
+
+			// scroll to bottom
+			$("#output").scrollTop($("#output").get(0).scrollHeight);
+
+			// set correct markers
+			$(this).parent().find("li.focus").removeClass("focus");
+			$(this).addClass("focus");
+
+		});
+
+		$("#clearbutton").on("click", function() {
+			$("#output").empty();
+		});
+	});
 
 }.call(this));
 

@@ -41,7 +41,8 @@
 		position: absolute;
 		left:325px;
 		top:15px;
-		font-size:14px;
+		font-size:12px;
+		font-weight:500;
 	}
 
 		#multicontroller #panel span {
@@ -51,8 +52,6 @@
 			padding:5px;
 			margin-bottom:3px;
 			border-radius:2px;
-			font-size:12px;
-			font-weight:bold;
 			cursor:pointer;
 		}
 

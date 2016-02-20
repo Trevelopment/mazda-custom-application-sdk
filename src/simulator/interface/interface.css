@@ -59,10 +59,12 @@ body {
 #mock {
 	width:800px;
 	height:480px;
-	position:relative;
+	position:absolute;
+	top:0;
+	left:0;
 	overflow:hidden;
-	background:url(../images/background.png) no-repeat center center ##0E0F0F;
-	border:1px solid #0E0F0F;	
+	background:url(../images/background.png) no-repeat center center #0E0F0F;
+	border:1px solid #0E0F0F;
 }
 
 	#mock #header {
@@ -224,10 +226,9 @@ body {
 		position:absolute;
 		left:0px;
 		top:0px;
-		bottom:250px;
+		bottom:251px;
 		right:0;
 		overflow-y:scroll;
-		font-family: "Lucina Console", sans-serif;
 		font-weight:bold;
 		font-size:12px;
 		border-bottom:1px solid #0E0F0F;
@@ -309,6 +310,7 @@ body {
 					text-overflow: ellipsis;
 					width: 200px;
 					white-space: nowrap;
+					font-weight:500;
 					overflow: hidden;
 				}
 
@@ -347,37 +349,78 @@ body {
 
 #console {
 	position:absolute;
-	border-top:3px solid #222;
+	border-top:1px solid #0E0F0F;
+	border-right:1px solid #0E0F0F;
 	top:481px;
 	bottom:0;
 	left:0;
-	width:802px;
-	background:#151515;
-	color:#555;
+	width:801px;
+	background:#333940;
+	color:#ADB0B3;
 }
 
 	#console #consolebar {
 		position:absolute;
 		top:0px;
-		height:30px;
+		height:35px;
 		left:0;
 		right:0;
-		background:#191919;
-
+		background:#1D242A;
+		border-bottom:1px solid #0E0F0F;
+		font-size:13px;
+		font-weight:500;
+		z-index:2;
 	}
+
+		#console #consolebar #levelbuttons {
+			list-style:none;
+			position:absolute;
+			left:10px;
+			top:8px;
+			margin:0;
+			padding:0;
+		}
+
+			#console #consolebar #levelbuttons li {
+				float:left;
+				margin:0;
+				padding:0;
+				padding:2px 4px;
+				cursor: pointer;
+				margin-right:5px;
+			}
+
+		#console #consolebar #levelbuttons li.focus,
+		#console #consolebar .button {
+			background:#333940;
+			padding:2px 4px;
+			border-radius:3px;
+			cursor: pointer;
+		}
+
+			#console #consolebar .button:hover {
+				background: #616469
+			}
+
+		#console #consolebar #clearbutton {
+			right:10px;
+			top:8px;
+			position:absolute;
+		}
 
 
 	#console #output {
 		position:absolute;
-		top:30px;
+		top:35px;
 		bottom:0;
 		left:0;
 		right:0;
 		overflow:scroll;
-		font-family: "Lucina Console", sans-serif;
+		font-family: "Lucida Console", Monaco, monospace;
 		font-weight:bold;
 		font-size:12px;
 		white-space: nowrap;
+		z-index:1;
 	}
 
 		#console #output div {
@@ -385,17 +428,18 @@ body {
 		}
 
 			#console #output div span {
-				margin-right:10px;
+				margin-right:5px;
 				display:inline-block;
 			}
 
 			#console #output div span:nth-child(1) {
-				width:75px;
+				width:50px;
+				font-size:10px;
 			}
 
 			#console #output div span:nth-child(2) {
-				background:#333;
-				width:60px;
+				background:#616469;
+				width:40px;
 				text-align:center;
 				padding:2px;
 				font-size:10px;
