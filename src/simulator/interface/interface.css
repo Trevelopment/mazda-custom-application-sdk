@@ -345,9 +345,23 @@ body {
 	color:#555;
 }
 
+	#console #consolebar {
+		position:absolute;
+		top:0px;
+		height:30px;
+		left:0;
+		right:0;
+		background:#191919;
+
+	}
+
+
 	#console #output {
-		width:100%;
-		height:100%;
+		position:absolute;
+		top:30px;
+		bottom:0;
+		left:0;
+		right:0;
 		overflow:scroll;
 		font-family: "Lucina Console", sans-serif;
 		font-weight:bold;
@@ -404,6 +418,10 @@ body {
 				color:#bbb;
 			}
 
+
+/**
+ * Framework specific classes - for JCI mock
+ */
 
 .TemplateFull {
 	position:absolute;
