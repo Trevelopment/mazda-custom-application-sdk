@@ -2341,7 +2341,7 @@ systemApp.prototype._loadCustomApplications = function()
         if(typeof(CustomApplicationsHandler) == "undefined") {
 
             // try to load the script
-            utility.loadScript("apps/system/casdk/runtime/runtime.js", false, function() {
+            utility.loadScript("apps/system/applications/runtime/runtime.js", false, function() {
 
                 this._initCustomApplicationsDataList();   
             

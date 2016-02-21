@@ -45,9 +45,9 @@ var CustomApplicationsHandler = {
 	 */
 
 	paths: {
-		framework: 'apps/system/casdk/runtime/',
-		applications: 'apps/system/casdk/apps/',
-		vendor: 'apps/system/casdk/runtime/vendor/'
+		framework: 'apps/system/applications/runtime/',
+		applications: 'apps/system/applications/apps/',
+		vendor: 'apps/system/applications/runtime/vendor/'
 	},
 
 	/**
