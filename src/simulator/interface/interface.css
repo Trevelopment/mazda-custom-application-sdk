@@ -395,10 +395,13 @@ body {
 					height:32px;
 				}
 
+					#console #consolebar #actions li.icon svg {
+						fill: #fff;
+					}
+
 					#console #consolebar #actions li.icon.refresh {
 						background:url(../images/refresh.svg) no-repeat center center;
-						background-size:32px 32pxs;
-						fill:#fff;
+						background-size:20px 20px;
 					}
 
 
