@@ -32,9 +32,20 @@ var
     gulp = require('gulp'),
     less = require('gulp-less'),
     concat = require('gulp-concat'),
+    uglify = require('gulp-uglify'),
+    concatutil = require('gulp-concat-util'),
     runSequence = require('run-sequence'),
     del = require('del'),
+    fs = require('fs'),
     exec = require('child_process').exec;
+
+/**
+ * ::package
+ */
+
+var package = require('./package.json');
+
+console.log(package);
 
 /**
  * ::configuration
@@ -130,6 +141,8 @@ gulp.task('runtime-js', function () {
 
     return gulp.src(runtimePathInput + "js/*", {base: runtimePathInput + "js"})
         .pipe(concat('runtime.js'))
+        .pipe(uglify())
+        .pipe(concatutil.header(fs.readFileSync(runtimePathInput + "resources/header.txt", "utf8"), { pkg : package} ))
         .pipe(gulp.dest(runtimePathOutput));
 });
 

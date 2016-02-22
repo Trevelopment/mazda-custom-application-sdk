@@ -27,3 +27,5 @@
 /**
  * This is the main mini framework file that contains everything to run the custom application environment
  */
+
+var CUSTOM_APPLICATION_VERSION='<%= pkg.version %>';

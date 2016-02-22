@@ -1,7 +1,7 @@
 {
   "name": "casdk",
   "description": "Write and deploy applications for the Mazda Infotainment System",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "homepage": "http://flyandi.github.io/mazda-custom-application-sdk/",
   "author": "flyandi <flyandi@yahoo.com>",
   "repository": {
@@ -20,8 +20,10 @@
     "grunt-build-atom-shell": "^2.1.1",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
+    "gulp-concat-util": "^0.5.5",
     "gulp-less": "^3.0.5",
     "gulp-open": "^1.0.0",
+    "gulp-uglify": "^1.5.2",
     "gulp-webserver": "^0.9.1",
     "run-sequence": "^1.1.5"
   },
@@ -39,5 +41,5 @@
     "build:osx": "npm run pack:osx && electron-builder \"build/simulator/osx/Mazda Infotainment Simulator.app\" --platform=osx --out=\"dist/simulator/osx\" --config=builder.json",
     "build:win": "npm run pack:win && electron-builder \"build/simulator/win/Mazda Infotainment Simulator\" --platform=win --out=\"dist/simulator/win\" --config=builder.json"
   },
-  "license": "GPL"
+  "license": "GPL-3.0"
 }

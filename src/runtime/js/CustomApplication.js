@@ -66,6 +66,9 @@ var CustomApplication = (function(){
 		/* (initialize) */
 		__initialize: function(next) {
 
+			// assign version
+			this.__version = CUSTOM_APPLICATION_VERSION;
+
 			// data arrays
 			this.__subscriptions = {};
 
