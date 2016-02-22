@@ -37,6 +37,7 @@ var
     runSequence = require('run-sequence'),
     del = require('del'),
     fs = require('fs'),
+    glob = require('glob'),
     exec = require('child_process').exec;
 
 /**
@@ -44,8 +45,6 @@ var
  */
 
 var package = require('./package.json');
-
-console.log(package);
 
 /**
  * ::configuration
