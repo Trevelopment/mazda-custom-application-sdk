@@ -74,6 +74,9 @@ ln -s /tmp/root /jci/gui/apps/system/data
 # patch systemApp
 cp -a /jci/gui/apps/system/js/systemApp.js /jci/gui/apps/system/js/systemApp.js.casdk
 
+# this is only for version 55.x NA right now (!)
+patch -t /jci/gui/apps/system/js/systemApp.js < casdk/patch/systemApp.patch
+
 
 # finalize with message
 /jci/tools/jci-dialog --title="Custom Application Runtime" --text="The Custom Application Runtime was successfully installed.\n\nPlease reboot system" --ok-label='OK' --no-cancel &
