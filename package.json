@@ -27,6 +27,7 @@
   },
   "scripts": {
     "build-runtime": "gulp build-runtime",
+    "build-install": "gulp build-install",
     "simulator": "electron ./src/simulator",
     "clean": "rm -rf ./dist/simulator",
     "clean:osx": "rm -rf ./build/simulator/osx",

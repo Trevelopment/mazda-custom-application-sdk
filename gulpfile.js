@@ -33,7 +33,8 @@ var
     less = require('gulp-less'),
     concat = require('gulp-concat'),
     runSequence = require('run-sequence'),
-    del = require('del');
+    del = require('del'),
+    exec = require('child_process').exec;
 
 /**
  * ::configuration
@@ -86,11 +87,11 @@ gulp.task('build-apps', function(callback) {
 /**
  * (build) runtime system
  *
- * These task build the run time system for the micro framework
+ * These task builds the run time system for the micro framework
  */
 
 var runtimePathInput =  input + "runtime/",
-    runtimePathOutput = output + 'apps/system/casdk/runtime/';
+    runtimePathOutput = output + "applications/runtime/";
 
 // (cleanup)
 gulp.task('runtime-cleanup', function () {  
@@ -145,9 +146,65 @@ gulp.task('build-runtime', function(callback) {
 }); 
 
 
+/**
+ * (build) install deploy image
+ *
+ * These task builds the install image
+ */
+
+
+var installDeployPathInput =  input + 'deploy/install/',
+    installDeployPathOutput = output + 'deploy/install/',
+    installSystemApp = "systemApp",
+    installSystemAppInput = input + "jci/" + installSystemApp;
+
+// (cleanup)
+gulp.task('install-cleanup', function () {  
+    return del(
+        [installDeployPathOutput + '**/*']
+    );
+});
+
+// (copy)
+gulp.task('install-copy', function() {
+
+    return gulp.src(installDeployPathInput + "**/*", {base: installDeployPathInput})
+        .pipe(gulp.dest(installDeployPathOutput));
+});
+
+// (patch)
+gulp.task('install-patch', function() {
+
+    exec("mkdir -p " + installDeployPathOutput + "patch", function() {
+        
+        exec("diff " + installSystemAppInput + ".orig.js " + installSystemAppInput + "js > " + installDeployPathOutput + "patch/" + installSystemApp + ".patch");
+
+    });
+
+});
+
+
+
+// (build)
+gulp.task('build-install', function(callback) {
+    runSequence(    
+        'install-cleanup',
+        'install-copy',
+        'install-patch',
+        callback
+    );
+}); 
+
 /** 
  * Common Commands
  */
+
+// clean
+gulp.task('clean', function () {  
+    return del(
+        [output + '**/*']
+    );
+});
 
 // Default Task
 gulp.task('default', function (callback) {
