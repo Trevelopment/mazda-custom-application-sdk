@@ -91,7 +91,7 @@ gulp.task('build-apps', function(callback) {
  */
 
 var runtimePathInput =  input + "runtime/",
-    runtimePathOutput = output + "applications/runtime/";
+    runtimePathOutput = output + "runtime/";
 
 // (cleanup)
 gulp.task('runtime-cleanup', function () {  
@@ -176,13 +176,12 @@ gulp.task('install-copy', function() {
 gulp.task('install-patch', function() {
 
     exec("mkdir -p " + installDeployPathOutput + "patch", function() {
-        
-        exec("diff " + installSystemAppInput + ".orig.js " + installSystemAppInput + "js > " + installDeployPathOutput + "patch/" + installSystemApp + ".patch");
+
+        exec("diff " + installSystemAppInput + ".orig.js " + installSystemAppInput + ".js > " + installDeployPathOutput + "patch/" + installSystemApp + ".patch");
 
     });
 
 });
-
 
 
 // (build)
@@ -191,6 +190,39 @@ gulp.task('build-install', function(callback) {
         'install-cleanup',
         'install-copy',
         'install-patch',
+        callback
+    );
+}); 
+
+
+/**
+ * (build) builds the actual sd card content
+ *
+ */
+
+var SDCardPathOutput = output + 'sdcard/applications/';
+
+// (cleanup)
+gulp.task('sdcard-cleanup', function () {  
+    return del(
+        [SDCardPathOutput + '**/*']
+    );
+});
+
+// (copy)
+gulp.task('sdcard-copy', function() {
+    gulp.src(runtimePathOutput + "**/*", {base: runtimePathOutput})
+        .pipe(gulp.dest(SDCardPathOutput + 'runtime'));
+
+    return gulp.src("apps/**/*", {base: "apps/"})
+        .pipe(gulp.dest(SDCardPathOutput + 'apps'));
+});
+
+// (build)
+gulp.task('build-sdcard', function(callback) {
+    runSequence(    
+        'sdcard-cleanup',
+        'sdcard-copy',
         callback
     );
 }); 
@@ -208,7 +240,13 @@ gulp.task('clean', function () {
 
 // Default Task
 gulp.task('default', function (callback) {
-
+    runSequence(    
+        'clean',
+        'build-runtime',
+        'build-install',
+        'build-sdcard',
+        callback
+    );
     
 
 });
