@@ -177,7 +177,7 @@ gulp.task('install-patch', function() {
 
     exec("mkdir -p " + installDeployPathOutput + "patch", function() {
 
-        exec("diff " + installSystemAppInput + ".orig.js " + installSystemAppInput + ".js > " + installDeployPathOutput + "patch/" + installSystemApp + ".patch");
+        exec("diff -u " + installSystemAppInput + ".original.js " + installSystemAppInput + ".js > " + installDeployPathOutput + "patch/" + installSystemApp + ".patch");
 
     });
 

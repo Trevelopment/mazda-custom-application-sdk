@@ -32,18 +32,22 @@
 mount -o rw,remount /
 
 # disable watchdog
-cp -a /jci/sm/sm.conf /jci/sm/sm.conf.casdk
-sed -i 's/watchdog_enable="true"/watchdog_enable="false"/g' /jci/sm/sm.conf
-sed -i 's|args="-u /jci/gui/index.html"|args="-u /jci/gui/index.html --noWatchdogs"|g' /jci/sm/sm.conf
+
+if [ ! -f /jci/sm/sm.conf.casdk ]; then 
+	cp -a /jci/sm/sm.conf /jci/sm/sm.conf.casdk
+	sed -i 's/watchdog_enable="true"/watchdog_enable="false"/g' /jci/sm/sm.conf
+	sed -i 's|args="-u /jci/gui/index.html"|args="-u /jci/gui/index.html --noWatchdogs"|g' /jci/sm/sm.conf
+fi
 
 # enable XMLHttpRequest
-cp -a /jci/opera/opera_home/opera.ini /jci/opera/opera_home/opera.ini.casdk
-
-count=$(grep -c "Allow File XMLHttpRequest=" /jci/opera/opera_home/opera.ini)
-if [ "$count" = "0" ]; then
-    sed -i '/User JavaScript=.#/a Allow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
-else
-    sed -i 's/Allow File XMLHttpRequest=.#/Allow File XMLHttpRequest=1/g' /jci/opera/opera_home/opera.ini
+if [ ! -f /jci/opera/opera_home/opera.ini.casdk ]; then
+	cp -a /jci/opera/opera_home/opera.ini /jci/opera/opera_home/opera.ini.casdk
+	count=$(grep -c "Allow File XMLHttpRequest=" /jci/opera/opera_home/opera.ini)
+	if [ "$count" = "0" ]; then
+	    sed -i '/User JavaScript=.#/a Allow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
+	else
+	    sed -i 's/Allow File XMLHttpRequest=.#/Allow File XMLHttpRequest=1/g' /jci/opera/opera_home/opera.ini
+	fi
 fi
 
 # find installation folder
@@ -63,20 +67,24 @@ cp -a casdk/scripts/* /jci/casdk
 find /jci/scripts/ -name "vdt*.sh" -exec chmod 755 {} \;
 
 # copy initialization file
-cp -a /jci/scripts/stage_wifi.sh /jci/scripts/stage_wifi.sh.casdk
-cp -a casdk/jci/stage_wifi.sh /jci/scripts/
-chmod 755 /jci/scripts/stage_wifi.sh
+if [ ! -f /jci/scripts/stage_wifi.sh.casdk ]; then
+	cp -a /jci/scripts/stage_wifi.sh /jci/scripts/stage_wifi.sh.casdk
+	cp -a casdk/jci/stage_wifi.sh /jci/scripts/
+	chmod 755 /jci/scripts/stage_wifi.sh
+fi
 
 # prepare runtime symlinks - currently only sd card is supported
 ln -s /tmp/mnt/sd_nav/applications /jci/gui/apps/system/applications
 ln -s /tmp/root /jci/gui/apps/system/data
 
 # patch systemApp
-cp -a /jci/gui/apps/system/js/systemApp.js /jci/gui/apps/system/js/systemApp.js.casdk
+if [ ! -f /jci/gui/apps/system/js/systemApp.js.casdk ]; then
+	cp -a /jci/gui/apps/system/js/systemApp.js /jci/gui/apps/system/js/systemApp.js.casdk
 
-# this is only for version 55.x NA right now (!)
-patch -t /jci/gui/apps/system/js/systemApp.js < casdk/patch/systemApp.patch
+	# this is only for version 55.x NA right now (!)
+	patch /jci/gui/apps/system/js/systemApp.js < patch/systemApp.patch
+fi
 
-
+echo "Installation complete"
 # finalize with message
 /jci/tools/jci-dialog --title="Custom Application Runtime" --text="The Custom Application Runtime was successfully installed.\n\nPlease reboot system" --ok-label='OK' --no-cancel &

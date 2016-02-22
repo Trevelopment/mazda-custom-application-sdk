@@ -44,7 +44,7 @@
  v2.7 (08-Feb-2013) Add now-playing icon to entertainment menu. Add traffic info item (Japan region only)
  v2.8 (15-Feb-2013) Communication context payload converted into msg instead. Hide home button icon on HomeScreen. Removed some remnants of change language.
  v2.9 (18-Feb-2013) HD Traffic Image item (regin specific)
- v3.0 (03-Feb-2016) Custom apps integration
+
  __________________________________________________________________________
 
  */
@@ -79,9 +79,6 @@ systemApp.prototype.appInit = function()
     {
         utility.loadScript("apps/system/test/systemAppTest.js");
     }
-
-    // Custom Applications Hook
-    this._prepareCustomApplications();
         
     //@formatter:off
 
@@ -489,17 +486,6 @@ systemApp.prototype.appInit = function()
             },
 			"readyFunction" : this._readySiriLaunchingError.bind(this),
         },
-
-        /**
-         * CustomApplication Surface
-         */
-
-        "CustomApplicationSurface" : {
-            "template" : "CustomApplicationSurfaceTmplt",
-            "templatePath": "apps/system/applications/runtime/surface/CustomApplicationSurfaceTmplt", 
-            "sbNameId" : null,
-        },
-
     }; // end of this._contextTable object
 
     //@formatter:off
@@ -1464,18 +1450,6 @@ systemApp.prototype._selectCallbackHomeScreen = function(mainMenuCtrlObj, appDat
  */
 systemApp.prototype._menuItemSelectCallback = function(listCtrlObj, appData, params)
 {
-    /**
-     * CustomApplication Handler Hook
-     */
-
-    if(appData.mmuiEvent == "ExecuteCustomApplication") {
-
-        return this._runCustomApplication(appData);
-
-    } 
-
-    // continue normal
-
     framework.sendEventToMmui(this.uiaId, appData.mmuiEvent, {}, params.fromVui);
 };
 
@@ -2318,87 +2292,6 @@ systemApp.prototype._updateSpeedRestrictedApps = function(isDisabled)
 				break;
 			}
 		}
-    }
-};
-
-/**
- * Custom Application Integration
- */
-
-systemApp.prototype._prepareCustomApplications = function()
-{
-    this.CustomApplicationLoadCount = 0;
-    setTimeout(function() {
-        this._loadCustomApplications();
-    }.bind(this), 15000); // first attempt wait 15s - the system might be booting still anyway
-
-}
-
-systemApp.prototype._loadCustomApplications = function()
-{
-    try {
-
-        if(typeof(CustomApplicationsHandler) == "undefined") {
-
-            // try to load the script
-            utility.loadScript("apps/system/applications/runtime/runtime.js", false, function() {
-
-                this._initCustomApplicationsDataList();   
-            
-            }.bind(this));
-
-            setTimeout(function() {
-
-                if(typeof(CustomApplicationsHandler) == "undefined") {
-
-                    this.CustomApplicationLoadCount = this.CustomApplicationLoadCount + 1;
-
-                    // 20 attempts or we forget it - that's almost 3min
-                    if(this.CustomApplicationLoadCount < 20) {
-                        
-                        this._loadCustomApplications();
-                    }
-                }
-
-            }.bind(this), 10000);
-
-        }
-
-    } catch(e) {
-        // if this fails, we won't attempt again because there could be issues with the actual handler
-        setTimeout(function() {
-            this._loadCustomApplications();
-        }.bind(this), 10000);
-    }
-};
-
-systemApp.prototype._initCustomApplicationsDataList = function()
-{
-    // extend with custom applications
-    try {
-        if(typeof(CustomApplicationsHandler) != "undefined") {
-            
-            CustomApplicationsHandler.retrieve(function(items) {
-
-                items.forEach(function(item) {
-
-                    this._masterApplicationDataList.items.push(item);
-
-                }.bind(this));
-
-                this._readyApplications();
-
-            }.bind(this));
-        }
-    } catch(e) {
-
-    }
-};
-
-systemApp.prototype._runCustomApplication = function(appData)
-{
-    if(typeof(CustomApplicationsHandler) != "undefined") {
-        CustomApplicationsHandler.run(appData);
     }
 };
 
