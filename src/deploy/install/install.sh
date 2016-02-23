@@ -39,15 +39,21 @@ if [ ! -f /jci/sm/sm.conf.casdk ]; then
 	sed -i 's|args="-u /jci/gui/index.html"|args="-u /jci/gui/index.html --noWatchdogs"|g' /jci/sm/sm.conf
 fi
 
-# enable XMLHttpRequest
+# enable User scripts and XMLHttpRequest
 if [ ! -f /jci/opera/opera_home/opera.ini.casdk ]; then
 	cp -a /jci/opera/opera_home/opera.ini /jci/opera/opera_home/opera.ini.casdk
+	sed -i 's/User JavaScript=0/User JavaScript=1/g' /jci/opera/opera_home/opera.ini
 	count=$(grep -c "Allow File XMLHttpRequest=" /jci/opera/opera_home/opera.ini)
 	if [ "$count" = "0" ]; then
 	    sed -i '/User JavaScript=.#/a Allow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
 	else
 	    sed -i 's/Allow File XMLHttpRequest=.#/Allow File XMLHttpRequest=1/g' /jci/opera/opera_home/opera.ini
 	fi
+fi
+
+# disable fps counter
+if [ -f /jci/opera/opera_dir/userjs/fps.js ]; then
+	mv -a /jci/opera/opera_dir/userjs/fps.js /jci/opera/opera_dir/userjs/fps.js.casdk
 fi
 
 # find installation folder
