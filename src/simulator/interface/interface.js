@@ -62,10 +62,15 @@
 		initialize: function() {
 
 			// startup console
-			Logger.info("Starting up");
+			Logger.info("Starting up on platform " + process.platform);
 
 			// ready framework
 			framework.ready();
+
+			// load additional css
+			if(process.platform.substr(0, 3) == "win") {
+				framework.loadCSS("interface-win.css");
+			}
 
 			// assign elements
 			this.root = $("#interface");
