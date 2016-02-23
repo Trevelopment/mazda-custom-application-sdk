@@ -31,6 +31,12 @@
 (function() {
 
 	/**
+	 * Globals
+	 */
+
+	LoggerFilterLevel = false;
+
+	/**
 	 * Logger
 	 */
 
@@ -50,6 +56,10 @@
 			this.log('DEBUG', id ? id : this.defaultId, message);
 		},
 
+		watch: function(message, id) {
+			this.log('WATCH', id ? id : this.defaultId, message);
+		},
+
 		log: function(level, id, message, color) {
 
 			var item = $("<div/>").attr("level", level);
@@ -61,6 +71,10 @@
 			item.append($("<span/>").append(id));
 			item.append($("<span/>").addClass(level).append(message));
 
+			// check LoggerFilterLevel
+			if(LoggerFilterLevel && level != LoggerFilterLevel) item.hide();
+
+			// add to output
 			$("#output").append(item);
 			$("#output").scrollTop($("#output").get(0).scrollHeight);
 		},
@@ -72,9 +86,7 @@
 	 * Global Error
 	 */
 	onerror = function(message, url, line) {
-		console.log(this);
 		Logger.log("ERROR", Logger.defaultId + ":" + url.replace(/^.*[\\\/]/, '') +":" + line, message);
-
 	};
 
 	/**
@@ -83,15 +95,23 @@
 
 	$(function() {
 
+		$("#actions").on("click", "li", function() {
+
+			var callMethod = $(this).attr("call");
+
+			if(Is.fn(Interface[callMethod])) Interface[callMethod]();
+
+		});
+
 		$("#levelbuttons").on("click", "li", function() {
 
-			var level = $(this).attr("level");
+			LoggerFilterLevel = $(this).attr("level");
 
-			if(!level) {
+			if(!LoggerFilterLevel) {
 				$("#output").find("div").show();
 			} else {
 				$("#output").find("div").hide();
-				$("#output").find("div[level=" + level + "]").show();
+				$("#output").find("div[level=" + LoggerFilterLevel + "]").show();
 			}
 
 			// scroll to bottom

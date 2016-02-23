@@ -62,7 +62,7 @@ var CustomApplication = (function(){
 		 * Called when the application is initalized first and is reponsible for creating 
 		 * the surface and canvas.
 		 */
-		
+
 		/* (initialize) */
 		__initialize: function(next) {
 
@@ -162,7 +162,7 @@ var CustomApplication = (function(){
 				if(this.require.images && !this.is.empty(this.require.images)) {
 					toload++;
 					CustomApplicationResourceLoader.loadImages(this.require.images, this.location, function(loadedImages) {
-						
+
 						// assign images
 						this.images = loadedImages;
 
@@ -195,7 +195,7 @@ var CustomApplication = (function(){
 				}.bind(this));
 			}
 
-			// execute life cycle 
+			// execute life cycle
 			this.__lifecycle("focused");
 
 			this.canvas.appendTo(parent);
@@ -419,7 +419,7 @@ var CustomApplication = (function(){
 				if(this.is.object(id)) {
 					o = id;
 					id = o.id || false;
-				} 
+				}
 
 				if(id) {
 					// set all lowercase id
@@ -432,6 +432,7 @@ var CustomApplication = (function(){
 						callback: callback
 					});
 
+					// all set
 					return true;
 				}
 			}

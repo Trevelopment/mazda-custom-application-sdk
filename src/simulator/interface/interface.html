@@ -39,6 +39,7 @@
 	<script src="logger.js"></script>
 	<script src="framework.js"></script>
 	<script src="multicontroller.js"></script>
+	<script src="watcher.js"></script>
 	<script src="interface.js"></script>
 
 	<link rel="stylesheet" href="../fonts/fonts.css" />
@@ -103,14 +104,21 @@
 			<div id="consolebar">
 				<div class="inner">
 					<ul id="actions">
-						<li class="icon refresh"></li>
+						<li class="icon" call="refresh">
+							<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512">
+								<path d="M376 288c0 70.688-57.312 128-128 128s-128-57.312-128-128c0-65.36 62.672-105.52 128-111.216v79.216l160-112v-16l-160-128v80.672c-117.552 6.912-224 88.976-224 207.328 0 123.712 100.288 224 224 224s224-100.288 224-224h-96z"></path>
+							</svg>
+						</li>
 					</ul>
 
 					<ul id="levelbuttons">
-						<li class="focus">All</li>
-						<li level="ERROR">Error</li>
-						<li level="INFO">Info</li>
-						<li level="DEBUG">Debug</li>
+						<li target="console" class="focus">All</li>
+						<li target="console" level="ERROR">Error</li>
+						<li target="console" level="INFO">Info</li>
+						<li target="console" level="DEBUG">Debug</li>
+						<li target="console" level="WATCH">Watch</li>
+						<li class="divider"></li>
+						<li>Storage</li>
 					</ul>
 					<div id="clearbutton" class="button">Clear</div>
 				</div>

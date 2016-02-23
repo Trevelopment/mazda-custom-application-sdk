@@ -376,7 +376,8 @@ body {
 			list-style:none;
 			position:absolute;
 			left:0;
-			top:1px;
+			top:0;
+			bottom:0;
 			margin:0;
 			padding:0;
 			border-right:1px solid #0E0F0F;
@@ -393,26 +394,42 @@ body {
 				#console #consolebar #actions li.icon {
 					width:32px;
 					height:32px;
+					cursor:pointer;
+					position:relative;
 				}
 
 					#console #consolebar #actions li.icon svg {
-						fill: #fff;
+						fill: #616469;
+						width:20px;
+						height:20px;
+						position:absolute;
+						top:6px;
+						left:9px;
+						cursor:pointer;
 					}
 
-					#console #consolebar #actions li.icon.refresh {
-						background:url(../images/refresh.svg) no-repeat center center;
-						background-size:20px 20px;
+					#console #consolebar #actions li.icon:hover svg {
+						fill:#ffffff;
 					}
 
 
 		#console #consolebar #levelbuttons {
 			list-style:none;
 			position:absolute;
-			left:100px;
-			top:8px;
+			left:50px;
+			top:0;
+			bottom:0;
 			margin:0;
 			padding:0;
+			padding-right:8px;
 		}
+
+			#console #consolebar #levelbuttons li.divider {
+				border-right:1px solid #0E0F0F;
+				margin:0!important;
+				padding-right:5px!important;
+				padding-top:34px;
+			}
 
 			#console #consolebar #levelbuttons li {
 				float:left;
@@ -421,6 +438,11 @@ body {
 				padding:2px 4px;
 				cursor: pointer;
 				margin-right:5px;
+				margin-top:8px;
+			}
+
+			#console #consolebar #levelbuttons li:hover {
+				color:#ffffff;
 			}
 
 		#console #consolebar #levelbuttons li.focus,
@@ -432,7 +454,8 @@ body {
 		}
 
 			#console #consolebar .button:hover {
-				background: #616469
+				background: #616469;
+				color:#fff;
 			}
 
 		#console #consolebar #clearbutton {
@@ -491,6 +514,11 @@ body {
 
 				#console #output div span:nth-child(2).ERROR {
 					background:#D93600;
+					color:#fff;
+				}
+
+				#console #output div span:nth-child(2).WATCH {
+					background:#B973FF;
 					color:#fff;
 				}
 

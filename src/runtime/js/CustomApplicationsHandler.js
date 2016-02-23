@@ -126,6 +126,7 @@ var CustomApplicationsHandler = {
 
 	register: function(id, application) {
 
+		// registering
 		CustomApplicationLog.info(this.__name, {id:id}, "Registering application");
 
 		application.id = id;
@@ -218,7 +219,6 @@ var CustomApplicationsHandler = {
 
 			return false;
 		}
-
 
 		CustomApplicationLog.error(this.__name, "Missing currentApplicationId");
 

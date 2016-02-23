@@ -30,8 +30,12 @@
 
 
 
+
 /**
  * Interface
+ *
+ * This is really messy code but it does the job - so don't judge me here! :-)
+ *
  */
 
 
@@ -91,31 +95,44 @@
 			Multicontroller.initialize();
 
 			// try to load runtime
-			this.loadRuntime(function() {
-
-				// runtime was loaded
-				this.loadApplications(function() {
-
-					// show app menu
-					this.showAppMenu();
-
-				}.bind(this));
-
-			}.bind(this));
+			this.refresh();
 
 			// register ipc messages
 			var ipc = require('ipc');
 
 			ipc.on('runtimeLocation', function(location) {
 				localStorage.setItem("runtimeLocation", location);
-				this.loadRuntime();
+				this.loadRuntime(function() {
+					this.showFromRecover();
+				}.bind(this));
 		    }.bind(this));
 
 		    ipc.on('appsLocation', function(location) {
 				localStorage.setItem("appsLocation", location);
-				this.loadApplications();
+				this.loadApplications(function() {
+					this.showFromRecover();
+				}.bind(this));
 		    }.bind(this));
+		},
 
+		/**
+		 * (refresh)
+		 */
+
+		refresh: function() {
+
+			// load runtime
+			this.loadRuntime(function() {
+
+				// runtime was loaded
+				this.loadApplications(function() {
+
+					// show app menu
+					this.showFromRecover();
+
+				}.bind(this));
+
+			}.bind(this));
 		},
 
 		/**
@@ -137,6 +154,9 @@
 
 			// reset
 			window.CustomApplicationsHandler = false;
+
+			// stop watcher
+			if(this.runtimeWatcher) this.runtimeWatcher.close();
 
 			// load runtime.js
 			framework.loadJS("file://" + runtimeLocation + "/runtime.js", function() {
@@ -167,6 +187,14 @@
 					// done
 					this.runtimeLoaded = true;
 
+					// engage watcher
+					this.runtimeWatcher = new Watcher(runtimeLocation, "runtime", function() {
+
+						// refresh if change was detected
+						this.refresh();
+
+					}.bind(this));
+
 					// callback
 					if(Is.fn(callback)) callback();
 
@@ -185,9 +213,17 @@
 			if(!this.runtimeLoaded || typeof(CustomApplicationsHandler) == "undefined")
 				return Logger.error("Error while loading applications. No runtime system was loaded.");
 
+			// stop watchers
+			this.deregisterApplicationWatchers();
+
+			// clear
 			this.appsLoaded = false;
 			this.applications = false;
 
+			// cleanup framework
+			framework.cleanup();
+
+			// load from location
 			var appsLocation = localStorage.getItem("appsLocation");
 
 			// check
@@ -200,18 +236,62 @@
 			// load runtime
 			Logger.info(sprintr("Loading applications from {0}", appsLocation));
 
+			// stop watcher
+			if(this.appsWatcher) this.appsWatcher.close();
+
 			// load applications
 			CustomApplicationsHandler.retrieve(function(items) {
 
+				// assign items
 				this.applications = items;
+				this.applicationsWatchers = Array.apply(null, Array(items.length));
 
+				// register watchers
+				this.registerApplicationWatchers();
+
+				// reload apps
 				this.appsLoaded = true;
 
+				// engage watcher for apps.js
+
+				this.appsWatcher = new Watcher(appsLocation, "applications", function() {
+
+					// auto reload
+					this.loadApplications(function() {
+
+						// reload main screen
+						this.showFromRecover();
+
+					}.bind(this));
+
+				}.bind(this));
+
+
+				// callback
 				if(Is.fn(callback)) callback();
 
 	        }.bind(this));
 		},
 
+		/**
+		 * (showFromRecover)
+		 *
+		 * Shows an application that previously invoked or display the menu
+		 */
+
+		showFromRecover: function() {
+
+			// sanity check
+			if(!this.appsLoaded || !this.applications) return;
+
+			// run last app id
+			if(this.lastApplicationId && this.invokeApplication(this.lastApplicationId)) {
+				return;
+			}
+
+			// show app menu
+			this.showAppMenu();
+		},
 
 		/**
 		 * (showAppMenu)
@@ -224,30 +304,31 @@
 			// sanity check
 			if(!this.appsLoaded || !this.applications) return;
 
-			// clear last application
-			localStorage.setItem("lastRunApplication", false);
+			// clear current application
+			this.lastApplicationId = false;
 
 			// cleanup framework
 			framework.cleanup();
 
 			// prepare menu
 			this.menu.html("");
+
+			// create items
             this.applications.forEach(function(item, index) {
 
             	this.menu.append($("<a/>").attr({
             		appId: item.appData.appId,
             		menuIndex: index,
-            	
             	}).on({
-            	
+
             		click: function() {
-            	
+
             			this.invokeApplication(item.appData.appId);
-            	
+
             		}.bind(this),
-            	
+
             	}).hover(function() {
-        			
+
         			this.menuIndex = index;
         			this.setAppMenuFocus();
 
@@ -303,13 +384,16 @@
 			// fadeout menu
 			this.menu.fadeOut();
 
-			// update last run application
-			localStorage.setItem("lastRunApplication", appId);
-
 			// run application
-			CustomApplicationsHandler.run(appId);
+			var result = CustomApplicationsHandler.run(appId);
 
-			this.inAppMenu = false;
+			// check result
+			if(result) {
+				this.inAppMenu = false;
+				this.lastApplicationId = appId;
+			}
+
+			return result;
 		},
 
 
@@ -438,6 +522,118 @@
 			}.bind(this));
 
 		},
+
+		/**
+		 * (registerApplicationWatchers)
+		 */
+
+		registerApplicationWatchers: function() {
+
+			if(!this.applications || !this.applicationsWatchers) return false;
+
+			// clear all watchers
+			this.deregisterApplicationWatchers();
+
+			// get location
+			var appsLocation = localStorage.getItem("appsLocation");
+
+			// sanity check
+			if(!appsLocation) return false;
+
+			// register new watchers
+			this.applications.forEach(function(item, index) {
+
+				var fn = appsLocation + "/" + item.appData.appId;
+
+				this.applicationsWatchers[index] = new Watcher(fn, item.appData.appId, function() {
+
+					// reload this specific application
+					this.reloadApplication(item.appData.appId, fn, index);
+
+
+				}.bind(this));
+
+			}.bind(this));
+
+			return true;
+		},
+
+		/**
+		 * (deregisterApplicationWatchers)
+		 */
+
+		deregisterApplicationWatchers: function() {
+
+			if(!this.applicationsWatchers) return false;
+
+			this.applicationsWatchers.forEach(function(item, index) {
+
+				if(this.applicationsWatchers[index]) {
+					this.applicationsWatchers[index].close();
+					this.applicationsWatchers[index] = false;
+				}
+
+			}.bind(this));
+		},
+
+		/**
+		 * (reloadApplication)
+		 *
+		 * This is a tricky one since I don't want to adjust the micro framework we need to
+		 * replace during runtime the application and reregister it.
+		 */
+
+		reloadApplication: function(id, location, index) {
+
+			// clean up current application
+			if(this.lastApplicationId == id) {
+				framework.cleanup();
+			}
+
+			// first destroy the current application
+			if(CustomApplicationsHandler.applications[id]) {
+				CustomApplicationsHandler.sleep(CustomApplicationsHandler.applications[id]);
+			}
+
+			// reload the current application
+			framework.loadJS("file://" + location + "/app.js", function() {
+
+				// app should be reappared by now
+				if(CustomApplicationsHandler.applications[id]) {
+
+					// show notification
+					this.notify("Application " + CustomApplicationsHandler.applications[id].title + " has been reloaded.");
+
+					// reassign application to array
+					this.applications[index] = CustomApplicationsHandler.applications[id];
+
+					// reload app or show screen
+					this.showFromRecover();
+
+				};
+
+			}.bind(this));
+
+		},
+
+
+		/**
+		 * (Notify) sends a desktop notification - Disabled for now until I have a settings page
+		 */
+
+		notify: function(content, title) {
+
+			/*if(Notification) {
+
+				var title = title ? title : 'Simulator';
+
+				new Notification(title, {
+					title: title,
+					body: content
+				});
+			}*/
+
+		}
 	}
 
 	/**

@@ -52,13 +52,23 @@ function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProp
 
     log.debug("templateID in CustomApplicationSurfaceTmplt constructor: " + templateID);
 
+    // reset
+    this.properties = {};
+
     // get active application
     this.application = CustomApplicationsHandler.getCurrentApplication();
+
+    if(!this.application) {
+
+        // todo: show a error message here that no active application launch was launched
+
+        return false;
+    }
 
     //set the template properties
     this.properties = {
         "statusBarVisible" : this.application.getStatusbar(),
-        "leftButtonVisible" : this.application.getLeftButton(), 
+        "leftButtonVisible" : this.application.getLeftButton(),
         "hasActivePanel" : false,
         "isDialog" : false
     }
@@ -90,7 +100,7 @@ function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProp
     this.application.__wakeup(this.divElt);
 
     // finish application creation
-    setTimeout(function() {    
+    setTimeout(function() {
 
         // there is no really work around for this. The templates context is never changed and
         // so none of the standard template callbacks are called. Anything else would require
@@ -123,7 +133,9 @@ function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProp
 
 CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
 {
-    CustomApplicationsHandler.sleep(this.application);
+    if(this.application) {
+        CustomApplicationsHandler.sleep(this.application);
+    }
 }
 
 /**
@@ -132,7 +144,9 @@ CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
 
 CustomApplicationSurfaceTmplt.prototype.handleControllerEvent = function(eventID)
 {
-    this.application.__handleControllerEvent(eventID);
+    if(this.application) {
+        this.application.__handleControllerEvent(eventID);
+    }
 }
 
 

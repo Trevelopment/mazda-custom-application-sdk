@@ -23,14 +23,14 @@
  * If not, see http://www.gnu.org/licenses/
  *
  */
- 
+
 
 /**
  * HelloWorld Application
- * 
+ *
  * This is the main file of the application and contains the required information
  * to run the application on the mini framework.
- * 
+ *
  * The filename needs to be app.js in order to be recognized by the loader.
  */
 
@@ -81,7 +81,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 		/**
 		 * (terminateOnLost) 	
-		 * 
+		 *
 		 * If set to 'true' this will remove the stateless life cycle and always
 		 * recreate the application once the focus is lost. Otherwise by default
 		 * the inital created state will stay alive across the systems runtime.

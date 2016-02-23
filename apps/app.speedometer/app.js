@@ -1,6 +1,6 @@
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
- * 
+ *
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
@@ -116,7 +116,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		statusbarTitle: 'Speedometer',
 
 		/**
-		 * (statusbarHideHomeButton) hides the home button in the statusbar 
+		 * (statusbarHideHomeButton) hides the home button in the statusbar
 		 */
 
 		// statusbarHideHomeButton: false,
@@ -144,7 +144,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 			scaleMinSpeed: 0,
 			scaleMaxSpeed: 120,
 			scaleStep: 10,  // every 10 miles / hour
-			scaleAngle: 148, 
+			scaleAngle: 148,
 			scaleRadius: 170,
 			scaleOffsetStep: 4.8,
 			scaleOffsetX: -11,

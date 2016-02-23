@@ -6,20 +6,20 @@
  *
  * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
  * Copyright (c) 2016. All rights reserved.
- * 
+ *
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
  * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
  * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. 
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/
  *
  */
@@ -50,7 +50,7 @@ var VehicleDataRegion = {
 
 
 /**
- * (VehicleData) a collection of useful mappings 
+ * (VehicleData) a collection of useful mappings
  */
 
 var VehicleData = {
@@ -184,12 +184,12 @@ var CustomApplicationDataHandler = {
 		}},
 
 
-		/** 
+		/**
 		 * (file) file based tables
 		 *
-		 * Most tables only need to be loaded once when the car is started. 
-		 */ 
-		 
+		 * Most tables only need to be loaded once when the car is started.
+		 */
+
 		/**
 		 * Frequent updated tables (1s refresh rate)
 		 */
@@ -197,7 +197,7 @@ var CustomApplicationDataHandler = {
 		// VDT - This table contains the most time sensitive values likes speed, rpm, etc
 		{table: 'vdt', prefix: 'VDT', enabled: true, file: true, update: 1},
 
-		// GPS 
+		// GPS
 		{table: 'gps', prefix: 'GPS', enabled: true, file: true, filter: 'gps', update: 1},
 
 
@@ -207,7 +207,7 @@ var CustomApplicationDataHandler = {
 
 		// Vehicle Data Transfer data
 		{table: 'vdtpid', prefix: 'PID', enabled: true, file: true, update: 60},
-		
+
 		// Vehicle Data Transfer data
 		{table: 'vdtcurrent', prefix: 'VDTC', enabled: true, file: true, update: 60},
 
@@ -219,7 +219,7 @@ var CustomApplicationDataHandler = {
 		// VDM - ECO and Energy Management data (disabled)
 		{table: 'vdm', prefix: 'VDM', enabled: false, file: true, update: 300},
 
-		// VDM History - ECO and Energy Management data
+		// VDM History - ECO and Energy Management data (disabled)
 		{table: 'vdmhistory', prefix: 'VDMH', enabled: false, file: true, update: 300},
 
 
@@ -231,10 +231,10 @@ var CustomApplicationDataHandler = {
 		{table: 'vdtsettings', prefix: 'VDTS', enabled: true, file: true, update: false},
 
 		// Ignition Diagnostic Monitor (disabled)
-		{table: 'idm', prefix: 'IDM', enabled: false, file: true, update: false},
+		{table: 'idm', prefix: 'IDM', enabled: true, file: true, update: false},
 
 		// Ignition Diagnostic Monitor History (disabled)
-		{table: 'idmhistory', prefix: 'IDMH', enabled: false, file: true, update: false},
+		{table: 'idmhistory', prefix: 'IDMH', enabled: true, file: true, update: false},
 
 		// Vehicle Data Transfer data (disabled)
 		{table: 'vdthistory', prefix: 'VDTH', enabled: false, file: true, update: false},
@@ -274,7 +274,7 @@ var CustomApplicationDataHandler = {
 		return this.data[id] ? this.data[id] : {value: _default ? _default : null};
 	},
 
-	/** 
+	/**
 	 * (registerValue) adds a new value
 	 */
 
@@ -328,7 +328,7 @@ var CustomApplicationDataHandler = {
 			if(CustomApplicationDataProcessors[id]) {
 				value = CustomApplicationDataProcessors[id](value);
 			}
-			
+
 			// assign
 			this.data[id].changed = this.data[id].value != value;
 			this.data[id].previous = this.data[id].value;
@@ -389,7 +389,7 @@ var CustomApplicationDataHandler = {
 
 	retrieve: function(callback) {
 
-		CustomApplicationLog.debug(this.__name, "Retrieving data tables");	
+		CustomApplicationLog.debug(this.__name, "Retrieving data tables");
 
 		// prepare
 		var loaded = 0, toload = 0, finish = function() {
@@ -416,7 +416,7 @@ var CustomApplicationDataHandler = {
 				toload++;
 
 				// loading
-				CustomApplicationLog.debug(this.__name, "Preparing table for parsing", {table: table.table});	
+				CustomApplicationLog.debug(this.__name, "Preparing table for parsing", {table: table.table});
 
 				// process table by type
 				switch(true) {
@@ -500,7 +500,7 @@ var CustomApplicationDataHandler = {
 
 		// filter
 		if(table.filter) data = this.__filterFileData(data, table.filter);
-	
+
 		// quick process
 		data.forEach(function(line, index) {
 
@@ -528,9 +528,9 @@ var CustomApplicationDataHandler = {
 						// update value
 						this.setValue(id, $.trim(parts[4]));
 
-						break; 
+						break;
 				}
-			
+
 			}
 
 		}.bind(this));
@@ -608,7 +608,7 @@ var DataTransform = {
 	 */
 
 
-	scaleValue: function( value, r1, r2 ) { 
+	scaleValue: function( value, r1, r2 ) {
     	return ( value - r1[ 0 ] ) * ( r2[ 1 ] - r2[ 0 ] ) / ( r1[ 1 ] - r1[ 0 ] ) + r2[ 0 ];
 	},
 
