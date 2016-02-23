@@ -54,6 +54,12 @@ var CustomApplication = (function(){
 		LESSER: 3,
 		EQUAL: 4,
 
+		/**
+		 * __storage
+		 */
+
+		__storage: {},
+
 
 
 		/**
@@ -403,6 +409,24 @@ var CustomApplication = (function(){
 					this.onRegionChange(region);
 				}
 			}
+		},
+
+		/**
+		 * (internal) storage
+		 *
+		 * Storage specific methods - this needs to be finalized
+		 */
+
+		getStorage: function() {
+			return this.__storage;
+		},
+
+		get: function(name, _default) {
+			return this.is.defined(this.__storage[name]) ? this.__storage[name] : _default;
+		},
+
+		set: function(name, value) {
+			this.__storage[name] = value;
 		},
 
 		/**

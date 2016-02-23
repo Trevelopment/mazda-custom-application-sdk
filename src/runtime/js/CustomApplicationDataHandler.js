@@ -166,12 +166,12 @@ var CustomApplicationDataHandler = {
 	},
 
 	/**
-	 * (Tables) 
+	 * (Tables)
 	 */
 
 	tables: [
 
-		/** 
+		/**
 		 * (internal) non-file tables
 		 *
 		 * These are internal tables that can be used by the subscription handlers
@@ -238,7 +238,7 @@ var CustomApplicationDataHandler = {
 
 		// Vehicle Data Transfer data (disabled)
 		{table: 'vdthistory', prefix: 'VDTH', enabled: false, file: true, update: false},
-		
+
 	],
 
 	/**
