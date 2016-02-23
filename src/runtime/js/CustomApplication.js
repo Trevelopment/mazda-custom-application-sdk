@@ -206,6 +206,9 @@ var CustomApplication = (function(){
 				}.bind(this));
 			}
 
+			// read storage
+			this.__getstorage();
+
 			// execute life cycle
 			this.__lifecycle("focused");
 
@@ -220,18 +223,22 @@ var CustomApplication = (function(){
 
 		__sleep: function() {
 
+			// clear canvas
 			this.canvas.detach();
 
-			// execute life cycle 
+			// write storage
+			this.__setstorage();
+
+			// execute life cycle
 			this.__lifecycle("lost");
 
 			// end life cycle if requested
 			if(this.getSetting("terminateOnLost") === true) {
 
-				// that's it! 
+				// that's it!
 				this.__terminate();
 			}
-			
+
 		},
 
 		/**
@@ -430,8 +437,28 @@ var CustomApplication = (function(){
 			return this.is.defined(this.__storage[name]) ? this.__storage[name] : _default;
 		},
 
+		__getstorage: function() {
+
+			try {
+				this.__storage = JSON.parse(localStorage.getItem(this.getId()));
+			} catch(e) {
+			}
+		},
+
 		set: function(name, value) {
 			this.__storage[name] = value;
+
+			this.__setstorage();
+		},
+
+		__setstorage: function() {
+
+			try {
+				// local storage should work on all mazda systems
+				localStorage.setItem(this.getId(), JSON.stringify(this.__storage));
+			} catch(e) {
+				CustomApplicationLog.info(this.id, "Could not set storage", {message: e.message});
+			}
 		},
 
 		/**
