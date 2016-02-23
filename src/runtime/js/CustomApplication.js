@@ -60,6 +60,11 @@ var CustomApplication = (function(){
 
 		__storage: {},
 
+		/**
+		 * __context
+		 */
+
+		__context: [],
 
 
 		/**
@@ -489,7 +494,7 @@ var CustomApplication = (function(){
 
 			return this.is.fn(transformer) ? transformer(value) : value;
 
-		},	
+		},
 
 
 
@@ -509,9 +514,31 @@ var CustomApplication = (function(){
 	    },
 
 	    /**
-	     * Transform Vehicle Data
+	     * (internal) addContext
+	     *
+	     * Adds a new context to the context table
 	     */
-	
+
+	    addContext: function(context) {
+
+	    	// format context
+	    	switch(true) {
+
+	    		case context.nodeName:
+
+	    			context = $(context);
+
+	    			break;
+
+	    		default:
+
+	    			return false;
+	    	}
+
+	    	// check context
+
+	    },
+
 	};
 
 	return CustomApplication;

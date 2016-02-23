@@ -37,4 +37,5 @@ var CustomApplications = [
 	"app.helloworld",
 	"app.speedometer",
 	"app.simpledashboard",
+	"app.multicontroller"
 ];
