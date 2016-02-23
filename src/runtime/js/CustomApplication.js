@@ -430,8 +430,29 @@ var CustomApplication = (function(){
 			return this.is.defined(this.__storage[name]) ? this.__storage[name] : _default;
 		},
 
+		__getstorage: function() {
+
+			try {
+				this.__storage = JSON.parse(localStorage.getItem(this.getId()));
+			} catch(e) {
+				this.__storage = {};
+			}
+		},
+
 		set: function(name, value) {
 			this.__storage[name] = value;
+
+			this.__setstorage();
+		},
+
+		__setstorage: function() {
+
+			try {
+				// local storage should work on all mazda systems
+				localStorage.setItem(this.getId(), JSON.stringify(this.__storage));
+			} catch(e) {
+				CustomApplicationLog.info(this.id, "Could not set storage", {message: e.message});
+			}
 		},
 
 		/**
