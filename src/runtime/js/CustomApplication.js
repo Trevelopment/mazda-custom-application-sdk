@@ -206,6 +206,9 @@ var CustomApplication = (function(){
 				}.bind(this));
 			}
 
+			// read storage
+			this.__getstorage();
+
 			// execute life cycle
 			this.__lifecycle("focused");
 
@@ -220,18 +223,22 @@ var CustomApplication = (function(){
 
 		__sleep: function() {
 
+			// clear canvas
 			this.canvas.detach();
 
-			// execute life cycle 
+			// write storage
+			this.__setstorage();
+
+			// execute life cycle
 			this.__lifecycle("lost");
 
 			// end life cycle if requested
 			if(this.getSetting("terminateOnLost") === true) {
 
-				// that's it! 
+				// that's it!
 				this.__terminate();
 			}
-			
+
 		},
 
 		/**
@@ -435,7 +442,6 @@ var CustomApplication = (function(){
 			try {
 				this.__storage = JSON.parse(localStorage.getItem(this.getId()));
 			} catch(e) {
-				this.__storage = {};
 			}
 		},
 
