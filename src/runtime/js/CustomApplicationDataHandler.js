@@ -181,7 +181,7 @@ var CustomApplicationDataHandler = {
 
 			region: {type: 'string', value: 'na'},
 
-		}},
+		}, update: false},
 
 
 		/**
@@ -408,9 +408,24 @@ var CustomApplicationDataHandler = {
 		}.bind(this);
 
 		// build to load list
-		this.tables.map(function(table) {
+		this.tables.map(function(table, tableIndex) {
 
-			if(table.enabled) {
+			// conditional loading
+			var enabled = table.enabled && ( (table.update) || (!table.update && !table.__last) );
+
+			// check time
+			if(enabled) {
+
+				if(table.update && table.__last && table.update > 1) {
+
+					enabled = (((new Date()) - table.__last) / 1000) > table.update;
+
+				}
+
+			}
+
+			// load
+			if(enabled) {
 
 				// update counter
 				toload++;
@@ -440,6 +455,9 @@ var CustomApplicationDataHandler = {
 						// update counter
 						loaded++;
 
+						// completed
+						this.tables[tableIndex].__last = new Date();
+
 						// continue
 						finish();
 
@@ -466,6 +484,9 @@ var CustomApplicationDataHandler = {
 							// execute parser
 							this.__parseFileData(table, data);
 
+							// completed
+							this.tables[tableIndex].__last = new Date();
+
 							// continue
 							finish();
 
@@ -477,7 +498,7 @@ var CustomApplicationDataHandler = {
 
 						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});	
 
-						// just finish 
+						// just finish
 						loaded++;
 
 						// continue
@@ -485,7 +506,7 @@ var CustomApplicationDataHandler = {
 						break;
 				}
 			}
-		}.bind(this));		
+		}.bind(this));
 	},
 
 
