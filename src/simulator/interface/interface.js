@@ -392,6 +392,9 @@
 			// run application
 			var result = CustomApplicationsHandler.run(appId);
 
+			// update application panel
+			//Logger.updateApplication(CustomApplicationsHandler.applications[appId]);
+
 			// check result
 			if(result) {
 				this.inAppMenu = false;

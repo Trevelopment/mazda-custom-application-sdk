@@ -396,6 +396,10 @@ var CustomApplication = (function(){
 			return this.__region || 'na';
 		},
 
+		getStorage: function() {
+			return this.__storage;
+		},
+
 		/**
 		 * (internal) setters
 		 */
@@ -416,10 +420,6 @@ var CustomApplication = (function(){
 		 *
 		 * Storage specific methods - this needs to be finalized
 		 */
-
-		getStorage: function() {
-			return this.__storage;
-		},
 
 		get: function(name, _default) {
 			return this.is.defined(this.__storage[name]) ? this.__storage[name] : _default;

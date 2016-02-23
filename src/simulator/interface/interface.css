@@ -428,7 +428,7 @@ body {
 			#console #consolebar #levelbuttons li.divider {
 				border-right:1px solid #0E0F0F;
 				margin:0!important;
-				padding-right:5px!important;
+				margin-right:10px!important;
 				padding-top:34px;
 			}
 
@@ -465,8 +465,7 @@ body {
 			position:absolute;
 		}
 
-
-	#console #output {
+	#console .consolewindow {
 		position:absolute;
 		top:35px;
 		bottom:0;
@@ -478,6 +477,20 @@ body {
 		font-size:12px;
 		white-space: nowrap;
 		z-index:1;
+		display:none;
+	}
+
+	#console #application {
+		
+	}
+
+
+	#console #storage {
+		
+	}
+
+	#console #output {
+		display:block;
 	}
 
 		#console #output div {

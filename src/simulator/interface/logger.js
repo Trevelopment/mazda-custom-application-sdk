@@ -105,17 +105,30 @@
 
 		$("#levelbuttons").on("click", "li", function() {
 
-			LoggerFilterLevel = $(this).attr("level");
+			$("#console").find(".consolewindow").hide();
 
-			if(!LoggerFilterLevel) {
-				$("#output").find("div").show();
-			} else {
-				$("#output").find("div").hide();
-				$("#output").find("div[level=" + LoggerFilterLevel + "]").show();
+			switch($(this).attr("target")) {
+
+				case "output":
+
+					LoggerFilterLevel = $(this).attr("level");
+
+					if(!LoggerFilterLevel) {
+						$("#output").find("div").show();
+					} else {
+						$("#output").find("div").hide();
+						$("#output").find("div[level=" + LoggerFilterLevel + "]").show();
+					}
+
+					// scroll to bottom
+					$("#output").scrollTop($("#output").get(0).scrollHeight);
+
+				default:
+
+					$("#" + $(this).attr("target")).show();
+					break;
+
 			}
-
-			// scroll to bottom
-			$("#output").scrollTop($("#output").get(0).scrollHeight);
 
 			// set correct markers
 			$(this).parent().find("li.focus").removeClass("focus");

@@ -112,18 +112,21 @@
 					</ul>
 
 					<ul id="levelbuttons">
-						<li target="console" class="focus">All</li>
-						<li target="console" level="ERROR">Error</li>
-						<li target="console" level="INFO">Info</li>
-						<li target="console" level="DEBUG">Debug</li>
-						<li target="console" level="WATCH">Watch</li>
+						<li target="output" class="focus">All</li>
+						<li target="output" level="ERROR">Error</li>
+						<li target="output" level="INFO">Info</li>
+						<li target="output" level="DEBUG">Debug</li>
+						<li target="output" level="WATCH">Watch</li>
 						<li class="divider"></li>
-						<li>Storage</li>
+						<li target="application">Application</li>
+						<li target="storage">Storage</li>
 					</ul>
 					<div id="clearbutton" class="button">Clear</div>
 				</div>
 			</div>
-			<div id="output"></div>
+			<div id="output" class="consolewindow"></div>
+			<div id="application" class="consolewindow"></div>
+			<div id="storage" class="consolewindow"></div>
 		</div>
 	</div>
 </body>
