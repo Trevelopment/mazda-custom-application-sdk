@@ -728,7 +728,7 @@ var CustomApplication = (function(){
 	    	$.each(this.__context, function(index, context) {
 
 	    		// make sure we don't process ourselves
-	    		if(index != this.__currentContextIndex) {
+	    		if(index != this.__currentContextIndex && nextIndex == false) {
 
 	    			var bb = context.boundingBox;
 
@@ -754,6 +754,9 @@ var CustomApplication = (function(){
 
 			    	}
 			    }
+
+			    // break loop
+			    if(nextIndex !== false) return false;
 
 		    }.bind(this));
 
