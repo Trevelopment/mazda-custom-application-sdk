@@ -286,16 +286,23 @@
 
 		showFromRecover: function() {
 
-			// sanity check
-			if(!this.appsLoaded || !this.applications) return;
+			clearTimeout(this.recoverTimer);
 
-			// run last app id
-			if(this.lastApplicationId && this.invokeApplication(this.lastApplicationId)) {
-				return;
-			}
+			this.recoverTimer = setTimeout(function() {
 
-			// show app menu
-			this.showAppMenu();
+				// sanity check
+				if(!this.appsLoaded || !this.applications) return;
+
+				// run last app id
+				if(this.lastApplicationId && this.invokeApplication(this.lastApplicationId)) {
+					return;
+				}
+
+				// show app menu
+				this.showAppMenu();
+
+			}.bind(this), 850);
+
 		},
 
 		/**

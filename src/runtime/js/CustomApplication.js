@@ -54,6 +54,9 @@ var CustomApplication = (function(){
 		LESSER: 3,
 		EQUAL: 4,
 
+		FOCUSED: 'focused',
+		LOST: 'lost',
+
 		/**
 		 * __storage
 		 */
@@ -65,6 +68,40 @@ var CustomApplication = (function(){
 		 */
 
 		__context: [],
+		__contextCounter: 0,
+		__currentContextIndex: false,
+
+		/**
+		 * (log) helper function for logging
+		 */
+
+		log: {
+
+			__logId: false,
+
+			__toArray: function(args) {
+				var result = Array.apply(null, args);
+
+				result.unshift(this.__logId);
+
+				return result;
+			},
+
+			// debug
+			debug: function() {
+				CustomApplicationLog.debug.apply(CustomApplicationLog, this.__toArray(arguments));
+			},
+
+			// info
+			info: function() {
+				CustomApplicationLog.info.apply(CustomApplicationLog, this.__toArray(arguments));
+			},
+
+			// error
+			error: function() {
+				CustomApplicationLog.error.apply(CustomApplicationLog, this.__toArray(arguments));
+			},
+		},
 
 
 		/**
@@ -77,11 +114,16 @@ var CustomApplication = (function(){
 		/* (initialize) */
 		__initialize: function(next) {
 
+			var that = this;
+
 			// assign version
 			this.__version = CUSTOM_APPLICATION_VERSION;
 
 			// data arrays
 			this.__subscriptions = {};
+
+			// set id
+			this.log.__logId = this.id;
 
 			// global specific
 			this.is = CustomApplicationHelpers.is();
@@ -111,6 +153,13 @@ var CustomApplication = (function(){
 				// create surface and set some basic properties
 				this.canvas = $("<div/>").addClass("CustomApplicationCanvas").attr("app", this.id);
 
+				// assign default event for context fields
+				this.canvas.on("click touchend", "[contextIndex]", function() {
+
+					that.__setCurrentContext($(this).attr("contextIndex"));
+
+				});
+
 				// finalize and bootup
 				this.__created = true;
 
@@ -138,7 +187,7 @@ var CustomApplication = (function(){
 
 			var loaded = 0, toload = 0, isFinished = function(o) {
 
-				CustomApplicationLog.debug(this.id, "Status update for loading resources", {loaded:loaded, toload: toload});
+				this.log.debug("Status update for loading resources", {loaded:loaded, toload: toload});
 
 				var o = o === true || loaded == toload;
 
@@ -212,7 +261,11 @@ var CustomApplication = (function(){
 			// execute life cycle
 			this.__lifecycle("focused");
 
+			// add to canvas
 			this.canvas.appendTo(parent);
+
+			// measure context
+			this.__measureContext();
 		},
 
 		/**
@@ -224,10 +277,15 @@ var CustomApplication = (function(){
 		__sleep: function() {
 
 			// clear canvas
-			this.canvas.detach();
+			if(this.canvas) {
+				this.canvas.detach();
+			}
 
 			// write storage
 			this.__setstorage();
+
+			// remove context
+			this.__context = {};
 
 			// execute life cycle
 			this.__lifecycle("lost");
@@ -266,7 +324,10 @@ var CustomApplication = (function(){
 	    __handleControllerEvent: function(eventId) {
 
 	    	// log
-	    	CustomApplicationLog.info(this.id, "Received Multicontroller Event", {eventId:eventId});
+	    	this.log.info("Received Multicontroller Event", {eventId:eventId});
+
+	    	// process to context
+	    	if(this.__processContext(eventId)) return true;
 
 	    	// pass to application
 	    	if(this.is.fn(this.onControllerEvent)) {
@@ -295,7 +356,7 @@ var CustomApplication = (function(){
 
 	    	try {
 
-	    		CustomApplicationLog.info(this.id, "Executing lifecycle", {lifecycle:cycle});
+	    		this.log.info("Executing lifecycle", {lifecycle:cycle});
 
 	    		if(this.is.fn(this[cycle])) {
 	    			this[cycle]();
@@ -303,7 +364,7 @@ var CustomApplication = (function(){
 
 	    	} catch(e) {
 
-	    		CustomApplicationLog.error(this.id, "Error while executing lifecycle event", {lifecycle:cycle, error: e.message});
+	    		this.log.error("Error while executing lifecycle event", {lifecycle:cycle, error: e.message});
 	    	
 	    	}
 	    },
@@ -457,7 +518,7 @@ var CustomApplication = (function(){
 				// local storage should work on all mazda systems
 				localStorage.setItem(this.getId(), JSON.stringify(this.__storage));
 			} catch(e) {
-				CustomApplicationLog.info(this.id, "Could not set storage", {message: e.message});
+				this.log.info("Could not set storage", {message: e.message});
 			}
 		},
 
@@ -546,14 +607,18 @@ var CustomApplication = (function(){
 	     * Adds a new context to the context table
 	     */
 
-	    addContext: function(context) {
+	    addContext: function(context, callback) {
 
 	    	// format context
 	    	switch(true) {
 
 	    		case context.nodeName:
 
-	    			context = $(context);
+	    			context = $(content);
+
+	    			break;
+
+	    		case (context instanceof jQuery):
 
 	    			break;
 
@@ -562,8 +627,220 @@ var CustomApplication = (function(){
 	    			return false;
 	    	}
 
-	    	// check context
+	    	// add element
+	    	context.attr("contextIndex", this.__contextCounter || 0);
 
+	    	// register into context
+	    	this.__context.push({
+	    		index: this.__contextCounter,
+	    		callback: callback
+	    	});
+
+	    	// update counter
+	    	this.__contextCounter += 1;
+
+	    	// if application is visible
+	    },
+
+	    /**
+	     * (protected) __measureContext
+	     *
+	     * Internal function to measure all contextes
+	     */
+
+	    __measureContext: function() {
+
+	    	$.each(this.__context, function(index, context) {
+
+	    		// get target
+	    		var target = this.canvas.find(this.sprintr("[contextIndex={0}]", context.index));
+
+	    		// sanity check
+	    		if(!target.length) return false;
+
+	    		// measure
+	    		this.__context[index] = $.extend({}, this.__context[index], {
+	    			boundingBox: $.extend({}, target.offset(), {
+		    			width: target.outerWidth(),
+		    			height: target.outerHeight(),
+		    			bottom: target.offset().top + target.outerHeight(),
+		    			right: target.offset().left + target.outerWidth()
+		    		}),
+	    			enabled: true,
+	    		});
+
+	    		var bb = this.__context[index].boundingBox;
+
+	    		$.each(this.__context, function(intersectIndex, intersectContext) {
+
+	    			if(intersectIndex != index && intersectContext.boundingBox) {
+
+	    				var ib = intersectContext.boundingBox;
+
+	    				if(bb.left <= ib.right && ib.left <= bb.right && bb.top <= ib.bottom && ib.top <= bb.bottom) {
+
+	    					this.__context[index].enabled = false;
+
+	    					return false;
+	    				}
+	    			}
+
+	    		}.bind(this));
+
+	    	}.bind(this));
+
+	    	// set initial index
+	    	if(this.__currentContextIndex === false && this.__context.length) {
+	    		this.__setCurrentContext(this.__context[0].index); // first item
+	    	}
+
+	    },
+
+	    /**
+	     * (protected) __processContext
+	     *
+	     * processes the current context
+	     */
+
+	    __processContext: function(eventId) {
+
+	    	// sanity check
+	    	if(!this.__context.length || this.__currentContextIndex === false) return false;
+
+	    	// log
+	    	this.log.debug("Context received new event", {eventId: eventId, index: this.__currentContextIndex});
+
+	    	// process direction
+	    	var nextIndex = false,
+	    		lastDistance = false,
+	    		current = this.__context[this.__currentContextIndex],
+	    		ba = current.boundingBox,
+	    		calc = function(i, o, index) {
+	    			if(o < i) {
+	    				var d = i - o;
+	    				if((i-o) > lastDistance) {
+	    					lastDistance = i-o;
+	    					nextIndex = index;
+	    				}
+	    			}
+	    		};
+
+	    	$.each(this.__context, function(index, context) {
+
+	    		// make sure we don't process ourselves
+	    		if(index != this.__currentContextIndex) {
+
+	    			var bb = context.boundingBox;
+
+		    		// process by eventId
+
+			    	switch(eventId) {
+
+			    		case "rightStart":
+			    			calc(bb.right, ba.left, index);
+			    			break;
+
+			    		case "leftStart":
+			    			calc(ba.right, bb.left, index);
+			    			break;
+
+			    		case "upStart":
+			    			calc(ba.top, bb.bottom, index);
+			    			break;
+
+			    		case "downStart":
+			    			calc(bb.top, ba.bottom, index);
+			    			break;
+
+			    	}
+			    }
+
+		    }.bind(this));
+
+
+		    // finalize
+		    if(nextIndex !== false) {
+		    	this.__setCurrentContext(nextIndex);
+
+		    	return true;
+		    }
+
+		    return false; 
+	    },
+
+
+	    /**
+	     * (protected) __setCurrentContext
+	     *
+	     * sets the current index
+	     */
+
+	    __setCurrentContext: function(index) {
+
+	    	// get generic
+	    	var hasEventHandler = this.is.fn(this.onContextEvent);
+
+	    	// execute application event
+	    	if(this.__currentContextIndex !== false) {
+
+	    		var last = this.__context[this.__currentContextIndex],
+	    			target =  this.canvas.find(this.sprintr("[contextIndex={0}]", this.__currentContextIndex));
+
+	    		if(last && target.length) {
+
+	    			var result = false;
+
+		    		// send callback
+		    		if(this.is.fn(last.callback)) {
+		    			// lost focus
+		    			result = last.callback.call(this, this.LOST, last, target);
+		    		}
+
+		    		// notify
+		    		if(!result && hasEventHandler) {
+		    			this.onContextEvent(this.LOST, last, target);
+		    		}
+
+		    		// log
+		    		this.log.info("Context lost focus", {contextIndex: last.index});
+		    	}
+		    }
+
+		    // process new context
+			this.canvas.find("[context]").attr("context", "lost");
+
+		   	// get new target
+		   	var target = this.canvas.find(this.sprintr("[contextIndex={0}]", index)),
+		   	    current = this.__context[index];
+
+
+
+		   	// notify callback
+		   	if(current && target.length) {
+
+		   	  	// set target focus
+		   		target.attr("context", "focused");
+
+		   		var result  = false;
+
+	    		// send callback
+	    		if(this.is.fn(current.callback)) {
+	    			// lost focus
+	    			result = current.callback.call(this, this.FOCUSED, current, target);
+
+	    		}
+
+	    		// notify
+	    		if(!result && hasEventHandler) {
+	    			this.onContextEvent(this.FOCUSED, current, target);
+	    		}
+
+	    		// log
+		    	this.log.info("Context gained focus", {contextIndex: current.index});
+	    	}
+
+	    	// set current context
+	    	this.__currentContextIndex = index;
 	    },
 
 	};

@@ -143,19 +143,11 @@ CustomApplicationsHandler.register("app.multicontroller", new CustomApplication(
 
         // let's build our interface
 
-        // 1) create a value label that shows the current value of the selected section
-
-        this.valueLabel = $("<div/>").appendTo(this.canvas);
-
-        // 2) create a name label that shows the name of the selected section
-
-        this.nameLabel = $("<span/>").appendTo(this.canvas);
-
-
-        // now let's get our data in place
-
         // 1) create our context aware sections
         this.createSections();
+
+        // 2) create our statusbar
+        this.statusBar = $("<div/>").addClass("status").appendTo(this.canvas);
 
     },
 
@@ -170,6 +162,19 @@ CustomApplicationsHandler.register("app.multicontroller", new CustomApplication(
      */
 
     onControllerEvent: function(eventId) {
+
+        // We only get not processed values from the multicontroller here
+
+    },
+
+
+    /**
+     * (event) onContextEvent
+     *
+     * Called when the context of an element was changed
+     */
+
+    onContextEvent: function(eventId, context, element) {
 
         // We only get not processed values from the multicontroller here
 
@@ -202,7 +207,9 @@ CustomApplicationsHandler.register("app.multicontroller", new CustomApplication(
              *
              */
 
-            this.addContext($("<div/>").addClass("section").css(item).append(item.title).appendTo(this.canvas));
+            this.addContext($("<div/>").addClass("section").css(item).append(item.title).appendTo(this.canvas), function(event, element) {
+
+            });
 
         }.bind(this));
 

@@ -140,7 +140,7 @@ gulp.task('runtime-js', function () {
 
     return gulp.src(runtimePathInput + "js/*", {base: runtimePathInput + "js"})
         .pipe(concat('runtime.js'))
-        .pipe(uglify())
+        //.pipe(uglify())
         .pipe(concatutil.header(fs.readFileSync(runtimePathInput + "resources/header.txt", "utf8"), { pkg : package} ))
         .pipe(gulp.dest(runtimePathOutput));
 });

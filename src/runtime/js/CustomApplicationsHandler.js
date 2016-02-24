@@ -126,6 +126,12 @@ var CustomApplicationsHandler = {
 
 	register: function(id, application) {
 
+		// unregister previous instance
+		if(this.applications[id]) {
+			this.applications[id].__terminate();
+			this.applications[id] = false;
+		}
+
 		// registering
 		CustomApplicationLog.info(this.__name, {id:id}, "Registering application");
 
