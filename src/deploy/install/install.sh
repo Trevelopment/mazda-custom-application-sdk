@@ -32,7 +32,6 @@
 mount -o rw,remount /
 
 # disable watchdog
-
 if [ ! -f /jci/sm/sm.conf.casdk ]; then 
 	cp -a /jci/sm/sm.conf /jci/sm/sm.conf.casdk
 	sed -i 's/watchdog_enable="true"/watchdog_enable="false"/g' /jci/sm/sm.conf
@@ -79,17 +78,22 @@ if [ ! -f /jci/scripts/stage_wifi.sh.casdk ]; then
 	chmod 755 /jci/scripts/stage_wifi.sh
 fi
 
-# prepare runtime symlinks - currently only sd card is supported
-ln -s /tmp/mnt/sd_nav/applications /jci/gui/apps/system/applications
-ln -s /tmp/root /jci/gui/apps/system/data
-
-# patch systemApp
-if [ ! -f /jci/gui/apps/system/js/systemApp.js.casdk ]; then
-	cp -a /jci/gui/apps/system/js/systemApp.js /jci/gui/apps/system/js/systemApp.js.casdk
-
-	# this is only for version 55.x NA right now (!)
-	patch /jci/gui/apps/system/js/systemApp.js < patch/systemApp.patch
+# copy proxy 
+if [ ! -f /jci/opera/opera_dir/userjs/CustomApplicationsProxy.js]; then
+	cp -a casdk/proxy/CustomApplicationsProxy.js /jci/opera/opera_dir/userjs/
 fi
+
+# copy custom application
+if [ ! -f /jci/gui/apps/custom ]; then
+	mkdir -p /jci/gui/apps/custom
+	cp -a -R casdk/custom/* /jci/gui/apps/custom
+fi
+
+# prepare runtime symlinks - currently only sd card is supported
+ln -s /tmp/mnt/sd_nav/apps /jci/gui/apps/custom/apps
+ln -s /tmp/mnt/sd_nav/runtime /jci/gui/apps/custom/runtime
+ln -s /tmp/root /jci/gui/apps/custom/data
+
 
 echo "Installation complete"
 # finalize with message

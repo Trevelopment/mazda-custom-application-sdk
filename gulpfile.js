@@ -159,7 +159,7 @@ gulp.task('build-runtime', function(callback) {
 
 var installDeployPathInput =  input + 'deploy/install/',
     installDeployPathOutput = output + 'deploy/install/',
-    installDeployDataPathOutput = installDeployPathOutput + 'files/';
+    installDeployDataPathOutput = installDeployPathOutput + 'casdk/';
 
 // (cleanup)
 gulp.task('install-cleanup', function () {  
