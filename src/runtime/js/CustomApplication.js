@@ -461,8 +461,16 @@ var CustomApplication = (function(){
 			return this.getSetting('statusbarHideHomeButton') === true ? false : true;
 		},
 
-		getLeftButton: function() {
-			return this.getSetting('leftButton');
+		getHasLeftButton: function() {
+			return this.getSetting('hasLeftButton');
+		},
+
+		getHasRightArc: function() {
+			return this.getSetting('hasRightArc');
+		},
+
+		getHasMenuCaret: function() {
+			return this.getSetting('hasMenuCaret');
 		},
 
 		getRegion: function() {

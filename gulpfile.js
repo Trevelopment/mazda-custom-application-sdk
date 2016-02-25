@@ -117,13 +117,6 @@ gulp.task('runtime-skeleton', function() {
         .pipe(gulp.dest(runtimePathOutput));
 });
 
-// (surface)
-gulp.task('runtime-surface', function() {
-
-    return gulp.src(runtimePathInput + "surface/**/*", {base: runtimePathInput + "surface"})
-        .pipe(gulp.dest(runtimePathOutput + "surface/"));
-});
-
 
 // (less)
 gulp.task('runtime-less', function () {
@@ -150,7 +143,6 @@ gulp.task('build-runtime', function(callback) {
     runSequence(    
         'runtime-cleanup',
         'runtime-skeleton',
-        'runtime-surface',
         'runtime-less',
         'runtime-js',
         callback
@@ -184,6 +176,14 @@ gulp.task('install-copy', function() {
         .pipe(gulp.dest(installDeployPathOutput));
 });
 
+// (custom)
+gulp.task('install-custom', function() {
+
+    return gulp.src(runtimePathInput + "custom/**/*", {base: runtimePathInput + "surface"})
+        .pipe(gulp.dest(runtimePathOutput + "surface/"));
+});
+
+
 // (patch)
 gulp.task('install-patch', function() {
 
@@ -201,6 +201,7 @@ gulp.task('build-install', function(callback) {
     runSequence(    
         'install-cleanup',
         'install-copy',
+        //'install-custom',
         'install-patch',
         callback
     );

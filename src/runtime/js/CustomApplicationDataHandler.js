@@ -162,7 +162,7 @@ var CustomApplicationDataHandler = {
 	 */
 
 	paths: {
-		data: 'apps/system/data/casdk-',
+		data: 'apps/custom/data/casdk-',
 	},
 
 	/**

@@ -1,4 +1,4 @@
-/**
+ /**
  * Custom Applications SDK for Mazda Connect Infotainment System
  * 
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
@@ -27,7 +27,7 @@
 /**
  * (CustomApplicationsHandler)
  *
- * This is the custom handler that manages the application between the JCI system and the mini framewor
+ * This is the custom handler that manages the application between the JCI system and the mini framework
  */
 
 var CustomApplicationsHandler = {
@@ -45,9 +45,10 @@ var CustomApplicationsHandler = {
 	 */
 
 	paths: {
-		framework: 'apps/system/applications/runtime/',
-		applications: 'apps/system/applications/apps/',
-		vendor: 'apps/system/applications/runtime/vendor/'
+		framework: 'apps/custom/runtime/',
+		applications: 'apps/custom/apps/',
+		vendor: 'apps/custom/runtime/vendor/',
+		surface: 'apps/custom/runtime/surface/',
 	},
 
 	/**
@@ -67,6 +68,10 @@ var CustomApplicationsHandler = {
 
 		this.initialized = true;
 
+		this.loader = CustomApplicationResourceLoader;
+
+		this.log = CustomApplicationLog;
+
 	},
 
 
@@ -81,18 +86,18 @@ var CustomApplicationsHandler = {
 			if(!this.initialized) this.initialize();
 
 			// load libraries
-			CustomApplicationResourceLoader.loadJavascript("jquery.js", this.paths.vendor, function() {
+			this.loader.loadJavascript("jquery.js", this.paths.vendor, function() {
 
-				CustomApplicationResourceLoader.loadCSS("runtime.css", this.paths.framework, function() {
+				this.loader.loadCSS("runtime.css", this.paths.framework, function() {
 
-					CustomApplicationResourceLoader.loadJavascript("apps.js", this.paths.applications, function() {
+					this.loader.loadJavascript("apps.js", this.paths.applications, function() {
 
 						// this has been completed
 						if(typeof(CustomApplications) != "undefined") {
 
 							// load applications
-							CustomApplicationResourceLoader.loadJavascript(
-								CustomApplicationResourceLoader.fromFormatted("{0}/app.js", CustomApplications),
+							this.loader.loadJavascript(
+								this.loader.fromFormatted("{0}/app.js", CustomApplications),
 								this.paths.applications,
 								function() {
 									// all applications are loaded, run data
@@ -104,7 +109,7 @@ var CustomApplicationsHandler = {
 							);
 						}
 
-					}.bind(this));
+					}.bind(this)); // apps.js
 
 				}.bind(this)); // bootstrap css
 
@@ -113,7 +118,7 @@ var CustomApplicationsHandler = {
 		} catch(e) {
 
 			// error message
-			CustomApplicationLog.error(this.__name, "Error while retrieving applications", e);
+			this.log.error(this.__name, "Error while retrieving applications", e);
 
 			// make sure that we notify otherwise we don't get any applications
 			callback(this.getMenuItems());
@@ -133,7 +138,7 @@ var CustomApplicationsHandler = {
 		}
 
 		// registering
-		CustomApplicationLog.info(this.__name, {id:id}, "Registering application");
+		this.log.info(this.__name, {id:id}, "Registering application");
 
 		application.id = id;
 
@@ -152,7 +157,7 @@ var CustomApplicationsHandler = {
 
 	run: function(id) {
 
-		CustomApplicationLog.info(this.__name, "Run request for application", {id: id});
+		this.log.info(this.__name, "Run request for application", {id: id});
 
 		if(CustomApplicationHelpers.is().object(id)) {
 
@@ -163,31 +168,22 @@ var CustomApplicationsHandler = {
 
 			this.currentApplicationId = id;
 
-			CustomApplicationLog.info(this.__name, "Preparing application launch", {id: id});
+			this.log.info(this.__name, "Preparing application launch", {id: id});
 
-			if(typeof(framework) != "undefined") {
-
-				var list = framework._focusStack ? framework._focusStack : [];
-
-				list.unshift({id: "system"});
+			if(typeof(CustomApplicationsProxy) != "undefined") {
 
 				// send message to framework to launch application
-				framework.routeMmuiMsg({"msgType":"transition","enabled":true});
-				framework.routeMmuiMsg({"msgType":"ctxtChg","ctxtId":"CustomApplicationSurface","uiaId":"system","contextSeq":2})
-				framework.routeMmuiMsg({"msgType":"focusStack","appIdList": list});
-				framework.routeMmuiMsg({"msgType":"transition","enabled":false});
-
-				return true;
+				return CustomApplicationsProxy.invokeApplication();
 
 			}
 
-			CustomApplicationLog.error(this.__name, "Failed to launch application because framework is not available", {id: id});
+			this.log.error(this.__name, "Failed to launch application because framework is not available", {id: id});
 
 			return false;
 
 		}
 
-		CustomApplicationLog.error(this.__name, "Application was not registered", {id: id});
+		this.log.error(this.__name, "Application was not registered", {id: id});
 
 		return false;
 	},
@@ -214,19 +210,19 @@ var CustomApplicationsHandler = {
 
 		if(this.currentApplicationId) {
 
-			CustomApplicationLog.debug(this.__name, "Invoking current set application", {id: this.currentApplicationId});
+			this.log.debug(this.__name, "Invoking current set application", {id: this.currentApplicationId});
 
 			if(this.applications[this.currentApplicationId]) {
 
 				return this.applications[this.currentApplicationId];
 			}
 
-			CustomApplicationLog.error(this.__name, "Application was not registered", {id: this.currentApplicationId});
+			this.log.error(this.__name, "Application was not registered", {id: this.currentApplicationId});
 
 			return false;
 		}
 
-		CustomApplicationLog.error(this.__name, "Missing currentApplicationId");
+		this.log.error(this.__name, "Missing currentApplicationId");
 
 		return false;
 	},
@@ -254,7 +250,7 @@ var CustomApplicationsHandler = {
 
 		return CustomApplicationHelpers.iterate(this.applications, function(id, application) {
 
-			CustomApplicationLog.info(this.__name, {id:id}, "Adding application to menu", {
+			this.log.info(this.__name, {id:id}, "Adding application to menu", {
 				title: application.getTitle(),
 			});
 
@@ -268,8 +264,8 @@ var CustomApplicationsHandler = {
 				title: application.getTitle(),
 				text1Id : application.getTitle(),
 				disabled : false,
-				itemStyle : 'style01',
-				hasCaret : false
+				itemStyle : 'style02',
+				hasCaret : application.getHasMenuCaret(),
 			};
 
 		}.bind(this));

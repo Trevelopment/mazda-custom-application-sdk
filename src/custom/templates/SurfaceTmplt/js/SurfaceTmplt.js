@@ -32,25 +32,24 @@
  */
 
 
-log.addSrcFile("CustomApplicationSurfaceTmplt.js", "customapplicationsurface");
+log.addSrcFile("SurfaceTmplt.js", "SurfaceTmpl");
 
 /*
  * =========================
  * Constructor
  * =========================
  */
-function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
+function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
 {
     // create context
     this.divElt = null;
-    this.templateName = "CustomApplicationSurfaceTmplt";
-    //this.onScreenClass = "CustomApplicationSurfaceTmplt";
+    this.templateName = "SurfaceTmplt";
 
     this.onScreenClass = "TestTemplateWithStatusLeft";
     this.offScreenLeftClass = "TestTemplateWithStatusLeft-OffscreenLeft";
     this.offScreenRightClass = "TestTemplateWithStatusLeft-OffscreenRight";
 
-    log.debug("templateID in CustomApplicationSurfaceTmplt constructor: " + templateID);
+    log.debug("templateID in SurfaceTmplt constructor: " + templateID);
 
     // reset
     this.properties = {};
@@ -68,7 +67,8 @@ function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProp
     //set the template properties
     this.properties = {
         "statusBarVisible" : this.application.getStatusbar(),
-        "leftButtonVisible" : this.application.getLeftButton(),
+        "leftButtonVisible" : this.application.getHasLeftButton(),
+        "rightChromeVisible" : this.application.getHasRightArc(),
         "hasActivePanel" : false,
         "isDialog" : false
     }
@@ -131,7 +131,7 @@ function CustomApplicationSurfaceTmplt(uiaId, parentDiv, templateID, controlProp
  * CleanUp
  */
 
-CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
+SurfaceTmplt.prototype.cleanUp = function()
 {
     if(this.application) {
         CustomApplicationsHandler.sleep(this.application);
@@ -142,7 +142,7 @@ CustomApplicationSurfaceTmplt.prototype.cleanUp = function()
  * MultiController
  */
 
-CustomApplicationSurfaceTmplt.prototype.handleControllerEvent = function(eventID)
+SurfaceTmplt.prototype.handleControllerEvent = function(eventID)
 {
     if(this.application) {
         this.application.__handleControllerEvent(eventID);
@@ -151,4 +151,4 @@ CustomApplicationSurfaceTmplt.prototype.handleControllerEvent = function(eventID
 
 
 // Finalize
-framework.registerTmpltLoaded("CustomApplicationSurfaceTmplt");
+framework.registerTmpltLoaded("SurfaceTmplt");

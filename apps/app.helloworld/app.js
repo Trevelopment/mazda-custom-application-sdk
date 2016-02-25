@@ -127,10 +127,22 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		// statusbarHideHomeButton: false,
 
 		/**
-		 * (leftButton) indicates if the UI left button / return button should be shown
+		 * (hasLeftButton) indicates if the UI left button / return button should be shown
 		 */
 
-		leftButton: false,
+		hasLeftButton: true,
+
+		/**
+		 * (hasMenuCaret) indicates if the menu item should be displayed with an caret
+		 */
+
+		hasMenuCaret: false,
+
+		/**
+		 * (hasRightArc) indicates if the standard right car should be displayed
+		 */
+
+		hasRightArc: true,
 
 	},
 
