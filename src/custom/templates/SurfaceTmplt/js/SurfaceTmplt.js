@@ -49,6 +49,11 @@ function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
     this.offScreenLeftClass = "TestTemplateWithStatusLeft-OffscreenLeft";
     this.offScreenRightClass = "TestTemplateWithStatusLeft-OffscreenRight";
 
+    this.slideOutLeftClass = "TemplateWithStatusLeft-SlideOutLeftClass";
+    this.slideInRightClass = "TemplateWithStatusLeft-SlideInRightClass";
+    this.slideInLeftClass = "TemplateWithStatusLeft-SlideInLeftClass";
+    this.slideOutRightClass = "TemplateWithStatusLeft-SlideOutRightClass";
+
     log.debug("templateID in SurfaceTmplt constructor: " + templateID);
 
     // reset

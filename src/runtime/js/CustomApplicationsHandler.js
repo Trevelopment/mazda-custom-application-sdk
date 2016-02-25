@@ -254,9 +254,13 @@ var CustomApplicationsHandler = {
 				title: application.getTitle(),
 			});
 
+			// create locals
+			var appName = 'custom_' + application.getId();
+
+			// set localized language - for now it's just the title
 			return {
 				appData : {
-					appName : 'custom_' + application.getId(),
+					appName : appName,
 					isVisible : true,
 					mmuiEvent : 'ExecuteCustomApplication',
 					appId: application.getId(),
