@@ -159,8 +159,7 @@ gulp.task('build-runtime', function(callback) {
 
 var installDeployPathInput =  input + 'deploy/install/',
     installDeployPathOutput = output + 'deploy/install/',
-    installSystemApp = "systemApp",
-    installSystemAppInput = input + "jci/" + installSystemApp;
+    installDeployDataPathOutput = installDeployPathOutput + 'files/';
 
 // (cleanup)
 gulp.task('install-cleanup', function () {  
@@ -179,21 +178,18 @@ gulp.task('install-copy', function() {
 // (custom)
 gulp.task('install-custom', function() {
 
-    return gulp.src(runtimePathInput + "custom/**/*", {base: runtimePathInput + "surface"})
-        .pipe(gulp.dest(runtimePathOutput + "surface/"));
+    return gulp.src(input + "custom/**/*", {base: input + "custom"})
+        .pipe(gulp.dest(installDeployDataPathOutput + "custom/"));
 });
 
 
-// (patch)
-gulp.task('install-patch', function() {
+// (proxy)
+gulp.task('install-proxy', function() {
 
-    exec("mkdir -p " + installDeployPathOutput + "patch", function() {
-
-        exec("diff -u " + installSystemAppInput + ".original.js " + installSystemAppInput + ".js > " + installDeployPathOutput + "patch/" + installSystemApp + ".patch");
-
-    });
-
+    return gulp.src(input + "proxy/**/*", {base: input + "proxy"})
+        .pipe(gulp.dest(installDeployDataPathOutput + "proxy/"));
 });
+
 
 
 // (build)
@@ -201,8 +197,8 @@ gulp.task('build-install', function(callback) {
     runSequence(    
         'install-cleanup',
         'install-copy',
-        //'install-custom',
-        'install-patch',
+        'install-custom',
+        'install-proxy',
         callback
     );
 }); 
