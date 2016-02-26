@@ -414,6 +414,10 @@
 
 			// check result
 			if(result) {
+				// send to mmui
+				framework.sendEventToMmui();
+
+				// disable app menu
 				this.inAppMenu = false;
 				this.lastApplicationId = appId;
 			}
