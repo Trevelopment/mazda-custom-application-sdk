@@ -163,6 +163,12 @@
 			// stop watcher
 			if(this.runtimeWatcher) this.runtimeWatcher.close();
 
+			// unload scripts
+			$("script[src*='" + runtimeLocation + "/runtime']").remove();
+			$("script[src*='" + runtimeLocation + "/templates']").remove();
+			$("link[href*='" + runtimeLocation + "/runtime']").remove();
+			$("link[href*='" + runtimeLocation + "/templates']").remove();
+
 			// load runtime.js
 			framework.loadJS("file://" + runtimeLocation + "/runtime/runtime.js", function() {
 
@@ -243,6 +249,10 @@
 
 			// stop watcher
 			if(this.appsWatcher) this.appsWatcher.close();
+
+			// unload scripts
+			$("script[src*='" + appsLocation + "']").remove();
+			$("link[href*='" + appsLocation + "']").remove();
 
 			// load applications
 			CustomApplicationsHandler.retrieve(function(items) {
@@ -524,7 +534,7 @@
 
 							var v = editor.val();
 
-							if(value.factor) v = v / value.factor; 
+							if(value.factor) v = v / value.factor;
 
 							// notify customer Handler
 							CustomApplicationDataHandler.setValue(value.id, v);

@@ -179,11 +179,7 @@
 				pb.removeClass("hit");
 			}, 450);
 
-
-			console.log(Interface.inAppMenu);
-
 			// switch by type
-
 			switch(true) {
 
 				case Interface.inAppMenu:

@@ -1,6 +1,6 @@
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
- * 
+ *
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
@@ -151,6 +151,8 @@ var CustomApplicationDataHandler = {
 
 	__name: 'DataHandler',
 
+	__super: [],
+
 	/**
 	 * (Locals)
 	 */
@@ -275,6 +277,25 @@ var CustomApplicationDataHandler = {
 	},
 
 	/**
+	 * (getTableByPrefix) returns a table by the prefix
+	 */
+
+	getTableByPrefix: function(prefix) {
+
+		var result = false;
+
+		this.tables.map(function(table) {
+
+			if(!result && table.prefix == prefix) {
+				result = table;
+			}
+
+		});
+
+		return result;
+	},
+
+	/**
 	 * (registerValue) adds a new value
 	 */
 
@@ -307,7 +328,7 @@ var CustomApplicationDataHandler = {
 
 	setValue: function(id, value) {
 
-		//CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});	
+		//CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});
 
 		if(this.data[id]) {
 
@@ -334,7 +355,16 @@ var CustomApplicationDataHandler = {
 			this.data[id].previous = this.data[id].value;
 			this.data[id].value = value;
 
-			// notify
+			// notify supers
+			this.__super.forEach(function(callback) {
+
+				if(CustomApplicationHelpers.is().fn(callback)) {
+					callback(id, this.data[id]);
+				}
+
+			}.bind(this));
+
+			// notify app handler
 			CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
 		}
 
@@ -479,7 +509,7 @@ var CustomApplicationDataHandler = {
 							// update counter
 							loaded++;
 
-							CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
+							CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});
 
 							// execute parser
 							this.__parseFileData(table, data);
@@ -496,7 +526,7 @@ var CustomApplicationDataHandler = {
 
 					default:
 
-						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});	
+						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});
 
 						// just finish
 						loaded++;
@@ -593,6 +623,18 @@ var CustomApplicationDataHandler = {
 				return result;
 				break;
 		}
+
+	},
+
+	/**
+	 * (addSuper)
+	 *
+	 * Adds a handler that always receives ALL data changes
+	 */
+
+	addSuper: function(callback) {
+
+		this.__super.push(callback);
 
 	},
 };

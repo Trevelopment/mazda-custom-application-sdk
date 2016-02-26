@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
  *
@@ -25,48 +26,24 @@
  */
 
 /**
- * customApp.js
- *
- * The control application for Custom Applications
+ * (casdk) Command line tool helper
  */
-
-log.addSrcFile("customApp.js", "customApp");
 
 /**
- * (Surface)
+ * (locals)
  */
 
-function customApp(uiaId)
-{
-    log.debug("Constructor called.");
+var program = require('commander');
 
-    baseApp.init(this, uiaId);
-}
+// processing command line arguments
+program
+	.version('0.0.1')
+	.arguments('<file>')
+	.option('create [applicationName]', 'Creates a new application with the associated name')
+  .parse(process.argv);
+	.action(function(file) {
+		console.log('user: %s pass: %s file: %s',
+		program.username, program.password, file);
+	})
+	.parse(process.argv);
 
-
-/**
- * Default BaseApp implementions
- */
-
-customApp.prototype.appInit = function() {
-
-    log.debug("customApp appInit called");
-
-    this._contextTable = {
-        "Surface": {
-            "leftBtnStyle" : "goBack",
-            "template" : "SurfaceTmplt",
-            "templatePath": "apps/custom/templates/SurfaceTmplt",
-            "sbNameId" : null,
-            "readyFunction": false,
-        }
-    };
-};
-
-/**
- * Register with framework
- */
-
-framework.registerAppLoaded("custom", null, false);
-
-/** EOF **/

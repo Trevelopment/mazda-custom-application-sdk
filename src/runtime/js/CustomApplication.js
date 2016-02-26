@@ -1,25 +1,25 @@
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
- * 
+ *
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
  * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
  * Copyright (c) 2016. All rights reserved.
- * 
+ *
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
  * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
  * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. 
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/
  *
  */
@@ -107,7 +107,7 @@ var CustomApplication = (function(){
 		/**
 		 * (protected) __initialize
 		 *
-		 * Called when the application is initalized first and is reponsible for creating 
+		 * Called when the application is initalized first and is reponsible for creating
 		 * the surface and canvas.
 		 */
 
@@ -284,9 +284,6 @@ var CustomApplication = (function(){
 			// write storage
 			this.__setstorage();
 
-			// remove context
-			this.__context = {};
-
 			// execute life cycle
 			this.__lifecycle("lost");
 
@@ -318,7 +315,7 @@ var CustomApplication = (function(){
 	    /**
 	     * (protected) __handleControllerEvent
 	     *
-	     * Handles a event from the multi controller. 
+	     * Handles a event from the multi controller.
 	     */
 
 	    __handleControllerEvent: function(eventId) {
@@ -365,7 +362,7 @@ var CustomApplication = (function(){
 	    	} catch(e) {
 
 	    		this.log.error("Error while executing lifecycle event", {lifecycle:cycle, error: e.message});
-	    	
+
 	    	}
 	    },
 
@@ -386,23 +383,23 @@ var CustomApplication = (function(){
 	    		// parse type
 	    		switch(subscription.type) {
 
-	    			case this.CHANGED: 
-	    				notify = payload.changed; 
+	    			case this.CHANGED:
+	    				notify = payload.changed;
 	    				break;
 
 	    			case this.GREATER:
 
-	    				notify = payload.value > payload.previous; 
+	    				notify = payload.value > payload.previous;
 	    				break;
 
 	    			case this.LESSER:
 
-	    				notify = payload.value < payload.previous; 
+	    				notify = payload.value < payload.previous;
 	    				break;
 
 	    			case this.EQUAL:
 
-	    				notify = payload.value == payload.previous; 
+	    				notify = payload.value == payload.previous;
 	    				break;
 
 	 	    		default:
@@ -414,8 +411,8 @@ var CustomApplication = (function(){
 
 	    		// execute
 	    		if(notify) {
-	    			subscription.callback(payload.value, $.extend({}, 
-	    				this.__subscriptions[id], 
+	    			subscription.callback(payload.value, $.extend({},
+	    				this.__subscriptions[id],
 	    				payload
 	    			));
 	    		}
@@ -647,7 +644,8 @@ var CustomApplication = (function(){
 	    	// update counter
 	    	this.__contextCounter += 1;
 
-	    	// if application is visible
+	    	// return context which is the actual dom element
+	    	return context;
 	    },
 
 	    /**
@@ -724,13 +722,16 @@ var CustomApplication = (function(){
 	    		current = this.__context[this.__currentContextIndex],
 	    		ba = current.boundingBox,
 	    		calc = function(i, o, index) {
+	    			//if(i > o) {
+
+	    				/*
 	    			if(o < i) {
 	    				var d = i - o;
-	    				if((i-o) > lastDistance) {
+	    				if((i-o) < lastDistance) {
 	    					lastDistance = i-o;
 	    					nextIndex = index;
 	    				}
-	    			}
+	    			}*/
 	    		};
 
 	    	$.each(this.__context, function(index, context) {
@@ -740,27 +741,31 @@ var CustomApplication = (function(){
 
 	    			var bb = context.boundingBox;
 
-		    		// process by eventId
+	    			console.group(ba, bb); console.groupEnd();
 
-			    	switch(eventId) {
+	    			if(ba && bb) {
 
-			    		case "rightStart":
-			    			calc(bb.right, ba.left, index);
-			    			break;
+			    		// process by eventId and find next item
+				    	switch(eventId) {
 
-			    		case "leftStart":
-			    			calc(ba.right, bb.left, index);
-			    			break;
+				    		case "rightStart":
+				    			calc(ba.right, bb.left, index);
+				    			break;
 
-			    		case "upStart":
-			    			calc(ba.top, bb.bottom, index);
-			    			break;
+				    		case "leftStart":
+				    			calc(ba.right, bb.left, index);
+				    			break;
 
-			    		case "downStart":
-			    			calc(bb.top, ba.bottom, index);
-			    			break;
+				    		case "upStart":
+				    			calc(ba.top, bb.bottom, index);
+				    			break;
 
-			    	}
+				    		case "downStart":
+				    			calc(ba.bottom, b.top, index);
+				    			break;
+
+				    	}
+				    }
 			    }
 
 			    // break loop
@@ -776,7 +781,7 @@ var CustomApplication = (function(){
 		    	return true;
 		    }
 
-		    return false; 
+		    return false;
 	    },
 
 
