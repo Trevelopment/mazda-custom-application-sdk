@@ -34,11 +34,10 @@
 
 log.addSrcFile("SurfaceTmplt.js", "SurfaceTmpl");
 
-/*
- * =========================
- * Constructor
- * =========================
+/**
+ * (Constructor)
  */
+
 function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
 {
     // create context

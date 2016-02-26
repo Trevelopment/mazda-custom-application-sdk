@@ -61,9 +61,6 @@
 
 		initialize: function() {
 
-			// bootstrap
-			CustomApplicationsProxy.bootstrap();
-
 			// startup console
 			Logger.info("Starting up on platform " + process.platform);
 
@@ -158,7 +155,7 @@
 				return Logger.error("You need to select the location of the runtime package first.");
 
 			// load runtime
-			Logger.info(sprintr("Loading runtime from {0}", runtimeLocation));
+			Logger.info(sprintr("Loading system runtime from {0}", runtimeLocation));
 
 			// reset
 			window.CustomApplicationsHandler = false;
@@ -167,10 +164,10 @@
 			if(this.runtimeWatcher) this.runtimeWatcher.close();
 
 			// load runtime.js
-			framework.loadJS("file://" + runtimeLocation + "/custom/runtime/runtime.js", function() {
+			framework.loadJS("file://" + runtimeLocation + "/runtime/runtime.js", function() {
 
 				// load CustomApplicationSurfaceTmplt
-				framework.loadJS("file://" + runtimeLocation + "/custom/templates/SurfaceTmplt/js/SurfaceTmplt.js", function() {
+				framework.loadJS("file://" + runtimeLocation + "/templates/SurfaceTmplt/js/SurfaceTmplt.js", function() {
 
 					if(typeof(CustomApplicationsHandler) == "undefined")
 						return Logger.error("Error while loading the runtime package.");
@@ -179,8 +176,8 @@
 					CustomApplicationLog.enableLogger(true);
 
 					// overwrite paths
-					CustomApplicationsHandler.paths.framework = "file://" + runtimeLocation + "/";
-					CustomApplicationsHandler.paths.vendor = "file://" + runtimeLocation + "/vendor/";
+					CustomApplicationsHandler.paths.framework = "file://" + runtimeLocation + "/runtime/";
+					CustomApplicationsHandler.paths.vendor = "file://" + runtimeLocation + "/runtime/vendor/";
 
 					// load data
 

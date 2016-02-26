@@ -47,6 +47,17 @@ var log = {
 
 
 /**
+ * (CustomApplicationsProxy) Mock - yeah I know :-)
+ */
+
+var CustomApplicationsProxy = {
+	invokeApplication: function() {
+		framework.sendEventToMmui();
+		return true;
+	}
+};
+
+/**
  * (framework)
  */
 
@@ -164,42 +175,40 @@ var framework = {
 
 	registerTmpltLoaded: function() {},
 
-	routeMmuiMsg: function(data) {
+	sendEventToMmui: function(uaId, event) {
 
-		if(data.msgType == "focusStack") {
+		// clean up
+		this.cleanup();
 
-			// clean up
-			this.cleanup();
+		// initialize template
+		this.current = new SurfaceTmplt("system", Interface.surface.get(0), 1);
 
-			// initialize template
-			this.current = new CustomApplicationSurfaceTmplt("system", Interface.surface.get(0), 1);
+		// check
+		if(this.current.properties) {
 
-			// check
-			if(this.current.properties) {
+			switch(true) {
 
-				switch(true) {
+				case this.current.properties.leftButtonVisible:
+					Interface.statusBar.fadeIn();
+					Interface.leftButton.fadeIn();
+					Interface.view.addClass("statusbar leftbutton");
+					break;
 
-					case this.current.properties.leftButtonVisible:
-						Interface.statusBar.fadeIn();
-						Interface.leftButton.fadeIn();
-						Interface.view.addClass("statusbar leftbutton");
-						break;
+				case this.current.properties.showStatusbar:
+					Interface.statusBar.fadeIn();
+					Interface.leftButton.fadeOut();
+					Interface.view.addClass("statusbar").removeClass("leftbutton");
+					break;
 
-					case this.current.properties.showStatusbar:
-						Interface.statusBar.fadeIn();
-						Interface.leftButton.fadeOut();
-						Interface.view.addClass("statusbar").removeClass("leftbutton");
-						break;
+				default:
+					Interface.view.removeClass("statusbar leftbutton");
+					break;
 
-					default:
-						Interface.view.removeClass("statusbar leftbutton");
-						break;
-
-				}
 			}
-
-			Interface.view.fadeIn();
 		}
+
+		Interface.view.fadeIn();
+
 	},
 
 	/**

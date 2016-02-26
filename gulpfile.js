@@ -253,32 +253,6 @@ gulp.task('build-sdcard', function(callback) {
 
 
 /**
- * (build) simulator resources
- *
- * This task builds the simulator resources
- */
-
-var simulatorOutput = input + "simulator/";
-
-// (copy)
-gulp.task('build-simulator-resources-copy', function() {
-
-    return gulp.src(input + "proxy/CustomApplicationsProxy.js")
-        .pipe(rename("proxy.js"))
-        .pipe(gulp.dest(simulatorOutput + "interface/"));
-});
-
-
-// (build)
-gulp.task('build-simulator-resources', function(callback) {
-    runSequence(
-        'build-simulator-resources-copy',
-        callback
-    );
-});
-
-
-/**
  * Common Commands
  */
 
@@ -297,7 +271,6 @@ gulp.task('default', function (callback) {
         'build-system',
         'build-install',
         'build-sdcard',
-        'build-simulator-resources',
         callback
     );
 
