@@ -262,7 +262,7 @@ var CustomApplicationsHandler = {
 				appData : {
 					appName : appName,
 					isVisible : true,
-					mmuiEvent : 'ExecuteCustomApplication',
+					mmuiEvent : 'SelectCustomApplication',
 					appId: application.getId(),
 				},
 				title: application.getTitle(),

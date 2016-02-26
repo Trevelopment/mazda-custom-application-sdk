@@ -45,6 +45,7 @@
 		systemAppCategory: 'Applications',
 
 		proxyAppName: 'vdt',
+		proxyAppContext: 'DriveChartDetails',
 		proxyMmuiEvent: 'SelectDriveRecord',
 
 		targetAppName: 'custom',
@@ -79,6 +80,7 @@
 					// overwrite framework MMUI handlers
 					framework.overwriteRouteMmmuiMsg = framework.routeMmuiMsg;
 					framework.routeMmuiMsg = this.routeMmuiMsg.bind(framework);
+					framework.sendEventToMmui = this.sendEventToMmui.bind(framework);
 
 					// assign template transition
 					framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
@@ -116,6 +118,27 @@
 
 			// pass to original handler
 			this._menuItemSelectCallback(listCtrlObj, appData, params);
+		},
+
+
+		/**
+		 * (Overwrite) sendEventToMmui
+		 */
+
+		sendEventToMmui: function(uiaId, eventId, params, fromVui) {
+
+    		var currentUiaId = this.getCurrentApp(),
+    			currentContextId = this.getCurrCtxtId();
+
+		    if(currentUiaId == this.currentApplicationName) {
+		    	currentUiaId = this.proxyAppName;
+		    	currentContextId = this.proxyAppContext;
+		    }
+
+   			this.websockets.sendEventMsg(uiaId, eventId, params, fromVui, currentUiaId, currentContextId);
+
+     		// Let debug know about the message
+    		this.debug.triggerEvtToMmuiCallbacks(uiaId, eventId, params);
 		},
 
 
@@ -262,6 +285,10 @@
 		                items.forEach(function(item) {
 
 		                    this.systemApp._masterApplicationDataList.items.push(item);
+
+		                    framework.localize._appDicts[this.systemAppId][item.appData.appName] = item.title;
+
+		                    framework.common._contextCategory._contextCategoryTable[item.appData.appName.+'.*'] = 'Applications';
 
 		                }.bind(this));
 
