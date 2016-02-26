@@ -110,10 +110,23 @@
 
 		menuItemSelectCallback: function(listCtrlObj, appData, params) {
 
-		 	if(appData.mmuiEvent == "ExecuteCustomApplication") {
+		 	if(appData.mmuiEvent == "SelectCustomApplication") {
 
-		        return CustomApplicationsProxy.runCustomApplication(appData);
+		 		// exit if handler is not available
+		        if(typeof(CustomApplicationsHandler) == "undefined") return false;
 
+		        // exit if application is not registered
+		        if(!CustomApplicationsHandler.launch(appData)) return false;
+
+		        // proxy data
+		        var proxy = CustomApplicationsProxy;
+
+		        // set current app id
+		        proxy.currentAppName= appData.appName;
+
+		        // set app data
+		        appData.appName = proxy.proxyAppName;
+		        appData.mmuiEvent = proxy.proxyMmuiEvent;
 		    }
 
 			// pass to original handler
@@ -127,14 +140,17 @@
 
 		sendEventToMmui: function(uiaId, eventId, params, fromVui) {
 
-    		var currentUiaId = this.getCurrentApp(),
+    		var proxy = CustomApplicationsProxy,
+    			currentUiaId = this.getCurrentApp(),
     			currentContextId = this.getCurrCtxtId();
 
-		    if(currentUiaId == this.currentApplicationName) {
+    		// proxy overwrites
+		    if(currentUiaId == proxy.currentAppName) {
 		    	currentUiaId = this.proxyAppName;
 		    	currentContextId = this.proxyAppContext;
 		    }
 
+		    // pass to web sockets
    			this.websockets.sendEventMsg(uiaId, eventId, params, fromVui, currentUiaId, currentContextId);
 
      		// Let debug know about the message
@@ -167,26 +183,34 @@
 
 					var inFocusStack = false;
 
-					if(jsObject.appIdList) {
-						jsObject.appIdList.forEach(function(app, index) {
+					if(proxy.currentAppName) {
 
-							if(app.id == proxy.proxyAppName) {
+						if(jsObject.appIdList) {
+							for(var i = 0; i < jsObject.appIdList.length; i++) {
 
-								jsObject.appIdList[index].id = proxy.targetAppName;
+								var appId = jsObject.appIdList[i];
 
-							}
+								if(appId.id == proxy.proxyAppName) {
+									appId.id = proxy.targetAppName;
+								}
 
-							if(app.id == proxy.targetAppName) {
-								inFocusStack = true;
-							}
+								if(appId.id == proxy.currentAppName) {
+									inFocusStack = true;
+								}
 
-						});
+							};
+						}
+					}
+
+					// lost focus on current custom application
+					if(!inFocusStack) {
+						proxy.currentAppName = null;
 					}
 
 				case 'msg':
 				case 'alert':
 
-					if(jsObject.uiaId == proxy.proxyAppName) {
+					if(proxy.currentAppName && jsObject.uiaId == proxy.proxyAppName) {
 						jsObject.uiaId = proxy.targetAppName;
 					}
 
@@ -298,17 +322,6 @@
 		        }
 		    } catch(e) {
 
-		    }
-		},
-
-		/**
-		 * (runCustomApplication)
-		 */
-
-		runCustomApplication: function(appData) {
-
-		    if(typeof(CustomApplicationsHandler) != "undefined") {
-		        CustomApplicationsHandler.run(appData);
 		    }
 		},
 

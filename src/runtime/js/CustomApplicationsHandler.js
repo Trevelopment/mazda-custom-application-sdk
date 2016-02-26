@@ -152,12 +152,12 @@ var CustomApplicationsHandler = {
 	},
 
 	/**
-	 * (run) runs an application
+	 * (launch) launches an application
 	 */
 
-	run: function(id) {
+	launch: function(id) {
 
-		this.log.info(this.__name, "Run request for application", {id: id});
+		this.log.info(this.__name, {id: id}, "Launch request for application");
 
 		if(CustomApplicationHelpers.is().object(id)) {
 
@@ -168,22 +168,12 @@ var CustomApplicationsHandler = {
 
 			this.currentApplicationId = id;
 
-			this.log.info(this.__name, "Preparing application launch", {id: id});
+			this.log.info(this.__name, {id: id}, "Launching application");
 
-			if(typeof(CustomApplicationsProxy) != "undefined") {
-
-				// send message to framework to launch application
-				return CustomApplicationsProxy.invokeApplication();
-
-			}
-
-			this.log.error(this.__name, "Failed to launch application because framework is not available", {id: id});
-
-			return false;
-
+			return true;
 		}
 
-		this.log.error(this.__name, "Application was not registered", {id: id});
+		this.log.error(this.__name, {id: id}, "Launch failed because application was not registered");
 
 		return false;
 	},
@@ -254,16 +244,13 @@ var CustomApplicationsHandler = {
 				title: application.getTitle(),
 			});
 
-			// create locals
-			var appName = 'custom_' + application.getId();
-
 			// set localized language - for now it's just the title
 			return {
 				appData : {
-					appName : appName,
+					appName : application.getId(),
+					appId: application.getId(),
 					isVisible : true,
 					mmuiEvent : 'SelectCustomApplication',
-					appId: application.getId(),
 				},
 				title: application.getTitle(),
 				text1Id : application.getTitle(),

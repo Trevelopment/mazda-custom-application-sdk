@@ -407,7 +407,7 @@
 			this.menu.fadeOut();
 
 			// run application
-			var result = CustomApplicationsHandler.run(appId);
+			var result = CustomApplicationsHandler.launch(appId);
 
 			// update application panel
 			//Logger.updateApplication(CustomApplicationsHandler.applications[appId]);
