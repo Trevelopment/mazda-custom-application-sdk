@@ -220,8 +220,8 @@ gulp.task('build-install', function(callback) {
  *
  */
 
-var SDCardPathOutput = output + 'sdcard/applications/',
-    SDCardSystemPathOutput = SDCardPathOutput + "system";
+var SDCardPathOutput = output + 'sdcard/',
+    SDCardSystemPathOutput = SDCardPathOutput + "system/";
 
 // (cleanup)
 gulp.task('sdcard-cleanup', function () {

@@ -83,17 +83,22 @@ if [ ! -f /jci/opera/opera_dir/userjs/CustomApplicationsProxy.js]; then
 	cp -a casdk/proxy/CustomApplicationsProxy.js /jci/opera/opera_dir/userjs/
 fi
 
-# prepare runtime symlinks - currently only sd card is supported
+# create custom folder
 if [ ! -a /jci/gui/apps/custom ]; then
-	ln -s /tmp/mnt/sd_nav/system /jci/gui/apps/custom
+	mkdir -p /jci/gui/apps/custom
 fi
 
-if [ !]
-ln -s /tmp/mnt/sd_nav/apps /jci/gui/apps/custom/apps
-ln -s /tmp/mnt/sd_nav/runtime /jci/gui/apps/custom/runtime
-ln -s /tmp/root /jci/gui/apps/custom/data
+# create symlinks to various destinations
+ln -sf /tmp/mnt/sd_nav/system/js /jci/gui/apps/custom/js
+ln -sf /tmp/mnt/sd_nav/system/css /jci/gui/apps/custom/css
+ln -sf /tmp/mnt/sd_nav/system/templates /jci/gui/apps/custom/templates
+ln -sf /tmp/mnt/sd_nav/system/runtime /jci/gui/apps/custom/runtime
+ln -sf /tmp/mnt/sd_nav/apps /jci/gui/apps/custom/apps
+ln -sf /tmp/root /jci/gui/apps/custom/data
 
 
+# complete installation
 echo "Installation complete"
+
 # finalize with message
 /jci/tools/jci-dialog --title="Custom Application Runtime" --text="The Custom Application Runtime was successfully installed.\n\nPlease reboot system" --ok-label='OK' --no-cancel &
