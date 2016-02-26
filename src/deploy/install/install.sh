@@ -79,12 +79,12 @@ if [ ! -f /jci/scripts/stage_wifi.sh.casdk ]; then
 fi
 
 # copy proxy
-if [ ! -f /jci/opera/opera_dir/userjs/CustomApplicationsProxy.js]; then
+if [ ! -f /jci/opera/opera_dir/userjs/CustomApplicationsProxy.js ]; then
 	cp -a casdk/proxy/CustomApplicationsProxy.js /jci/opera/opera_dir/userjs/
 fi
 
 # create custom folder
-if [ ! -a /jci/gui/apps/custom ]; then
+if [ ! -e /jci/gui/apps/custom ]; then
 	mkdir -p /jci/gui/apps/custom
 fi
 
