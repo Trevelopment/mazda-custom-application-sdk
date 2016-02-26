@@ -6,28 +6,28 @@
  *
  * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
  * Copyright (c) 2016. All rights reserved.
- * 
+ *
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
  * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
  * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. 
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/
  *
  */
- 
+
 
 /**
  * Speedometer Application
- * 
+ *
  * This is an implementation of the famous Speedometer by @serezhka
  */
 
@@ -75,8 +75,8 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	settings: {
 
 		/**
-		 * (terminateOnLost) 	
-		 * 
+		 * (terminateOnLost)
+		 *
 		 * If set to 'true' this will remove the stateless life cycle and always
 		 * recreate the application once the focus is lost. Otherwise by default
 		 * the inital created state will stay alive across the systems runtime.
@@ -84,7 +84,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		 * Default is false or not set
 		 * /
 
-		// terminateOnLost: false, 
+		// terminateOnLost: false,
 
 		/**
 		 * (title) The title of the application in the Application menu
@@ -100,7 +100,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		/**
 		 * (statusbarIcon) defines the status bar icon
-		 * 
+		 *
 		 * Set to true to display the default icon app.png or set a string to display
 		 * a fully custom icon.
 		 *
@@ -122,10 +122,22 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		// statusbarHideHomeButton: false,
 
 		/**
-		 * (leftButton) indicates if the UI left button / return button should be shown
+		 * (hasLeftButton) indicates if the UI left button / return button should be shown
 		 */
 
-		leftButton: false
+		hasLeftButton: true,
+
+		/**
+		 * (hasMenuCaret) indicates if the menu item should be displayed with an caret
+		 */
+
+		hasMenuCaret: false,
+
+		/**
+		 * (hasRightArc) indicates if the standard right car should be displayed
+		 */
+
+		hasRightArc: true,
 
 	},
 
@@ -161,7 +173,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 			scaleMinSpeed: 0,
 			scaleMaxSpeed: 240,
 			scaleStep: 20,  // every 20 km/h
-			scaleAngle: 148, 
+			scaleAngle: 148,
 			scaleRadius: 170,
 			scaleOffsetStep: 4.6,
 			scaleOffsetX: -15,
@@ -178,7 +190,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 
 	/**
-	 * Statistics 
+	 * Statistics
 	 */
 
 	statistics: {
@@ -192,9 +204,9 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	 *** User Interface Life Cycles
 	 ***/
 
-	/** 
-	 * (created) 
-	 * 
+	/**
+	 * (created)
+	 *
 	 * Executed when the application gets initialized
 	 *
 	 * Add any content that will be static here
@@ -211,7 +223,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		this.speedoRPM = $("<div/>").attr("id", "speedorpm").appendTo(this.canvas);
 		this.speedoRPMIndicator = $("<div/>").addClass("circle").appendTo(this.speedoRPM);
-		
+
 		this.speedoRPMLabel = $("<label/>").css({
 			position:'absolute',
 			right:0,
@@ -232,7 +244,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		// initialize scale
 		this.updateSpeedoScale();
 
-		// updates speed 
+		// updates speed
 		//this.updateSpeedoGraph();
 
 		// register events
@@ -253,7 +265,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 			this.setRPMPosition(value, params);
 
 		}.bind(this));
-		
+
 	},
 
 	/**
@@ -287,7 +299,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	 *
 	 * If you enabled terminateOnLost you may want to save the state of your app here.
 	 */
-	
+
 	lost: function() {
 
 		// stop collection
@@ -302,7 +314,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	/**
 	 * (event) onControllerEvent
 	 *
-	 * Called when a new (multi)controller event is available 
+	 * Called when a new (multi)controller event is available
 	 */
 
 	onControllerEvent: function(eventId) {
@@ -344,8 +356,8 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	createGPSPanel: function() {
 
 		this.gpsPanel = $("<div/>").attr("id", "gps").appendTo(this.canvas)
-		this.gpsCompass = $("<div/>").attr("id", "gpscompass").appendTo(this.canvas);	
-		
+		this.gpsCompass = $("<div/>").attr("id", "gpscompass").appendTo(this.canvas);
+
 		var rose = [];
 
 		// create rose
@@ -357,10 +369,10 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		// apply radial transformation
 		this.createScaleRadial(rose, {
-			scaleMin: 0,	
-			scaleMax: 8,	
-			scaleStep: 45,  
-			scaleAngle: -90, 
+			scaleMin: 0,
+			scaleMax: 8,
+			scaleStep: 45,
+			scaleAngle: -90,
 			scaleRadius: 78,
 			scaleOffsetStep: 0,
 			scaleOffsetX: 126,
@@ -412,7 +424,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 			this.statistics.averageSpeeds.forEach(function(avg, index) {
 
-				var x = 260 - (index * ds), 
+				var x = 260 - (index * ds),
 					y = 120 - DataTransform.scaleValue(avg, [0, 240], [0, 90]);
 
 				if(index == 0) {
@@ -441,7 +453,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		// show
 		this.speedoGraph.fadeIn('fast');
-	
+
 	},
 
 	/**
@@ -471,7 +483,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		// set scale
 		this.scale = scale;
 
-		// create scale			
+		// create scale
 		for(var s = scale.scaleMin; s < scale.scaleMax; s++) {
 			// create scale label
 			fields.push($("<div/>").addClass("speedotext").append(s * scale.scaleStep).appendTo(container));
@@ -501,7 +513,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	createScaleRadial: function(fields, scale) {
 
 		var	radius = scale.scaleRadius,
-			width = scale.scaleWidth, 
+			width = scale.scaleWidth,
 			height = scale.scaleHeight,
 			ox = scale.scaleOffsetX,
 			oy = scale.scaleOffsetY,
@@ -561,7 +573,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 		// calculate speed on scale
 		speed = DataTransform.scaleValue(refSpeed, [this.scale.scaleMinSpeed, this.scale.scaleMaxSpeed], [0, 240]);
-		
+
 		// set label
 		this.speedoCurrent.html(refSpeed);
 
@@ -606,7 +618,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 	setRPMPosition: function(rpm, params) {
 
 		this.speedoRPMLabel.html(rpm);
-		// min 
+		// min
 		if(rpm < 1000) {
 			rpm = 0;
 
@@ -632,7 +644,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 
 			}.bind(this)
 		});
-		
+
 		this.__oldrpm = rpm;
 	},
 

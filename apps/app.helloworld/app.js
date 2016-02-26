@@ -1,25 +1,25 @@
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
- * 
+ *
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
  * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
  * Copyright (c) 2016. All rights reserved.
- * 
+ *
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
  * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
  * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. 
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/
  *
  */
@@ -80,7 +80,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 	settings: {
 
 		/**
-		 * (terminateOnLost) 	
+		 * (terminateOnLost)
 		 *
 		 * If set to 'true' this will remove the stateless life cycle and always
 		 * recreate the application once the focus is lost. Otherwise by default
@@ -89,7 +89,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * Default is false or not set
 		 * /
 
-		// terminateOnLost: false, 
+		// terminateOnLost: false,
 
 		/**
 		 * (title) The title of the application in the Application menu
@@ -105,7 +105,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 		/**
 		 * (statusbarIcon) defines the status bar icon
-		 * 
+		 *
 		 * Set to true to display the default icon app.png or set a string to display
 		 * a fully custom icon.
 		 *
@@ -121,7 +121,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		statusbarTitle: false,
 
 		/**
-		 * (statusbarHideHomeButton) hides the home button in the statusbar 
+		 * (statusbarHideHomeButton) hides the home button in the statusbar
 		 */
 
 		// statusbarHideHomeButton: false,
@@ -151,9 +151,9 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 	 *** User Interface Life Cycles
 	 ***/
 
-	/** 
-	 * (created) 
-	 * 
+	/**
+	 * (created)
+	 *
 	 * Executed when the application gets initialized
 	 *
 	 * Add any content that will be static here
@@ -166,7 +166,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 */
 
 		/* The use of 'element'.
-		 * 
+		 *
 		 * By default the app framework includes the jQuery library.
 		 *
 		 * The application exposes the 'element' helper which basically creates a simple
@@ -177,7 +177,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		 * See the examples below:
 		 */
 
-		// Yeah I gotta do this! 
+		// Yeah I gotta do this!
 		this.element("div", false, false, false, "Hello World!");
 
 		// This will add a class to the element
@@ -205,20 +205,20 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 		this.canvas.get(0).appendChild(div); // yeah canvas is a jQuery object
 
 
-		/* A word about this.canvas 
-		 * 
+		/* A word about this.canvas
+		 *
 		 * this.canvas is the main application screen and the DOM root for the application.
 		 *
 		 * this.canvas is a jQuery object! Just FYI.
-		 * 
-		 * Any content you want to display needs to be attached to the canvas or any children 
+		 *
+		 * Any content you want to display needs to be attached to the canvas or any children
 		 * below it. Please don't attach it to the 'body' or you will loose all the automatic
 		 * context handling of the JCI system which will end up in a bad user experience.
 		 */
 
 
 		/*
-		 * Let's move to some more advanced stuff. 
+		 * Let's move to some more advanced stuff.
 		 */
 
 		// Let's create a simple label with an value
@@ -242,7 +242,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 
 		// lets add it to the canvas
 		this.element("div", false, "simpleLabel", false, ['Current Speed', this.speedLabel]);
-		
+
 		// lets get the speed assigned to it
 		/*
 		this.subscribe(VehicleData.vehicleSpeed, function(speed) {
@@ -276,7 +276,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 	 *
 	 * If you enabled terminateOnLost you may want to save the state of your app here.
 	 */
-	
+
 	lost: function() {
 
 	},
@@ -288,7 +288,7 @@ CustomApplicationsHandler.register("app.helloworld", new CustomApplication({
 	/**
 	 * (event) onControllerEvent
 	 *
-	 * Called when a new (multi)controller event is available 
+	 * Called when a new (multi)controller event is available
 	 */
 
 	onControllerEvent: function(eventId) {

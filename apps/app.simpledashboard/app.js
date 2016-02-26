@@ -1,29 +1,29 @@
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
- * 
+ *
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
  * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
  * Copyright (c) 2016. All rights reserved.
- * 
+ *
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
  * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
  * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
  * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. 
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
  * If not, see http://www.gnu.org/licenses/
  *
  */
- 
+
 /**
  * SimpleDashboard Example Applicatiom
  *
@@ -76,8 +76,8 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
     settings: {
 
         /**
-         * (terminateOnLost)  
-         * 
+         * (terminateOnLost)
+         *
          * If set to 'true' this will remove the stateless life cycle and always
          * recreate the application once the focus is lost. Otherwise by default
          * the inital created state will stay alive across the systems runtime.
@@ -85,7 +85,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
          * Default is false or not set
          * /
 
-        // terminateOnLost: false, 
+        // terminateOnLost: false,
 
         /**
          * (title) The title of the application in the Application menu
@@ -101,7 +101,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
 
         /**
          * (statusbarIcon) defines the status bar icon
-         * 
+         *
          * Set to true to display the default icon app.png or set a string to display
          * a fully custom icon.
          *
@@ -118,11 +118,22 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
 
 
         /**
-         * (leftButton) indicates if the UI left button / return button should be shown
+         * (hasLeftButton) indicates if the UI left button / return button should be shown
          */
 
-        leftButton: false,
+        hasLeftButton: true,
 
+        /**
+         * (hasMenuCaret) indicates if the menu item should be displayed with an caret
+         */
+
+        hasMenuCaret: false,
+
+        /**
+         * (hasRightArc) indicates if the standard right car should be displayed
+         */
+
+        hasRightArc: true,
     },
 
 
@@ -158,9 +169,9 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
      *** User Interface Life Cycles
      ***/
 
-    /** 
-     * (created) 
-     * 
+    /**
+     * (created)
+     *
      * Executed when the application gets initialized
      *
      * Add any content that will be static here
@@ -185,7 +196,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
         this.createSections();
 
         // 2) Finally show the first section
-        this.showSection(0); 
+        this.showSection(0);
 
     },
 
@@ -196,7 +207,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
     /**
      * (event) onControllerEvent
      *
-     * Called when a new (multi)controller event is available 
+     * Called when a new (multi)controller event is available
      */
 
     onControllerEvent: function(eventId) {
@@ -218,7 +229,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
                 if(this.currentSectionIndex >= this.sections.length) this.currentSectionIndex = 0;
 
                 this.showSection(this.currentSectionIndex);
-            
+
                 break;
 
             /**
@@ -281,7 +292,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
 
         this.sections = [
 
-            // Vehicle speed 
+            // Vehicle speed
             {field: VehicleData.vehicle.speed, transform: function(speed, index) {
 
                 // For speed we need to transform it to the local region
@@ -291,7 +302,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
 
                 // return the new value and name
                 return {
-                    value: speed, 
+                    value: speed,
                     name: this.regions[this.getRegion()].unit
                 };
 
@@ -319,7 +330,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
 
                 // we got a new value for this subscription, let's update it
                 this.updateSection(sectionIndex, value);
-            
+
             }.bind(this));
 
         }.bind(this));
@@ -345,7 +356,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
             name = section.name;
 
 
-        // Let's check if this value requires some transformation. 
+        // Let's check if this value requires some transformation.
         // We are using the internal is handler to determinate
 
         if(this.is.fn(section.transform)) {
