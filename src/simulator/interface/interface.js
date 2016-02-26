@@ -61,6 +61,9 @@
 
 		initialize: function() {
 
+			// bootstrap
+			CustomApplicationsProxy.bootstrap();
+
 			// startup console
 			Logger.info("Starting up on platform " + process.platform);
 
@@ -164,10 +167,10 @@
 			if(this.runtimeWatcher) this.runtimeWatcher.close();
 
 			// load runtime.js
-			framework.loadJS("file://" + runtimeLocation + "/runtime.js", function() {
+			framework.loadJS("file://" + runtimeLocation + "/custom/runtime/runtime.js", function() {
 
 				// load CustomApplicationSurfaceTmplt
-				framework.loadJS("file://" + runtimeLocation + "/surface/CustomApplicationSurfaceTmplt/js/CustomApplicationSurfaceTmplt.js", function() {
+				framework.loadJS("file://" + runtimeLocation + "/custom/templates/SurfaceTmplt/js/SurfaceTmplt.js", function() {
 
 					if(typeof(CustomApplicationsHandler) == "undefined")
 						return Logger.error("Error while loading the runtime package.");
