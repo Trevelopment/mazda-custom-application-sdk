@@ -67,7 +67,6 @@ var CustomApplication = (function(){
 		 * __context
 		 */
 
-		__context: [],
 		__contextCounter: 0,
 		__currentContextIndex: false,
 
@@ -121,6 +120,9 @@ var CustomApplication = (function(){
 
 			// data arrays
 			this.__subscriptions = {};
+
+			// initialize context
+			this.__contexts = [];
 
 			// set id
 			this.log.__logId = this.id;
@@ -265,7 +267,9 @@ var CustomApplication = (function(){
 			this.canvas.appendTo(parent);
 
 			// measure context
-			this.__measureContext();
+			setTimeout(function() {
+				this.__measureContext();
+			}.bind(this), 25);
 		},
 
 		/**
@@ -636,7 +640,7 @@ var CustomApplication = (function(){
 	    	context.attr("contextIndex", this.__contextCounter || 0);
 
 	    	// register into context
-	    	this.__context.push({
+	    	this.__contexts.push({
 	    		index: this.__contextCounter,
 	    		callback: callback
 	    	});
@@ -656,7 +660,7 @@ var CustomApplication = (function(){
 
 	    __measureContext: function() {
 
-	    	$.each(this.__context, function(index, context) {
+	    	$.each(this.__contexts, function(index, context) {
 
 	    		// get target
 	    		var target = this.canvas.find(this.sprintr("[contextIndex={0}]", context.index));
@@ -665,7 +669,7 @@ var CustomApplication = (function(){
 	    		if(!target.length) return false;
 
 	    		// measure
-	    		this.__context[index] = $.extend({}, this.__context[index], {
+	    		this.__contexts[index] = $.extend({}, this.__contexts[index], {
 	    			boundingBox: $.extend({}, target.offset(), {
 		    			width: target.outerWidth(),
 		    			height: target.outerHeight(),
@@ -675,9 +679,9 @@ var CustomApplication = (function(){
 	    			enabled: true,
 	    		});
 
-	    		var bb = this.__context[index].boundingBox;
+	    		var bb = this.__contexts[index].boundingBox;
 
-	    		$.each(this.__context, function(intersectIndex, intersectContext) {
+	    		$.each(this.__contexts, function(intersectIndex, intersectContext) {
 
 	    			if(intersectIndex != index && intersectContext.boundingBox) {
 
@@ -685,7 +689,7 @@ var CustomApplication = (function(){
 
 	    				if(bb.left <= ib.right && ib.left <= bb.right && bb.top <= ib.bottom && ib.top <= bb.bottom) {
 
-	    					this.__context[index].enabled = false;
+	    					this.__contexts[index].enabled = false;
 
 	    					return false;
 	    				}
@@ -696,8 +700,8 @@ var CustomApplication = (function(){
 	    	}.bind(this));
 
 	    	// set initial index
-	    	if(this.__currentContextIndex === false && this.__context.length) {
-	    		this.__setCurrentContext(this.__context[0].index); // first item
+	    	if(this.__currentContextIndex === false && this.__contexts.length) {
+	    		this.__setCurrentContext(this.__contexts[0].index); // first item
 	    	}
 
 	    },
@@ -708,10 +712,10 @@ var CustomApplication = (function(){
 	     * processes the current context
 	     */
 
-	    __processContext: function(eventId) {
+	    __processContext: function(eventId, rms) {
 
 	    	// sanity check
-	    	if(!this.__context.length || this.__currentContextIndex === false) return false;
+	    	if(!this.__contexts.length || this.__currentContextIndex === false) return false;
 
 	    	// log
 	    	this.log.debug("Context received new event", {eventId: eventId, index: this.__currentContextIndex});
@@ -719,29 +723,22 @@ var CustomApplication = (function(){
 	    	// process direction
 	    	var nextIndex = false,
 	    		lastDistance = false,
-	    		current = this.__context[this.__currentContextIndex],
+	    		current = this.__contexts[this.__currentContextIndex],
 	    		ba = current.boundingBox,
-	    		calc = function(i, o, index) {
-	    			//if(i > o) {
-
-	    				/*
-	    			if(o < i) {
-	    				var d = i - o;
-	    				if((i-o) < lastDistance) {
-	    					lastDistance = i-o;
-	    					nextIndex = index;
-	    				}
-	    			}*/
+	    		calc = function(i, o, index, r) {
+	    			var d = r ? i - o : o - i;
+	    			if(d >= 0 && (lastDistance === false || d < lastDistance)) {
+	    				lastDistance = d;
+	    				nextIndex = index;
+	    			}
 	    		};
 
-	    	$.each(this.__context, function(index, context) {
+	    	$.each(this.__contexts, function(index, context) {
 
 	    		// make sure we don't process ourselves
-	    		if(index != this.__currentContextIndex && nextIndex == false) {
+	    		if(index != this.__currentContextIndex) {
 
 	    			var bb = context.boundingBox;
-
-	    			console.group(ba, bb); console.groupEnd();
 
 	    			if(ba && bb) {
 
@@ -753,23 +750,20 @@ var CustomApplication = (function(){
 				    			break;
 
 				    		case "leftStart":
-				    			calc(ba.right, bb.left, index);
+				    			calc(ba.left, bb.right, index, true);
 				    			break;
 
 				    		case "upStart":
-				    			calc(ba.top, bb.bottom, index);
+				    			calc(ba.top, bb.bottom, index, true);
 				    			break;
 
 				    		case "downStart":
-				    			calc(ba.bottom, b.top, index);
+				    			calc(ba.bottom, bb.top, index);
 				    			break;
 
 				    	}
 				    }
 			    }
-
-			    // break loop
-			    if(nextIndex !== false) return false;
 
 		    }.bind(this));
 
@@ -799,7 +793,7 @@ var CustomApplication = (function(){
 	    	// execute application event
 	    	if(this.__currentContextIndex !== false) {
 
-	    		var last = this.__context[this.__currentContextIndex],
+	    		var last = this.__contexts[this.__currentContextIndex],
 	    			target =  this.canvas.find(this.sprintr("[contextIndex={0}]", this.__currentContextIndex));
 
 	    		if(last && target.length) {
@@ -827,7 +821,7 @@ var CustomApplication = (function(){
 
 		   	// get new target
 		   	var target = this.canvas.find(this.sprintr("[contextIndex={0}]", index)),
-		   	    current = this.__context[index];
+		   	    current = this.__contexts[index];
 
 
 

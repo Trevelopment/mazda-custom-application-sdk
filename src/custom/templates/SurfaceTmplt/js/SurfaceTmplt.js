@@ -129,7 +129,7 @@ function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
 
         }
 
-    }.bind(this), 0);
+    }.bind(this), 50);
 }
 
 
