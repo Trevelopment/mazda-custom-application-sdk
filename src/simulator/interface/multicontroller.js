@@ -157,7 +157,7 @@
 			// initialize panel
 			this.multicontroller.find("#panel").on("click", "span", function() {
 				that.notifyMultiController($(this).attr("event"));
-			}.bind(this));
+			});
 
 		},
 

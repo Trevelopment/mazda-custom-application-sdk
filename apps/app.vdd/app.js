@@ -166,6 +166,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
         // create interface
         this.createInterface();
 
+
         /**
          * Create global data subscription
          *
@@ -193,52 +194,28 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     onControllerEvent: function(eventId) {
 
-        // For this application we are looking at the wheel
-        // and the buttons left and right
         switch(eventId) {
 
             /**
-             * Go forward in displaying our sections
+             * Scroll Down
              */
 
             case "cw":
-            case "rightStart":
 
-                // we just cyle the sections here
-
-                this.currentSectionIndex++;
-                if(this.currentSectionIndex >= this.sections.length) this.currentSectionIndex = 0;
-
-                this.showSection(this.currentSectionIndex);
+                this.scrollElement(this.canvas.find(".panel.active"), this.canvas.find(".panel.active div.item").height());
 
                 break;
 
             /**
-             * Go backwards in displaying our sections
+             * Scroll Up
              */
 
             case "ccw":
-            case "leftStart":
 
-                // we just cyle the sections here
-
-                this.currentSectionIndex--;
-                if(this.currentSectionIndex < 0) this.currentSectionIndex = this.sections.length -1;
-
-                 this.showSection(this.currentSectionIndex);
+                this.scrollElement(this.canvas.find(".panel.active"), -1 * this.canvas.find(".panel.active div.item").height());
 
                 break;
 
-            /**
-             * When the middle button is pressed, we will change the region
-             * just for this application
-             */
-
-            case "selectStart":
-
-                this.setRegion(this.getRegion() == "na" ? "eu" : "na");
-
-                break;
         }
 
     },
@@ -251,10 +228,21 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     onContextEvent: function(eventId, context, element) {
 
-        this.canvas.find(".panel").hide();
+        // remember the scrolling position
+        var active = this.canvas.find(".panel.active");
+        if(active.length) {
+            this.panelScrollPositions[active.attr("index")] = active.scrollTop();
+        }
 
-        this.canvas.find(".panel[name=" + element.attr("name") + "]").show();
+        // continue
+        this.canvas.find(".panel").removeClass("active").hide();
 
+        var active = this.canvas.find(".panel[name=" + element.attr("name") + "]").addClass("active").show();
+
+        // set position
+        if(this.panelScrollPositions[active.attr("index")]) {
+            active.scrollTop(this.panelScrollPositions[active.attr("index")]);
+        }
     },
 
 
@@ -273,7 +261,8 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
         this.menu = $("<div/>").addClass("tabs").appendTo(this.canvas);
 
         // create tabs
-        this.panelData = [];
+        var panelData = [];
+        this.panelScrollPositions = [];
         $.each(this.dataGroups, function(index, group) {
 
             // set enabled
@@ -299,15 +288,18 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
                 this.menu.append($("<span/>").addClass("divider"));
 
                 // add to panel
-                this.panelData.push({
+                panelData.push({
                     group: group
                 });
+
+                this.panelScrollPositions.push(0);
+
             }
 
         }.bind(this));
 
         // calculate size
-        var tabWidth = Math.round((800 - this.panelData.length) / this.panelData.length);
+        var tabWidth = Math.round((800 - panelData.length) / panelData.length);
 
         this.menu.find("span.tab").css("width", tabWidth);
 
@@ -315,10 +307,10 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
         this.menu.find("span.divider:last").remove();
 
         // create panels
-        this.panelData.forEach(function(panel, index) {
+        panelData.forEach(function(panel, index) {
 
             // create panel
-            var panelDom = $("<div/>").addClass("panel").attr("name", panel.group.id).appendTo(this.canvas);
+            var panelDom = $("<div/>").addClass("panel").attr({index: index, name: panel.group.id}).appendTo(this.canvas);
 
             // create items in panel
             switch(true) {
@@ -349,9 +341,6 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
 
             }
-
-            // assign
-            this.panelData[index].dom = panelDom;
 
         }.bind(this));
 
@@ -417,6 +406,25 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
             $("<span/>").append(value.friendlyName ? value.friendlyName : value.name).appendTo(item);
             $("<span/>").attr("data", value.id).append(value.value).appendTo(item);
 
+        }.bind(this));
+
+    },
+
+    /**
+     * (scrollElement)
+     */
+
+    scrollElement: function(element, distance, animated, callback) {
+
+        var distance = element.scrollTop() + distance;
+
+        element.stop().animate({
+            scrollTop: distance
+        }, animated ? 100 : 0, function() {
+
+            if(this.is.fn(callback)) {
+                callback(element.scrollTop());
+            }
         }.bind(this));
 
     },
