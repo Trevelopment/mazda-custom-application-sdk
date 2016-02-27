@@ -194,6 +194,8 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     onControllerEvent: function(eventId) {
 
+        var itemHeight = this.canvas.find(".panel.active div.item").outerHeight(true) * 2;
+
         switch(eventId) {
 
             /**
@@ -202,7 +204,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
             case "cw":
 
-                this.scrollElement(this.canvas.find(".panel.active"), this.canvas.find(".panel.active div.item").height());
+                this.scrollElement(this.canvas.find(".panel.active"), itemHeight);
 
                 break;
 
@@ -212,7 +214,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
             case "ccw":
 
-                this.scrollElement(this.canvas.find(".panel.active"), -1 * this.canvas.find(".panel.active div.item").height());
+                this.scrollElement(this.canvas.find(".panel.active"), -1 * itemHeight);
 
                 break;
 
