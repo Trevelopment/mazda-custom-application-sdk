@@ -35,7 +35,7 @@
 watch -n 1 /jci/casdk/vdt1s.sh &
 
 # 60s update rate
-watch -n 1 /jci/casdk/vdt60s.sh &
+watch -n 60 /jci/casdk/vdt60s.sh &
 
 # 300s update rate
 watch -n 300 /jci/casdk/vdt300s.sh &
