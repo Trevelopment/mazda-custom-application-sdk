@@ -159,6 +159,25 @@
 				that.notifyMultiController($(this).attr("event"));
 			});
 
+			// initialize keystrokes
+			$(document).keyup(function(e) {
+
+				switch(e.keyCode) {
+
+					case 49: this.notifyMultiController("cw"); break;
+					case 50: this.notifyMultiController("ccw"); break;
+					case 38: this.notifyMultiController("upStart"); break;
+					case 40: this.notifyMultiController("downStart"); break;
+					case 37: this.notifyMultiController("leftStart"); break;
+					case 39: this.notifyMultiController("rightStart"); break;
+					case 13: this.notifyMultiController("selectStart"); break;
+					case 8: this.notifyMultiController("home"); break;
+
+
+				}
+
+			}.bind(this));
+
 		},
 
 		setMultiControllerDirection: function(direction) {
