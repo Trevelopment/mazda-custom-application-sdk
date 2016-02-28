@@ -121,7 +121,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
          * (hasLeftButton) indicates if the UI left button / return button should be shown
          */
 
-        hasLeftButton: true,
+        hasLeftButton: false,
 
         /**
          * (hasMenuCaret) indicates if the menu item should be displayed with an caret
@@ -133,7 +133,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
          * (hasRightArc) indicates if the standard right car should be displayed
          */
 
-        hasRightArc: true,
+        hasRightArc: false,
     },
 
 

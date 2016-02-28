@@ -257,7 +257,7 @@ var CustomApplicationDataHandler = {
 
 		this.initialized = true;
 
-		this.next();
+		this.next(true);
 	},
 
 
@@ -355,15 +355,6 @@ var CustomApplicationDataHandler = {
 			this.data[id].previous = this.data[id].value;
 			this.data[id].value = value;
 
-			// notify supers
-			this.__super.forEach(function(callback) {
-
-				if(CustomApplicationHelpers.is().fn(callback)) {
-					callback(id, this.data[id]);
-				}
-
-			}.bind(this));
-
 			// notify app handler
 			CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
 		}
@@ -390,7 +381,7 @@ var CustomApplicationDataHandler = {
 	 * (next)
 	 */
 
-	next: function() {
+	next: function(overide) {
 
 		clearTimeout(this.currentTimer);
 
@@ -398,13 +389,13 @@ var CustomApplicationDataHandler = {
 
 			if(!this.paused) {
 
-				if(CustomApplicationsHandler.currentApplicationId) {
+				if(overide || CustomApplicationsHandler.currentApplicationId) {
 
 					this.retrieve();
 
 				} else {
 
-					this.next();
+					this.pause();
 				}
 			}
 
@@ -626,17 +617,6 @@ var CustomApplicationDataHandler = {
 
 	},
 
-	/**
-	 * (addSuper)
-	 *
-	 * Adds a handler that always receives ALL data changes
-	 */
-
-	addSuper: function(callback) {
-
-		this.__super.push(callback);
-
-	},
 };
 
 /**

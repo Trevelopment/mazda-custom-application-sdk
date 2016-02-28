@@ -185,6 +185,10 @@ var CustomApplicationsHandler = {
 	sleep: function(application) {
 
 		if(application.id == this.currentApplicationId) {
+			// remember last state
+			this.lastApplicationId = this.currentApplicationId;
+
+			// clear current
 			this.currentApplicationId = false;
 		}
 
@@ -196,18 +200,20 @@ var CustomApplicationsHandler = {
 	 * (getCurrentApplication) returns the current application
 	 */
 
-	getCurrentApplication: function() {
+	getCurrentApplication: function(allowLast) {
 
-		if(this.currentApplicationId) {
+		var applicationId = this.currentApplicationId || (allowLast ? this.lastApplicationId : false);
 
-			this.log.debug(this.__name, "Invoking current set application", {id: this.currentApplicationId});
+		if(applicationId) {
 
-			if(this.applications[this.currentApplicationId]) {
+			this.log.debug(this.__name, "Invoking current set application", {id: applicationId});
 
-				return this.applications[this.currentApplicationId];
+			if(this.applications[applicationId]) {
+
+				return this.applications[applicationId];
 			}
 
-			this.log.error(this.__name, "Application was not registered", {id: this.currentApplicationId});
+			this.log.error(this.__name, "Application was not registered", {id: applicationId});
 
 			return false;
 		}
@@ -253,7 +259,7 @@ var CustomApplicationsHandler = {
 					mmuiEvent : 'SelectCustomApplication',
 				},
 				title: application.getTitle(),
-				text1Id : application.getTitle(),
+				text1Id : application.getId().replace(".", "_"),
 				disabled : false,
 				itemStyle : 'style02',
 				hasCaret : application.getHasMenuCaret(),

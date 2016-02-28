@@ -40,8 +40,10 @@ log.addSrcFile("SurfaceTmplt.js", "SurfaceTmpl");
 
 function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
 {
-    // create context
-    this.divElt = null;
+    // create the div for template
+    this.divElt = document.createElement('div');
+    this.divElt.id = templateID;
+
     this.templateName = "SurfaceTmplt";
 
     this.onScreenClass = "TestTemplateWithStatusLeft";
@@ -62,7 +64,7 @@ function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
     this.application = null;
 
     // get active application
-    this.application = CustomApplicationsHandler.getCurrentApplication();
+    this.application = CustomApplicationsHandler.getCurrentApplication(true);
 
     if(!this.application) {
 
@@ -78,11 +80,7 @@ function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
         "rightChromeVisible" : this.application.getHasRightArc(),
         "hasActivePanel" : false,
         "isDialog" : false
-    }
-
-    // create the div for template
-    this.divElt = document.createElement('div');
-    this.divElt.id = templateID;
+    };
 
     // set the correct template class
     switch(true) {

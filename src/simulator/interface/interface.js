@@ -187,7 +187,7 @@
 
 					// load data
 
-			       	CustomApplicationDataHandler.pause();
+			       	CustomApplicationDataHandler.stop();
 			       	CustomApplicationDataHandler.paths.data = "file://" + __dirname + "/../data/casdk-";
 
 			       	Logger.info("Attempting to load vehicle mock data");

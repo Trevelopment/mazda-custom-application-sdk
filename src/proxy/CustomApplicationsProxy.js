@@ -94,15 +94,6 @@
 			}
 		},
 
-		/**
-		 * (invokeApplication)
-		 */
-
-		invokeApplication: function() {
-
-			framework.sendEventToMmui(this.proxyAppName, this.proxyMmuiEvent);
-		},
-
 
 		/**
 		 * (Overwrite) menuItemSelectCallback
@@ -110,24 +101,29 @@
 
 		menuItemSelectCallback: function(listCtrlObj, appData, params) {
 
-		 	if(appData.mmuiEvent == "SelectCustomApplication") {
+			try {
 
-		 		// exit if handler is not available
-		        if(typeof(CustomApplicationsHandler) == "undefined") return false;
+		       	var proxy = CustomApplicationsProxy;
 
-		        // exit if application is not registered
-		        if(!CustomApplicationsHandler.launch(appData)) return false;
+			 	if(appData.mmuiEvent == "SelectCustomApplication") {
 
-		        // proxy data
-		        var proxy = CustomApplicationsProxy;
+			 		// exit if handler is not available
+			        if(typeof(CustomApplicationsHandler) == "undefined") return false;
 
-		        // set current app id
-		        proxy.currentAppName= appData.appName;
+			        // exit if application is not registered
+			        if(!CustomApplicationsHandler.launch(appData)) return false;
 
-		        // set app data
-		        appData.appName = proxy.proxyAppName;
-		        appData.mmuiEvent = proxy.proxyMmuiEvent;
-		    }
+			        // clone app data
+			        appData = JSON.parse(JSON.stringify(appData));
+
+			        // set app data
+			        appData.appName = proxy.proxyAppName;
+			        appData.mmuiEvent = proxy.proxyMmuiEvent;
+			    }
+
+			} catch(e) {
+				// do nothing
+			}
 
 			// pass to original handler
 			this._menuItemSelectCallback(listCtrlObj, appData, params);
@@ -145,7 +141,7 @@
     			currentContextId = this.getCurrCtxtId();
 
     		// proxy overwrites
-		    if(currentUiaId == proxy.currentAppName) {
+		    if(currentUiaId == proxy.targetAppName) {
 		    	currentUiaId = this.proxyAppName;
 		    	currentContextId = this.proxyAppContext;
 		    }
@@ -164,62 +160,50 @@
 
 		routeMmuiMsg: function(jsObject) {
 
-			var proxy = CustomApplicationsProxy;
+			try {
 
+				var proxy = CustomApplicationsProxy;
 
-			// validate routing message
-			switch(jsObject.msgType) {
+				// validate routing message
+				switch(jsObject.msgType) {
 
-				// magic switch
-				case 'ctxtChg':
-					if(jsObject.uiaId == proxy.proxyAppName) {
-						jsObject.uiaId = proxy.targetAppName;
-						jsObject.ctxtId = proxy.targetAppContext;
-					}
-					break;
+					// magic switch
+					case 'ctxtChg':
+						if(jsObject.uiaId == proxy.proxyAppName) {
+							jsObject.uiaId = proxy.targetAppName;
+							jsObject.ctxtId = proxy.targetAppContext;
+						}
+						break;
 
-				// check if our proxy app is in the focus stack
-				case 'focusStack':
+					// check if our proxy app is in the focus stack
+					case 'focusStack':
 
-					var inFocusStack = false;
-
-					if(proxy.currentAppName) {
-
-						if(jsObject.appIdList) {
+						if(jsObject.appIdList && jsObject.appIdList.length) { 
 							for(var i = 0; i < jsObject.appIdList.length; i++) {
-
 								var appId = jsObject.appIdList[i];
-
 								if(appId.id == proxy.proxyAppName) {
 									appId.id = proxy.targetAppName;
 								}
-
-								if(appId.id == proxy.currentAppName) {
-									inFocusStack = true;
-								}
-
 							};
 						}
-					}
 
-					// lost focus on current custom application
-					if(!inFocusStack) {
-						proxy.currentAppName = null;
-					}
+					case 'msg':
+					case 'alert':
 
-				case 'msg':
-				case 'alert':
+						if(jsObject.uiaId == proxy.proxyAppName) {
+							jsObject.uiaId = proxy.targetAppName;
+						}
 
-					if(proxy.currentAppName && jsObject.uiaId == proxy.proxyAppName) {
-						jsObject.uiaId = proxy.targetAppName;
-					}
+						break;
+					default:
+						// do nothing
+						break;
+				}
 
-					break;
-				default:
-					// do nothing
-					break;
+			} catch(e) {
+
+				// do nothing
 			}
-
 
 			// pass to original
 			this.overwriteRouteMmmuiMsg(jsObject);
@@ -310,9 +294,9 @@
 
 		                    this.systemApp._masterApplicationDataList.items.push(item);
 
-		                    framework.localize._appDicts[this.systemAppId][item.appData.appName] = item.title;
+		                    framework.localize._appDicts[this.systemAppId][item.appData.appName.replace(".", "_")] = item.title;
 
-		                    framework.common._contextCategory._contextCategoryTable[item.appData.appName.+'.*'] = 'Applications';
+		                    framework.common._contextCategory._contextCategoryTable[item.appData.appName + '.*'] = 'Applications';
 
 		                }.bind(this));
 

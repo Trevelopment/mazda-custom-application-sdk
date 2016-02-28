@@ -163,8 +163,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     created: function() {
 
-        // create interface
-        this.createInterface();
+        this.isCreated = false;
 
 
         /**
@@ -179,6 +178,22 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
             this.canvas.find("span[data=" + id + "]").html(data.value);
 
          }.bind(this));
+
+    },
+
+    /**
+     * (focused)
+     */
+
+    focused: function() {
+
+        if(!this.isCreated) {
+
+            // create interface
+            this.createInterface();
+
+            this.isCreated = true;
+        }
 
     },
 
