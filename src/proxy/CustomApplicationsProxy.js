@@ -39,8 +39,6 @@
 		 * (locals)
 		 */
 
-		debug: true,
-
 		systemAppId: 'system',
 		systemAppCategory: 'Applications',
 
@@ -305,7 +303,7 @@
 		            }.bind(this));
 		        }
 		    } catch(e) {
-
+		    	// failed to register applications
 		    }
 		},
 

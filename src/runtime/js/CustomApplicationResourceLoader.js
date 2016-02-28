@@ -147,41 +147,47 @@ var CustomApplicationResourceLoader = {
 		// process items
 		items.forEach(function(filename, index) {
 
-			filename = path + filename;
+			try {
 
-			this.logger.debug(this.__name, "Attempting to load resource from", filename);
+				filename = path + filename;
 
-			if(!async && options.timeout) {
+				this.logger.debug(this.__name, "Attempting to load resource from", filename);
 
-				clearTimeout(timeout);
-				timeout = setTimeout(function() {
+				if(!async && options.timeout) {
 
-					this.logger.error(this.__name, "Timeout occured while loading resource", filename);
+					clearTimeout(timeout);
+					timeout = setTimeout(function() {
 
-					// just do the next one
-					next(true);
+						this.logger.error(this.__name, "Timeout occured while loading resource", filename);
 
-				}.bind(this), options.timeout);
+						// just do the next one
+						next(true);
 
-			}
+					}.bind(this), options.timeout);
 
-			build(filename, function(resource) {
-
-				this.logger.info(this.__name, "Successfully loaded resource", filename);
-
-				if(resource && ids != false) {
-					this.logger.debug(this.__name, "Loaded resource assigned to id", {id: ids[index], filename: filename});
-
-					result[ids[index]] = resource;
 				}
 
-	        	if(async) {
-	        		if(CustomApplicationHelpers.is().fn(callback)) callback();
-	        	} else {
-	        		next();
-	        	}
+				build(filename, function(resource) {
 
-	        }.bind(this), ids ? ids[index] : false);
+					this.logger.info(this.__name, "Successfully loaded resource", filename);
+
+					if(resource && ids != false) {
+						this.logger.debug(this.__name, "Loaded resource assigned to id", {id: ids[index], filename: filename});
+
+						result[ids[index]] = resource;
+					}
+
+		        	if(async) {
+		        		if(CustomApplicationHelpers.is().fn(callback)) callback();
+		        	} else {
+		        		next();
+		        	}
+
+		        }.bind(this), ids ? ids[index] : false);
+
+			} catch(e) {
+				this.logger.error(this.__name, "Failed to load resource", {filename: filename, error: e.message});
+			}
 
 	   	}.bind(this));
 	}

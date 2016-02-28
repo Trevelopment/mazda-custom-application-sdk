@@ -1,6 +1,6 @@
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
- *
+ * 
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
@@ -151,13 +151,12 @@ var CustomApplicationDataHandler = {
 
 	__name: 'DataHandler',
 
-	__super: [],
-
 	/**
 	 * (Locals)
 	 */
 
 	refreshRate: 1000,
+	paused: false,
 
 	/**
 	 * (Paths)
@@ -257,7 +256,7 @@ var CustomApplicationDataHandler = {
 
 		this.initialized = true;
 
-		this.next(true);
+		this.next();
 	},
 
 
@@ -274,25 +273,6 @@ var CustomApplicationDataHandler = {
 		var id = id.toLowerCase();
 
 		return this.data[id] ? this.data[id] : {value: _default ? _default : null};
-	},
-
-	/**
-	 * (getTableByPrefix) returns a table by the prefix
-	 */
-
-	getTableByPrefix: function(prefix) {
-
-		var result = false;
-
-		this.tables.map(function(table) {
-
-			if(!result && table.prefix == prefix) {
-				result = table;
-			}
-
-		});
-
-		return result;
 	},
 
 	/**
@@ -328,7 +308,7 @@ var CustomApplicationDataHandler = {
 
 	setValue: function(id, value) {
 
-		//CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});
+		//CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});	
 
 		if(this.data[id]) {
 
@@ -355,7 +335,7 @@ var CustomApplicationDataHandler = {
 			this.data[id].previous = this.data[id].value;
 			this.data[id].value = value;
 
-			// notify app handler
+			// notify
 			CustomApplicationsHandler.notifyDataChange(id, this.data[id]);
 		}
 
@@ -381,7 +361,7 @@ var CustomApplicationDataHandler = {
 	 * (next)
 	 */
 
-	next: function(overide) {
+	next: function() {
 
 		clearTimeout(this.currentTimer);
 
@@ -389,13 +369,13 @@ var CustomApplicationDataHandler = {
 
 			if(!this.paused) {
 
-				if(overide || CustomApplicationsHandler.currentApplicationId) {
+				if(CustomApplicationsHandler.currentApplicationId) {
 
 					this.retrieve();
 
 				} else {
 
-					this.pause();
+					this.next();
 				}
 			}
 
@@ -495,29 +475,35 @@ var CustomApplicationDataHandler = {
 						CustomApplicationLog.debug(this.__name, "Loading table data from file", {table: table.table, location: location});
 
 						// load
-						$.get(location, function(data) {
+						try {
+							$.get(location, function(data) {
 
-							// update counter
-							loaded++;
+								// update counter
+								loaded++;
 
-							CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});
+								CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
 
-							// execute parser
-							this.__parseFileData(table, data);
+								// execute parser
+								this.__parseFileData(table, data);
 
-							// completed
-							this.tables[tableIndex].__last = new Date();
+								// completed
+								this.tables[tableIndex].__last = new Date();
 
-							// continue
-							finish();
+								// continue
+								finish();
 
-						}.bind(this));
+							}.bind(this));
 
+						} catch(e) {
+							CustomApplicationLog.error(this.__name, "Failed to load table", {table: table.table});
+
+							finish(); // move to next
+						}
 						break;
 
 					default:
 
-						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});
+						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});	
 
 						// just finish
 						loaded++;
@@ -616,7 +602,6 @@ var CustomApplicationDataHandler = {
 		}
 
 	},
-
 };
 
 /**
@@ -656,5 +641,4 @@ var DataTransform = {
 	},
 
 };
-
 
