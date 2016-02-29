@@ -39,6 +39,8 @@
 		 * (locals)
 		 */
 
+		debug: true,
+
 		systemAppId: 'system',
 		systemAppCategory: 'Applications',
 
@@ -297,8 +299,6 @@
 		                    framework.common._contextCategory._contextCategoryTable[item.appData.appName + '.*'] = 'Applications';
 
 		                }.bind(this));
-
-		                this.systemApp._readyApplications();
 
 		            }.bind(this));
 		        }

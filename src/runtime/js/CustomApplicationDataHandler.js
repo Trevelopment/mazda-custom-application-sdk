@@ -391,7 +391,7 @@ var CustomApplicationDataHandler = {
 
 	retrieve: function(callback) {
 
-		//CustomApplicationLog.debug(this.__name, "Retrieving data tables");
+		CustomApplicationLog.debug(this.__name, "Retrieving data tables");
 
 		// prepare
 		var loaded = 0, toload = 0, finish = function() {
@@ -433,7 +433,7 @@ var CustomApplicationDataHandler = {
 				toload++;
 
 				// loading
-				//CustomApplicationLog.debug(this.__name, "Preparing table for parsing", {table: table.table});
+				CustomApplicationLog.debug(this.__name, "Preparing table for parsing", {table: table.table});
 
 				// process table by type
 				switch(true) {
@@ -473,33 +473,42 @@ var CustomApplicationDataHandler = {
 						// prepare variables
 						var location = this.paths.data + table.table;
 
-						//CustomApplicationLog.debug(this.__name, "Loading table data from file", {table: table.table, location: location});
+						CustomApplicationLog.debug(this.__name, "Loading table data from file", {table: table.table, location: location});
 
 						// load
-						$.get(location, function(data) {
+						$.ajax(location, { 
+							timeout: 500,
 
-							// update counter
-							loaded++;
+							// success handler
+							success: function(data) {
 
-							//CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
+								CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
 
-							// execute parser
-							this.__parseFileData(table, data);
+								// execute parser
+								this.__parseFileData(table, data);
 
-							// completed
-							this.tables[tableIndex].__last = new Date();
+								// completed
+								this.tables[tableIndex].__last = new Date();
 
-							// continue
-							finish();
+							}.bind(this), 
 
-						}.bind(this));
+							// all done handler - timeouts will be handled here as well
+							complete: function() {
+
+								// just continue
+								loaded++;
+								finish();
+
+							}.bind(this),
+							
+						});
 
 	
 						break;
 
 					default:
 
-						//CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});	
+						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});	
 
 						// just finish
 						loaded++;
