@@ -182,25 +182,26 @@
 
 			try {
 
-				var proxy = CustomApplicationsProxy;
+				var proxy = CustomApplicationsProxy,
+					jsObjectModified = jsObject;
 
 				// validate routing message
-				switch(jsObject.msgType) {
+				switch(jsObjectModified.msgType) {
 
 					// magic switch
 					case 'ctxtChg':
-						if(jsObject.uiaId == proxy.proxyAppName) {
-							jsObject.uiaId = proxy.targetAppName;
-							jsObject.ctxtId = proxy.targetAppContext;
+						if(jsObjectModified.uiaId == proxy.proxyAppName) {
+							jsObjectModified.uiaId = proxy.targetAppName;
+							jsObjectModified.ctxtId = proxy.targetAppContext;
 						}
 						break;
 
 					// check if our proxy app is in the focus stack
 					case 'focusStack':
 
-						if(jsObject.appIdList && jsObject.appIdList.length) {
-							for(var i = 0; i < jsObject.appIdList.length; i++) {
-								var appId = jsObject.appIdList[i];
+						if(jsObjectModified.appIdList && jsObjectModified.appIdList.length) {
+							for(var i = 0; i < jsObjectModified.appIdList.length; i++) {
+								var appId = jsObjectModified.appIdList[i];
 								if(appId.id == proxy.proxyAppName) {
 									appId.id = proxy.targetAppName;
 								}
@@ -210,8 +211,8 @@
 					case 'msg':
 					case 'alert':
 
-						if(jsObject.uiaId == proxy.proxyAppName) {
-							jsObject.uiaId = proxy.targetAppName;
+						if(jsObjectModified.uiaId == proxy.proxyAppName) {
+							jsObjectModified.uiaId = proxy.targetAppName;
 						}
 
 						break;
@@ -219,6 +220,9 @@
 						// do nothing
 						break;
 				}
+
+				// assign to original jsObject
+				jsObject = jsObjectModified;
 
 			} catch(e) {
 
