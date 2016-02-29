@@ -65,17 +65,17 @@
 			if(typeof framework === 'object' && framework._currentAppUiaId === this.systemAppId) {
 
 				// retrieve system app
-				this.systemApp = framework.getAppInstance(this.systemAppId);
+				var systemApp = framework.getAppInstance(this.systemAppId);
 
 				// verify bootstrapping - yeah long name
-				if(!this.systemApp.isCustomApplicationBootstrapped) {
+				if(!systemApp.isCustomApplicationBootstrapped) {
 
 					// overwrite list2 handler
-					this.systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(this.systemApp);
+					systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(systemApp);
 
 					// detect usb changes
-					this.systemApp.overwriteStatusMenuUSBAudioMsgHandler = this.systemApp._StatusMenuUSBAudioMsgHandler;
-					this.systemApp._StatusMenuUSBAudioMsgHandler = this.StatusMenuUSBAudioMsgHandler.bind(this.systemApp);
+					systemApp.overwriteStatusMenuUSBAudioMsgHandler = systemApp._StatusMenuUSBAudioMsgHandler;
+					systemApp._StatusMenuUSBAudioMsgHandler = this.StatusMenuUSBAudioMsgHandler.bind(systemApp);
 
 					// overwrite framework MMUI handlers
 					framework.overwriteRouteMmmuiMsg = framework.routeMmuiMsg;
@@ -86,7 +86,7 @@
 					framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
 
 					// finalize
-					this.systemApp.isCustomApplicationBootstrapped = true;
+					systemApp.isCustomApplicationBootstrapped = true;
 
 					// kick off loader - implemention only for sdcard right now
 					this.prepareCustomApplications();
@@ -205,7 +205,6 @@
 				// do nothing
 			}
 
-			// pass to original
 			this.overwriteRouteMmmuiMsg(jsObject);
 		},
 
@@ -239,7 +238,7 @@
 		 * (loadCustomApplications)
 		 */
 
-		 loadCustomApplications: function() {
+		loadCustomApplications: function() {
 
 		    try {
 
@@ -290,9 +289,11 @@
 
 		            CustomApplicationsHandler.retrieve(function(items) {
 
+		            	var systemApp = framework.getAppInstance(this.systemAppId);
+
 		                items.forEach(function(item) {
 
-		                    this.systemApp._masterApplicationDataList.items.push(item);
+		                    systemApp._masterApplicationDataList.items.push(item);
 
 		                    framework.localize._appDicts[this.systemAppId][item.appData.appName.replace(".", "_")] = item.title;
 
