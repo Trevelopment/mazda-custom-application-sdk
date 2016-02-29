@@ -33,6 +33,12 @@
 
 (function() {
 
+	// global value, indicating the bootstrapping status - avoid infinite loop
+	if(typeof(CustomApplicationsProxyBootstrapped) == "undefined") {
+		CustomApplicationsProxyBootstrapped = false;
+	};
+
+	// Proxy class
 	CustomApplicationsProxy = {
 
 		/**
@@ -51,6 +57,8 @@
 		targetAppName: 'custom',
 		targetAppContext: 'Surface',
 
+		isBootstrapped: false,
+
 
 		/**
 		 * (bootstrap)
@@ -60,36 +68,51 @@
 
 		 bootstrap: function() {
 
-
 			// verify that core objects are available
-			if(typeof framework === 'object' && framework._currentAppUiaId === this.systemAppId) {
+			if(typeof framework === 'object' /** && framework._currentAppUiaId === this.systemAppId **/) {
 
 				// retrieve system app
 				var systemApp = framework.getAppInstance(this.systemAppId);
 
 				// verify bootstrapping - yeah long name
-				if(!systemApp.isCustomApplicationBootstrapped) {
+				if(!window.CustomApplicationsProxyBootstrapped) {
 
-					// overwrite list2 handler
-					systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(systemApp);
+					// set to strap - if everything fails - no harm is done :-)
+					window.CustomApplicationsProxyBootstrapped = true;
 
-					// detect usb changes
-					systemApp.overwriteStatusMenuUSBAudioMsgHandler = systemApp._StatusMenuUSBAudioMsgHandler;
-					systemApp._StatusMenuUSBAudioMsgHandler = this.StatusMenuUSBAudioMsgHandler.bind(systemApp);
+					// let's boostrap
+					try {
 
-					// overwrite framework MMUI handlers
-					framework.overwriteRouteMmmuiMsg = framework.routeMmuiMsg;
-					framework.routeMmuiMsg = this.routeMmuiMsg.bind(framework);
-					framework.sendEventToMmui = this.sendEventToMmui.bind(framework);
+						// overwrite list2 handler
+						systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(systemApp);
 
-					// assign template transition
-					framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
+						// for usb changes
+						if(typeof(systemApp.overwriteStatusMenuUSBAudioMsgHandler) == "undefined") {
+							systemApp.overwriteStatusMenuUSBAudioMsgHandler = systemApp._StatusMenuUSBAudioMsgHandler;
+							systemApp._StatusMenuUSBAudioMsgHandler = this.StatusMenuUSBAudioMsgHandler.bind(systemApp);
+						}
 
-					// finalize
-					systemApp.isCustomApplicationBootstrapped = true;
+						// overwrite framework route handler
+						if(typeof(framework.overwriteRouteMmmuiMsg) == "undefined") {
+							framework.overwriteRouteMmmuiMsg = framework.routeMmuiMsg;
+							framework.routeMmuiMsg = this.routeMmuiMsg.bind(framework);
+						}
 
-					// kick off loader - implemention only for sdcard right now
-					this.prepareCustomApplications();
+						// ovewrite framework MMUI sender
+						if(typeof(framework.overwriteSendEventToMmui) == "undefined") {
+							framework.overwriteSendEventToMmui = framework.sendEventToMmui;
+							framework.sendEventToMmui = this.sendEventToMmui.bind(framework);
+						}
+
+						// assign template transition
+						framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
+
+						// kick off loader - implemention only for sdcard right now
+						this.prepareCustomApplications();
+
+					} catch(e) {
+						// bootstrapping process failed - we just leave it here
+					}
 				}
 			}
 		},
@@ -146,11 +169,8 @@
 		    	currentContextId = this.proxyAppContext;
 		    }
 
-		    // pass to web sockets
-   			this.websockets.sendEventMsg(uiaId, eventId, params, fromVui, currentUiaId, currentContextId);
-
-     		// Let debug know about the message
-    		this.debug.triggerEvtToMmuiCallbacks(uiaId, eventId, params);
+		    // pass to original handler
+		    this.overwriteSendEventToMmui(uiaId, eventId, params, fromVui, currentUiaId, currentContextId);
 		},
 
 
@@ -178,7 +198,7 @@
 					// check if our proxy app is in the focus stack
 					case 'focusStack':
 
-						if(jsObject.appIdList && jsObject.appIdList.length) { 
+						if(jsObject.appIdList && jsObject.appIdList.length) {
 							for(var i = 0; i < jsObject.appIdList.length; i++) {
 								var appId = jsObject.appIdList[i];
 								if(appId.id == proxy.proxyAppName) {
