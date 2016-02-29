@@ -34,69 +34,72 @@
 
 	[app="app.devtools"] .output {
 		position:absolute;
-		top:0;
 		left:0;
 		right:0;
 		bottom:0;
 		background:#121212;
+		overflow:hidden;
+		font-family: "Lucida Console", Monaco, monospace;
+		font-weight:bold;
+		font-size:15px;
+		white-space: nowrap;
 	}
 
 	#console #output {
 		display:block;
 	}
 
-		#console #output div {
-			padding:2px;
+		[app="app.devtools"] .output div {
+			padding:3px;
 		}
 
-			#console #output div span {
+			[app="app.devtools"] .output div span {
 				margin-right:5px;
 				display:inline-block;
 			}
 
-			#console #output div span:nth-child(1) {
+			[app="app.devtools"] .output div span:nth-child(1) {
 				width:50px;
 				font-size:10px;
 			}
 
-			#console #output div span:nth-child(2) {
+			[app="app.devtools"] .output div span:nth-child(2) {
 				background:#616469;
 				width:40px;
 				text-align:center;
 				padding:2px;
-				font-size:10px;
+				font-size:13px;
 				border-radius:2px;
 			}
 
-				#console #output div span:nth-child(2).DEBUG {
+				[app="app.devtools"] .output div span:nth-child(2).DEBUG {
 					background:#0059B2;
 					color:#fff;
 				}
 
-				#console #output div span:nth-child(2).INFO {
+				[app="app.devtools"] .output div span:nth-child(2).INFO {
 					background:#468C00;
 					color:#fff;
 				}
 
-				#console #output div span:nth-child(2).ERROR {
+				[app="app.devtools"] .output div span:nth-child(2).ERROR {
 					background:#D93600;
 					color:#fff;
 				}
 
-				#console #output div span:nth-child(2).WATCH {
+				[app="app.devtools"] .output div span:nth-child(2).WATCH {
 					background:#B973FF;
 					color:#fff;
 				}
 
-			#console #output div span:nth-child(3) {
+			[app="app.devtools"] .output div span:nth-child(3) {
 				background:#515151;
 				color:#fff;
 				padding:2px;
-				font-size:10px;
+				font-size:13px;
 				border-radius:2px;
 			}
 
-			#console #output div span:nth-child(4) {
+			[app="app.devtools"] .output div span:nth-child(4) {
 				color:#bbb;
 			}
-

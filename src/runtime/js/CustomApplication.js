@@ -582,6 +582,17 @@ var CustomApplication = (function(){
 		},
 
 		/**
+		 * (internal) removeSubscriptions
+		 *
+		 * Removes all subscriptions
+		 */
+
+		removeSubscriptions: function() {
+
+			this.__subscriptions = {} // clear all
+		},
+
+		/**
 		 * (internal) transformValue
 		 *
 		 * Calls a DataTransform object

@@ -25,6 +25,26 @@
  */
 
 /**
+ * (Global Handler)
+ */
+
+window.onerror = function(message, url, linenumber) {
+
+	var div = document.createElement("div");
+	div.style.fontSize = "15px";
+	div.style.backgroundColor = "red";
+	div.style.color = "white";
+	div.style.zIndex = 999999999999;
+	div.style.position = "absolute";
+	div.style.top = "0px";
+	div.style.left = "0px";
+	div.innerHTML = url + ":" + linenumber + ":" + message;
+
+	document.body.appendChild(div);
+
+};
+
+/**
  * (CustomApplicationLog)
  *
  * A logger
@@ -117,24 +137,26 @@ var CustomApplicationLog = {
 				});
 			}
 
-			if(this.enabledLogger && typeof(Logger) != "undefined") {
-				Logger.log(level, values[0], msg.join(" "), color);
+			try {
+				if(this.enabledLogger && typeof(Logger) != "undefined") {
+					Logger.log(level, values[0], msg.join(" "), color);
+				}
+			} catch(e) {
+				// do nothing
 			}
 
-			if(this.enabledConsole) {
-				 console.log(
-					CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
-					CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
-					"color:black",
-					CustomApplicationHelpers.sprintr("color:{0}", color)
-				);
+			try {
+				if(this.enabledConsole) {
+					 console.log(
+						CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
+						CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")), 
+						"color:black",
+						CustomApplicationHelpers.sprintr("color:{0}", color)
+					);
+				}
+			} catch(e) {
+				// do nothing
 			}
-		
 		}
 	}
-
 };
-
-
-
-

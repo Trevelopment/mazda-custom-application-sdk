@@ -275,6 +275,25 @@ var CustomApplicationDataHandler = {
 		return this.data[id] ? this.data[id] : {value: _default ? _default : null};
 	},
 
+	/**
+	 * (getTableByPrefix) returns a table by the prefix
+	 */
+
+	getTableByPrefix: function(prefix) {
+
+		var result = false;
+
+		this.tables.map(function(table) {
+
+			if(!result && table.prefix == prefix) {
+				result = table;
+			}
+
+		});
+
+		return result;
+	},
+
 
 	/**
 	 * (registerValue) adds a new value
@@ -391,7 +410,7 @@ var CustomApplicationDataHandler = {
 
 	retrieve: function(callback) {
 
-		CustomApplicationLog.debug(this.__name, "Retrieving data tables");
+		//CustomApplicationLog.debug(this.__name, "Retrieving data tables");
 
 		// prepare
 		var loaded = 0, toload = 0, finish = function() {
@@ -433,7 +452,7 @@ var CustomApplicationDataHandler = {
 				toload++;
 
 				// loading
-				CustomApplicationLog.debug(this.__name, "Preparing table for parsing", {table: table.table});
+				//CustomApplicationLog.debug(this.__name, "Preparing table for parsing", {table: table.table});
 
 				// process table by type
 				switch(true) {
@@ -473,7 +492,7 @@ var CustomApplicationDataHandler = {
 						// prepare variables
 						var location = this.paths.data + table.table;
 
-						CustomApplicationLog.debug(this.__name, "Loading table data from file", {table: table.table, location: location});
+						//CustomApplicationLog.debug(this.__name, "Loading table data from file", {table: table.table, location: location});
 
 						// load
 						$.ajax(location, { 
@@ -482,7 +501,7 @@ var CustomApplicationDataHandler = {
 							// success handler
 							success: function(data) {
 
-								CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
+								//CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
 
 								// execute parser
 								this.__parseFileData(table, data);

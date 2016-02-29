@@ -320,6 +320,27 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
             // GPS Velocity
             {field: VehicleData.gps.velocity, name: 'Velocity'},
 
+            // Odo meter
+            {field: VehicleData.vehicle.odometer, name: 'Odometer'},
+
+            // Battery Level
+            {field: VehicleData.vehicle.batterylevel, name: 'Battery Level'},
+
+            // Fuel Level
+            {field: VehicleData.fuel.position, name: 'Fuel Level'},
+            
+            // Average Consumption
+            {field: VehicleData.fuel.averageconsumption, name: 'Average Fuel Consumption'},
+            
+            // Temperature: Outside
+            {field: VehicleData.temperature.outside, name: 'Temperature Outside'},
+
+            // Temperature Intake
+            {field: VehicleData.temperature.intake, name: 'Temperature Intake'},
+
+            // Temperature Coolant
+            {field: VehicleData.temperature.coolant, name: 'Temperature Coolant'},
+
         ];
 
         // let's actually execute the subscriptions

@@ -126,6 +126,16 @@ var CustomApplicationsHandler = {
 	},
 
 	/**
+	 * (get) returns an application by id
+	 */
+
+	get: function(id) {
+
+		return this.applications[id] ? this.applications[id] : false;
+	},
+	
+
+	/**
 	 * (Register) registers all the custom applications
 	 */
 

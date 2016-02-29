@@ -3,7 +3,7 @@
 }
 	
 	[app="app.simpledashboard"] div {
-		background:#333;
+		background:rgba(255, 0, 0, 0.1);
 		position:absolute;
 		top:45px;
 		left:50px;
@@ -12,8 +12,9 @@
 		text-align:center;
 		line-height:300px;
 		font-size:300px;
-		border:5px solid #555;
+		border:5px solid rgba(255, 0, 0, 0.25);
 		border-radius: 25px;
+		color:rgba(255, 255, 255, 0.9);
 	}
 
 	[app="app.simpledashboard"] span {
@@ -22,7 +23,7 @@
 		left:0;
 		right:0;
 		font-size:25px;
-		color:#fff;
+		color:rgba(255, 0, 0, 0.5);
 		text-align:center;
 		display:block;
 		text-transform: uppercase;

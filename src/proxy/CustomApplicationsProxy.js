@@ -39,7 +39,7 @@
 		 * (locals)
 		 */
 
-		debug: true,
+		//debug: true,
 
 		systemAppId: 'system',
 		systemAppCategory: 'Applications',

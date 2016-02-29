@@ -163,21 +163,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     created: function() {
 
-        this.isCreated = false;
-
-
-        /**
-         * Create global data subscription
-         *
-         * WARNING: Applications should ALWAYS use the subscriber model of the app.
-         * This is litterally only for the VDD app that monitors all values at once.
-         */
-
-         CustomApplicationDataHandler.addSuper(function(id, data) {
-
-            this.canvas.find("span[data=" + id + "]").html(data.value);
-
-         }.bind(this));
+        this.createInterface();
 
     },
 
@@ -187,14 +173,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     focused: function() {
 
-        if(!this.isCreated) {
-
-            // create interface
-            this.createInterface();
-
-            this.isCreated = true;
-        }
-
+        //this.update();
     },
 
     /***
@@ -209,7 +188,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     onControllerEvent: function(eventId) {
 
-        var itemHeight = this.canvas.find(".panel.active div.item").outerHeight(true) * 2;
+        var itemHeight = this.canvas.find(".panel div.item").outerHeight(true) * 2;
 
         switch(eventId) {
 
@@ -219,7 +198,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
             case "cw":
 
-                this.scrollElement(this.canvas.find(".panel.active"), itemHeight);
+                this.scrollElement(this.canvas.find(".panel"), itemHeight);
 
                 break;
 
@@ -229,7 +208,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
             case "ccw":
 
-                this.scrollElement(this.canvas.find(".panel.active"), -1 * itemHeight);
+                this.scrollElement(this.canvas.find(".panel"), -1 * itemHeight);
 
                 break;
 
@@ -256,6 +235,9 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
         var active = this.canvas.find(".panel[name=" + element.attr("name") + "]").addClass("active").show();
 
+        // create items
+        this.createPanel(element.attr("index"));
+
         // set position
         if(this.panelScrollPositions[active.attr("index")]) {
             active.scrollTop(this.panelScrollPositions[active.attr("index")]);
@@ -278,7 +260,7 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
         this.menu = $("<div/>").addClass("tabs").appendTo(this.canvas);
 
         // create tabs
-        var panelData = [];
+        this.panelData = [];
         this.panelScrollPositions = [];
         $.each(this.dataGroups, function(index, group) {
 
@@ -299,15 +281,13 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
             // add to menu if enabled
             if(enabled) {
                 // add to menu
-                this.menu.append(this.addContext($("<span/>").attr("name", group.id).addClass("tab").append(group.name || group.prefix)));
+                this.menu.append(this.addContext($("<span/>").attr({name: group.id, index: this.panelData.length}).addClass("tab").append(group.name || group.prefix)));
 
                 // add divider
                 this.menu.append($("<span/>").addClass("divider"));
 
                 // add to panel
-                panelData.push({
-                    group: group
-                });
+                this.panelData.push(group);
 
                 this.panelScrollPositions.push(0);
 
@@ -316,50 +296,64 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
         }.bind(this));
 
         // calculate size
-        var tabWidth = Math.round((800 - panelData.length) / panelData.length);
+        var tabWidth = Math.round((800 - this.panelData.length) / this.panelData.length);
 
         this.menu.find("span.tab").css("width", tabWidth);
 
         // remove last divider
         this.menu.find("span.divider:last").remove();
 
+    },
+
+
+    /**
+     * createPanel
+     */
+
+    createPanel: function(index) {
+
+
         // create panels
-        panelData.forEach(function(panel, index) {
+        if(!this.panelData[index]) return;
 
-            // create panel
-            var panelDom = $("<div/>").addClass("panel").attr({index: index, name: panel.group.id}).appendTo(this.canvas);
+        // flush
+        this.removeSubscriptions();
 
-            // create items in panel
-            switch(true) {
+        this.canvas.find(".panel").remove();
 
-                case this.is.array(panel.group.items):
+        // create panel
+        var panelDom = $("<div/>").addClass("panel").appendTo(this.canvas),
+            panel = this.panelData[index];
 
-                    // create sectionalized view
-                    panel.group.items.forEach(function(section) {
+        // create items in panel
+        switch(true) {
 
-                        // add header
-                        panelDom.append($("<div/>").addClass("section").append(section.name));
+            case this.is.array(panel.items):
 
-                        // add items
-                        this.createItems(panelDom, section);
+                // create sectionalized view
+                panel.items.forEach(function(section) {
 
-                    }.bind(this));
+                    // add header
+                    panelDom.append($("<div/>").addClass("section").append(section.name));
 
-                    break;
+                    // add items
+                    this.createItems(panelDom, section);
 
-                default:
-                    // create description
-                    panelDom.append($("<div/>").addClass("section").append(panel.group.title));
+                }.bind(this));
 
-                    // create items
+                break;
 
-                    this.createItems(panelDom, panel.group);
-                    break;
+            default:
+                // create description
+                panelDom.append($("<div/>").addClass("section").append(panel.title));
+
+                // create items
+
+                this.createItems(panelDom, panel);
+                break;
 
 
-            }
-
-        }.bind(this));
+        }
 
     },
 
@@ -423,7 +417,20 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
             $("<span/>").append(value.friendlyName ? value.friendlyName : value.name).appendTo(item);
             $("<span/>").attr("data", value.id).append(value.value).appendTo(item);
 
+            // create subscription
+            this.subscribe(value.id, this.valueCallback.bind(this));
+
         }.bind(this));
+
+    },
+
+    /**
+     * (valueCallback)
+     */
+
+    valueCallback: function(value, payload) {
+
+        this.canvas.find("span[data=" + payload.id + "]").html(value);
 
     },
 
@@ -435,14 +442,9 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
         var distance = element.scrollTop() + distance;
 
-        element.stop().animate({
-            scrollTop: distance
-        }, animated ? 100 : 0, function() {
+        element.scrollTop(distance);
 
-            if(this.is.fn(callback)) {
-                callback(element.scrollTop());
-            }
-        }.bind(this));
+        callback(element.scrollTop());
 
     },
 

@@ -139,51 +139,51 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
     created: function() {
 
-        var that = this;
-
         // create log buffer
         this.buffer = [];
+
+        // set local ref
+        var that = this;
 
         // create global logger
         window.Logger = {
 
-            defaultId: 'Developer Logger',
+            defaultId: 'console',
 
             error: function(message, id) {
-                this.log('ERROR', id ? id : this.defaultId, message);
+                Logger.log('ERROR', id ? id : Logger.defaultId, message);
             },
 
             info: function(message, id) {
-                this.log('INFO', id ? id : this.defaultId, message);
+                Logger.log('INFO', id ? id : Logger.defaultId, message);
             },
 
             debug: function(message, id) {
-                this.log('DEBUG', id ? id : this.defaultId, message);
+                Logger.log('DEBUG', id ? id : Logger.defaultId, message);
             },
 
             watch: function(message, id) {
-                this.log('WATCH', id ? id : this.defaultId, message);
+                Logger.log('WATCH', id ? id : Logger.defaultId, message);
             },
 
             log: function(level, id, message, color) {
-
-                that.log(level, id, messages, color);
+                that.receiveLog(level, id, message, color);
             }
         };
 
         /**
          * Global Error
          */
-        /*onerror = function(message, url, line) {
+        window.error = function(message, url, line) {
             Logger.log("ERROR", Logger.defaultId + ":" + url.replace(/^.*[\\\/]/, '') +":" + line, message);
-        };*/
+        };
 
         /**
          * EnableLogger
          */
 
         if(typeof(CustomApplicationLog) != "undefined") {
-           // CustomApplicationLog.enableLogger(true);
+            CustomApplicationLog.enableLogger(true);
         }
 
         // create interface
@@ -261,18 +261,22 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
     },
 
     /**
-     * (log)
+     * (receiveLog)
      *
      * This method adds items to the panel
      */
 
-    log: function(level, id, message, color) {
+    receiveLog: function(level, id, message, color) {
 
+        // prevent own app
+        if(id == this.getId()) return false;
+
+        // go ahead
         var item = $("<div/>").attr("level", level);
 
         var d = new Date();
 
-        item.append($("<span/>").append(sprintr("{0}:{1}:{2}", d.getHours(), d.getMinutes(), d.getSeconds())));
+        item.append($("<span/>").append(this.sprintr("{0}:{1}:{2}", d.getHours(), d.getMinutes(), d.getSeconds())));
         item.append($("<span/>").addClass(level).append(level));
         item.append($("<span/>").append(id));
         item.append($("<span/>").addClass(level).append(message));
@@ -297,6 +301,7 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
     update: function() {
 
         this.output.empty().append(this.buffer);
+
 
     },
 
