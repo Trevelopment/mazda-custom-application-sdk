@@ -32,7 +32,8 @@
  * Startup
  */
 
-var app = require('app'),
+var fs = require('fs'),
+    app = require('app'),
     BrowserWindow = require('browser-window'),
     Menu = require('menu'),
     Dialog = require('dialog'),
@@ -66,7 +67,11 @@ app.on('ready', function() {
     height:755,
     title: app.getName(),
     resizable: false,
-    center: true
+    center: true,
+    webPreferences: {
+      webSecurity: false
+    },
+    shown: false,
   });
 
   // and load the interface
@@ -152,6 +157,34 @@ var BuildAppMenu = function() {
           accelerator: 'Command+Q',
           click: function() { 
             app.quit(); 
+          }
+        },
+      ],
+    },
+    {
+      label: 'View',
+      submenu: [
+        {
+          label: 'Simulator',
+        },
+        {
+          label: 'Showcase',
+        },
+        {
+          type: 'separator'
+        },
+        {
+          label: 'Application Screenshot',
+          accelerator: 'Command+P',
+          click: function() {
+            mainWindow.capturePage({x: 0, y: 0, width: 800, height: 480}, function(image) {
+
+              // get fn
+              fn = "casdk-simulator-" + Math.floor(Date.now() / 1000 | 0) + ".png";
+
+              // save image to desktop
+              fs.writeFile(app.getPath("desktop") + "/" + fn, image.toPng(), function (err) {});
+            });
           }
         },
       ],

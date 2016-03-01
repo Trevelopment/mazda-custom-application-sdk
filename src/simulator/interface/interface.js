@@ -141,6 +141,14 @@
 		},
 
 		/**
+		 * (reload)
+		 */
+
+		reload: function() {
+			document.location.reload(true);
+		},
+
+		/**
 		 * (loadRuntime)
 		 */
 
@@ -200,8 +208,8 @@
 					// engage watcher
 					this.runtimeWatcher = new Watcher(runtimeLocation, "runtime", function() {
 
-						// refresh if change was detected
-						this.refresh();
+						// reload entire window
+						this.reload();
 
 					}.bind(this));
 
@@ -270,13 +278,8 @@
 
 				this.appsWatcher = new Watcher(appsLocation, "applications", function() {
 
-					// auto reload
-					this.loadApplications(function() {
-
-						// reload main screen
-						this.showFromRecover();
-
-					}.bind(this));
+					// reload
+					this.this.reload();
 
 				}.bind(this));
 
