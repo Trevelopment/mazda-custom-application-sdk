@@ -146,24 +146,24 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
         var that = this;
 
         // create global logger
-        window.Logger = {
+        window.DevLogger = {
 
             defaultId: 'console',
 
             error: function(message, id) {
-                Logger.log('ERROR', id ? id : Logger.defaultId, message);
+                DevLogger.log('ERROR', id ? id : DevLogger.defaultId, message);
             },
 
             info: function(message, id) {
-                Logger.log('INFO', id ? id : Logger.defaultId, message);
+                DevLogger.log('INFO', id ? id : DevLogger.defaultId, message);
             },
 
             debug: function(message, id) {
-                Logger.log('DEBUG', id ? id : Logger.defaultId, message);
+                DevLogger.log('DEBUG', id ? id : DevLogger.defaultId, message);
             },
 
             watch: function(message, id) {
-                Logger.log('WATCH', id ? id : Logger.defaultId, message);
+                DevLogger.log('WATCH', id ? id : DevLogger.defaultId, message);
             },
 
             log: function(level, id, message, color) {
@@ -175,16 +175,8 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
          * Global Error
          */
         window.error = function(message, url, line) {
-            Logger.log("ERROR", Logger.defaultId + ":" + url.replace(/^.*[\\\/]/, '') +":" + line, message);
+            DevLogger.log("ERROR", DevLogger.defaultId + ":" + url.replace(/^.*[\\\/]/, '') +":" + line, message);
         };
-
-        /**
-         * EnableLogger
-         */
-
-        if(typeof(CustomApplicationLog) != "undefined") {
-            //CustomApplicationLog.enableLogger(true);
-        }
 
         // create interface
         this.createInterface();

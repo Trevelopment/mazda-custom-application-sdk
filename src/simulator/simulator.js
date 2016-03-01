@@ -111,7 +111,7 @@ var BuildAppMenu = function() {
         },
         {
           label: 'Choose Runtime Location',
-          accelerator: 'CmdOrCtrl+P',
+          accelerator: 'CmdOrCtrl+L',
           click: function() {
 
             var result = Dialog.showOpenDialog({
@@ -166,9 +166,14 @@ var BuildAppMenu = function() {
       submenu: [
         {
           label: 'Simulator',
+          type: 'checkbox', 
+          checked: true,
+          disabled: true,
         },
         {
           label: 'Showcase',
+          type: 'checkbox', 
+          disabled: true,
         },
         {
           type: 'separator'

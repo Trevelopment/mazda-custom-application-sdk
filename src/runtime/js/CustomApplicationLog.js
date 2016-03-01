@@ -122,6 +122,10 @@ var CustomApplicationLog = {
 				if(this.enabledLogger && typeof(Logger) != "undefined") {
 					Logger.log(level, values[0], msg.join(" "), color);
 				}
+
+				if(typeof(DevLogger) != "undefined") {
+					DevLogger.log(level, values[0], msg.join(" "), color);
+				}
 			} catch(e) {
 				// do nothing
 			}

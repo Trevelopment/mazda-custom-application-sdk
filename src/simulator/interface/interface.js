@@ -340,6 +340,7 @@
 			// create items
             this.applications.forEach(function(item, index) {
 
+
             	this.menu.append($("<a/>").attr({
             		appId: item.appData.appId,
             		menuIndex: index,
@@ -357,7 +358,7 @@
         			this.setAppMenuFocus();
 
         		}.bind(this)).append(item.title));
-
+	        
             }.bind(this));
 
             // select first
