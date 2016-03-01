@@ -196,7 +196,7 @@ var CustomApplicationDataHandler = {
 		 */
 
 		// VDT - This table contains the most time sensitive values likes speed, rpm, etc
-		{table: 'vdt', prefix: 'VDT', enabled: true, file: true, update: 1},
+		{table: 'vdt', prefix: 'VDT', enabled: true, file: true, always: true},
 
 		// GPS
 		{table: 'gps', prefix: 'GPS', enabled: true, file: true, filter: 'gps', update: 1},
@@ -432,7 +432,7 @@ var CustomApplicationDataHandler = {
 		this.tables.map(function(table, tableIndex) {
 
 			// conditional loading
-			var enabled = table.enabled && ( (table.update) || (!table.update && !table.__last) );
+			var enabled = table.enabled && ( (table.always) || (table.update) || (!table.update && !table.__last) );
 
 			// check time
 			if(enabled) {

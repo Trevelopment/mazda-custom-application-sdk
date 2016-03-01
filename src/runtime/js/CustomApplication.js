@@ -376,11 +376,11 @@ var CustomApplication = (function(){
 	     * Called by the data handler to update the current vehicle data of the application
 	     */
 
-	    __notify: function(id, payload) {
+	    __notify: function(id, payload, always) {
 
 	    	id = id.toLowerCase();
 
-	    	if(this.__subscriptions[id]) {
+	    	if(this.__subscriptions[id] && payload) {
 
 	    		var subscription = this.__subscriptions[id], notify = false;
 
@@ -412,6 +412,9 @@ var CustomApplication = (function(){
 	    				break;
 
 	    		}
+
+	    		// always
+	    		if(always) notify = true;
 
 	    		// execute
 	    		if(notify) {
@@ -557,6 +560,9 @@ var CustomApplication = (function(){
 						type: type || this.CHANGED,
 						callback: callback
 					});
+
+					// call first time regardless
+					this.__notify(id, CustomApplicationDataHandler.get(id), true);
 
 					// all set
 					return true;
