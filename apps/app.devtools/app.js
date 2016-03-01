@@ -140,7 +140,7 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
     created: function() {
 
         // create log buffer
-        this.buffer = [];
+        this.localLogBuffer = [];
 
         // set local ref
         var that = this;
@@ -183,7 +183,7 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
          */
 
         if(typeof(CustomApplicationLog) != "undefined") {
-            CustomApplicationLog.enableLogger(true);
+            //CustomApplicationLog.enableLogger(true);
         }
 
         // create interface
@@ -255,8 +255,72 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
      */
 
     createInterface: function() {
-        // create tabbed menu
-        this.output = $("<div/>").addClass("output").appendTo(this.canvas);
+
+        this.menu = $("<div/>").addClass("tabs").appendTo(this.canvas);
+
+        // create tabs
+        this.panelData = [
+            {name: 'Local', panel: this.showPanelConsole},
+            {name: 'System', panel: this.showPanelSystemConsole},
+            {name: 'Storages', panel: this.showPanelStorages},
+
+        ];
+
+        this.panelData.forEach(function(panel, index) {
+
+            // add to menu
+            this.menu.append(this.addContext($("<span/>").attr({index: index}).addClass("tab").append(panel.name)));
+
+            // add divider
+            this.menu.append($("<span/>").addClass("divider"));
+
+        }.bind(this));
+
+        // calculate size
+        var tabWidth = Math.round((800 - this.panelData.length) / this.panelData.length);
+
+        this.menu.find("span.tab").css("width", tabWidth);
+
+        // remove last divider
+        this.menu.find("span.divider:last").remove();
+
+        // show always first tab
+        this.showPanelConsole();
+    },
+
+    /**
+     * (clearPanel)
+     */
+
+    clearPanel: function() {
+
+        this.activePanel = false;
+
+        this.canvas.find(".panel").remove();
+    },
+
+    /**
+     * (showPanelConsole)
+     */
+
+    showPanelConsole: function() {
+
+        this.clearPanel();
+        this.activePanel = 0;
+
+        // create output panel
+        this.output = $("<div/>").addClass("panel output").appendTo(this.canvas);
+
+        this.updatePanelConsole();
+
+
+    },
+
+    updatePanelConsole: function() {
+
+        if(this.activePanel !== 0) return;
+
+        this.output.empty().append(this.localLogBuffer);
 
     },
 
@@ -274,34 +338,29 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
         // go ahead
         var item = $("<div/>").attr("level", level);
 
-        var d = new Date();
+        var d = new Date(), 
+            h = Math.abs(d.getHours()),
+            m = Math.abs(d.getMinutes()),
+            s = Math.abs(d.getSeconds());
 
-        item.append($("<span/>").append(this.sprintr("{0}:{1}:{2}", d.getHours(), d.getMinutes(), d.getSeconds())));
+        item.append($("<span/>").append(
+            (h > 9 ? "" : "0") + h,
+            (m > 9 ? "" : "0") + m,
+            (s > 9 ? "" : "0") + s
+        ));
         item.append($("<span/>").addClass(level).append(level));
         item.append($("<span/>").append(id));
         item.append($("<span/>").addClass(level).append(message));
 
         // add to output
-        this.buffer.push(item);
+        this.localLogBuffer.push(item);
 
-        if(this.buffer.length > 50) {
-            while(this.buffer.length > 50) this.buffer.shift();
+        if(this.localLogBuffer.length > 50) {
+            while(this.localLogBuffer.length > 50) this.localLogBuffer.shift();
         }
 
-        this.update();
-
-    },
-
-    /**
-     * (update)
-     *
-     * Updates the display
-     */
-
-    update: function() {
-
-        this.output.empty().append(this.buffer);
-
+        // update
+        this.updatePanelConsole();
 
     },
 

@@ -33,21 +33,31 @@ mount -o rw,remount /
 
 # disable watchdog
 if [ ! -f /jci/sm/sm.conf.casdk ]; then
+	echo "Disable watchdog"
 	cp -a /jci/sm/sm.conf /jci/sm/sm.conf.casdk
 	sed -i 's/watchdog_enable="true"/watchdog_enable="false"/g' /jci/sm/sm.conf
 	sed -i 's|args="-u /jci/gui/index.html"|args="-u /jci/gui/index.html --noWatchdogs"|g' /jci/sm/sm.conf
 fi
 
-# enable User scripts and XMLHttpRequest
+# modify opera.ini
 if [ ! -f /jci/opera/opera_home/opera.ini.casdk ]; then
+	# make a copy
 	cp -a /jci/opera/opera_home/opera.ini /jci/opera/opera_home/opera.ini.casdk
+
+	# enable user javascript
 	sed -i 's/User JavaScript=0/User JavaScript=1/g' /jci/opera/opera_home/opera.ini
+
+	# enable file ajax
 	count=$(grep -c "Allow File XMLHttpRequest=" /jci/opera/opera_home/opera.ini)
 	if [ "$count" = "0" ]; then
 	    sed -i '/User JavaScript=.#/a Allow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
 	else
 	    sed -i 's/Allow File XMLHttpRequest=.#/Allow File XMLHttpRequest=1/g' /jci/opera/opera_home/opera.ini
 	fi
+
+	# enable javascript logging
+	sed -i 's/Console Error Log Enabled=0/Console Error Log Enabled=1/g' /jci/opera/opera_home/opera.ini
+	sed -i 's/Console Error Log=$OPERA_HOME\/error.log/Console Error Log=\/tmp\/root\/casdk-error.log/g' /jci/opera/opera_home/opera.ini
 fi
 
 # disable fps counter - it's really annoying! So I am doing you a favor here.

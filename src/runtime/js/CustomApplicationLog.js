@@ -24,29 +24,6 @@
  *
  */
 
-/**
- * (Global Handler)
- */
-
-/*
-
-window.onerror = function(message, url, linenumber) {
-
-	var div = document.createElement("div");
-	div.style.fontSize = "15px";
-	div.style.backgroundColor = "red";
-	div.style.color = "white";
-	div.style.zIndex = 999999999999;
-	div.style.position = "absolute";
-	div.style.top = "0px";
-	div.style.left = "0px";
-	div.innerHTML = url + ":" + linenumber + ":" + message;
-
-	document.body.appendChild(div);
-
-};
-*/
-
 
 /**
  * (CustomApplicationLog)

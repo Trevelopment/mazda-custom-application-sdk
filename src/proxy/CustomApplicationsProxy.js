@@ -34,18 +34,19 @@
 (function() {
 
 	// global value, indicating the bootstrapping status - avoid infinite loop
-	if(typeof(CustomApplicationsProxyBootstrapped) == "undefined") {
-		CustomApplicationsProxyBootstrapped = false;
+	if(typeof(window.CustomApplicationsProxyBootstrapped) == "undefined") {
+		window.CustomApplicationsProxyBootstrapped = false;
 	};
 
 	// Proxy class
-	CustomApplicationsProxy = {
+	window.CustomApplicationsProxy = {
 
 		/**
 		 * (locals)
 		 */
 
-		//debug: true,
+		debug: true,
+		sysdebug: true,
 
 		systemAppId: 'system',
 		systemAppCategory: 'Applications',
@@ -69,7 +70,7 @@
 		 bootstrap: function() {
 
 			// verify that core objects are available
-			if(typeof framework === 'object' /** && framework._currentAppUiaId === this.systemAppId **/) {
+			if(typeof framework === 'object' && framework._currentAppUiaId === this.systemAppId) {
 
 				// retrieve system app
 				var systemApp = framework.getAppInstance(this.systemAppId);
@@ -112,9 +113,34 @@
 
 					} catch(e) {
 						// bootstrapping process failed - we just leave it here
+						window.CustomApplicationsProxy.displayError(e.message);
 					}
 				}
 			}
+		},
+
+		/**
+		 * (displayError)
+		 */
+
+		displayError: function(message) {
+
+			if(!this.sysdebug) return;
+
+			if(!this.errorDiv) {
+				this.errorDiv = document.createElement("div");
+				this.errorDiv.style.fontSize = "15px";
+				this.errorDiv.style.backgroundColor = "red";
+				this.errorDiv.style.color = "white";
+				this.errorDiv.style.zIndex = 999999999999;
+				this.errorDiv.style.position = "absolute";
+				this.errorDiv.style.top = "0px";
+				this.errorDiv.style.left = "0px";
+		
+				document.body.appendChild(this.errorDiv);
+			}
+
+			this.errorDiv.innerHTML = message;
 		},
 
 
@@ -146,6 +172,7 @@
 
 			} catch(e) {
 				// do nothing
+				window.CustomApplicationsProxy.displayError(e.message);
 			}
 
 			// pass to original handler
@@ -225,8 +252,8 @@
 				jsObject = jsObjectModified;
 
 			} catch(e) {
-
 				// do nothing
+				window.CustomApplicationsProxy.displayError(e.message);
 			}
 
 			this.overwriteRouteMmmuiMsg(jsObject);
@@ -253,7 +280,7 @@
 		    this.loadCount = 0;
 		    setTimeout(function() {
 		        this.loadCustomApplications();
-		    }.bind(this), this.debug ? 500 : 5000); // first attempt wait 5s - the system might be booting still anyway
+		    }.bind(this), this.debug ? 500 : 15000); // first attempt wait 5s - the system might be booting still anyway
 
 		},
 
@@ -329,6 +356,7 @@
 		        }
 		    } catch(e) {
 		    	// failed to register applications
+		    	window.CustomApplicationsProxy.displayError(e.message);
 		    }
 		},
 

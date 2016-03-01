@@ -158,7 +158,3 @@ var CustomApplicationHelpers = {
 	},
 
 };
-
-
-
-

@@ -64,9 +64,7 @@
 
 			var item = $("<div/>").attr("level", level);
 
-			var d = new Date();
-
-			item.append($("<span/>").append(sprintr("{0}:{1}:{2}", d.getHours(), d.getMinutes(), d.getSeconds())));
+			item.append($("<span/>").append((new Date()).format("H:i:s")));
 			item.append($("<span/>").addClass(level).append(level));
 			item.append($("<span/>").append(id));
 			item.append($("<span/>").addClass(level).append(message));
