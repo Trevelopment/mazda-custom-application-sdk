@@ -62,7 +62,7 @@ CustomApplicationsHandler.register("app.speedometer", new CustomApplication({
 		 */
 
 		images: {
-
+	
 		},
 	},
 

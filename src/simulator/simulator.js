@@ -130,7 +130,7 @@ var BuildAppMenu = function() {
           click: function() {
 
             var result = Dialog.showOpenDialog({
-                title: 'Choose Applictions Location',
+                title: 'Choose Applications Location',
                 properties: ['openDirectory']
               });
 
