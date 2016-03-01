@@ -27,7 +27,7 @@
 /**
  * NPM/Node Integration
  */
-
+var fs = require("fs");
 
 
 
@@ -187,6 +187,9 @@
 					if(typeof(CustomApplicationsHandler) == "undefined")
 						return Logger.error("Error while loading the runtime package.");
 
+					// load css
+					framework.loadCSS("file://" + runtimeLocation + "/runtime/runtime.css");
+
 					// enable logger
 					CustomApplicationLog.enableLogger(true);
 
@@ -249,9 +252,6 @@
 			if(!appsLocation)
 				return Logger.error("You need to select the location of the applications first.");
 
-			// override applications handler
-			CustomApplicationsHandler.paths.applications = "file://" + appsLocation + "/";
-
 			// load runtime
 			Logger.info(sprintr("Loading applications from {0}", appsLocation));
 
@@ -262,33 +262,82 @@
 			$("script[src*='" + appsLocation + "']").remove();
 			$("link[href*='" + appsLocation + "']").remove();
 
-			// load applications
-			CustomApplicationsHandler.retrieve(function(items) {
+			// assign new dir
+			CustomApplicationsHandler.paths.applications = "file://" + appsLocation + "/";
 
-				// assign items
-				this.applications = items;
-				this.applicationsWatchers = Array.apply(null, Array(items.length));
+			// load from dir
+			fs.readdir(appsLocation, function(err, data) {
 
-				// register watchers
-				this.registerApplicationWatchers();
+				if(err) return Logger.error(sprintr("Unable to load applications from {0}", appsLocation));
 
-				// reload apps
-				this.appsLoaded = true;
+				// initialize
+				var appsToLoad = [];
 
-				// engage watcher for apps.js
+				// process data
+				for(var i = 0; i < data.length; i++) {
 
-				this.appsWatcher = new Watcher(appsLocation, "applications", function() {
+					var path = appsLocation + "/" + data[i];
 
-					// reload
-					this.loadApplications();
+					if(fs.lstatSync(path).isDirectory()) {
+						appsToLoad.push(data[i]);
+					}
+				}
 
-				}.bind(this));
+				// invoke custom application loader
+				try {
+
+					CustomApplicationsHandler.initialize();
+
+					CustomApplicationsHandler.loader.loadJavascript(
+						CustomApplicationsHandler.loader.fromFormatted("{0}/app.js", appsToLoad),
+						CustomApplicationsHandler.paths.applications,
+						function() {
+
+							// create menu items
+							this.completeApplications(CustomApplicationsHandler.getMenuItems(), callback);
+
+						}.bind(this)
+					);
+				} catch(e) {
+					// error message
+					CustomApplicationsHandler.log.error(this.__name, "Error while retrieving applications", e);
+
+					// make sure that we notify otherwise we don't get any applications
+					his.completeApplications(CustomApplicationsHandler.getMenuItems(), callback);
+				}
+			}.bind(this));
+		},
+
+		/**
+		 * (completeApplications)
+		 */
+
+		completeApplications: function(items, callback) {
+
+			var appsLocation = localStorage.getItem("appsLocation");
+
+			// assign items
+			this.applications = items;
+			this.applicationsWatchers = Array.apply(null, Array(items.length));
+
+			// register watchers
+			this.registerApplicationWatchers();
+
+			// reload apps
+			this.appsLoaded = true;
+
+			// engage watcher for apps.js
+
+			this.appsWatcher = new Watcher(appsLocation, "applications", function() {
+
+				// reload
+				this.loadApplications();
+
+			}.bind(this));
 
 
-				// callback
-				if(Is.fn(callback)) callback();
-
-	        }.bind(this));
+			// callback
+			if(Is.fn(callback)) callback();
 		},
 
 		/**
@@ -314,7 +363,7 @@
 				// show app menu
 				this.showAppMenu();
 
-			}.bind(this), 850);
+			}.bind(this), 250);
 
 		},
 
