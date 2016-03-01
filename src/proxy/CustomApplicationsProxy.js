@@ -253,7 +253,7 @@
 		    this.loadCount = 0;
 		    setTimeout(function() {
 		        this.loadCustomApplications();
-		    }.bind(this), this.debug ? 500 : 15000); // first attempt wait 15s - the system might be booting still anyway
+		    }.bind(this), this.debug ? 500 : 5000); // first attempt wait 5s - the system might be booting still anyway
 
 		},
 
@@ -334,7 +334,7 @@
 
 	}
 
-}.call(this));
+}.call(window));
 
 /**
  * Runtime Caller

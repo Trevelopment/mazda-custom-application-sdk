@@ -272,7 +272,7 @@ var CustomApplicationDataHandler = {
 
 		var id = id.toLowerCase();
 
-		return this.data[id] ? this.data[id] : {value: _default ? _default : null};
+		return this.data[id] ? this.data[id] : {value: (_default ? _default : null)};
 	},
 
 	/**

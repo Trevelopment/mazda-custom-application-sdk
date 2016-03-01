@@ -39,8 +39,8 @@
     "clean:osx": "rm -rf ./build/simulator/osx",
     "clean:win": "rm -rf ./build/simulator/win",
     "pack": "npm run clean && npm run pack:osx && npm run pack:win",
-    "pack:osx": "npm run clean:osx && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --out=build/simulator/osx --platform=darwin --arch=x64 --version=0.36.8 --icon=src/assets/osx/simulator.icns",
-    "pack:win": "npm run clean:win && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --out=build/simulator/win --platform=win32 --arch=ia32 --version=0.36.8 --icon=src/assets/win/simulator.ico",
+    "pack:osx": "npm run clean:osx && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --asar=true --out=build/simulator/osx --platform=darwin --arch=x64 --version=0.36.8 --icon=src/assets/osx/simulator.icns",
+    "pack:win": "npm run clean:win && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --asar=true --out=build/simulator/win --platform=win32 --arch=ia32 --version=0.36.8 --icon=src/assets/win/simulator.ico",
     "build": "npm run build:osx && npm run build:win",
     "build:osx": "npm run pack:osx && electron-builder \"build/simulator/osx/Mazda Infotainment Simulator.app\" --platform=osx --out=\"dist/simulator/osx\" --config=builder.json",
     "build:win": "npm run pack:win && electron-builder \"build/simulator/win/Mazda Infotainment Simulator\" --platform=win --out=\"dist/simulator/win\" --config=builder.json"

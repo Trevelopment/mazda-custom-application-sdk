@@ -57,49 +57,41 @@ var CustomApplication = (function(){
 		FOCUSED: 'focused',
 		LOST: 'lost',
 
-		/**
-		 * __storage
-		 */
-
-		__storage: {},
-
-		/**
-		 * __context
-		 */
-
-		__contextCounter: 0,
-		__currentContextIndex: false,
 
 		/**
 		 * (log) helper function for logging
 		 */
 
-		log: {
+		__log: function() {
 
-			__logId: false,
+			this.log = {
 
-			__toArray: function(args) {
-				var result = Array.apply(null, args);
+				__logId: this.getId(),
 
-				result.unshift(this.__logId);
+				__toArray: function(args) {
+					var result = Array.apply(null, args);
 
-				return result;
-			},
+					result.unshift(this.__logId);
 
-			// debug
-			debug: function() {
-				CustomApplicationLog.debug.apply(CustomApplicationLog, this.__toArray(arguments));
-			},
+					return result;
+				},
 
-			// info
-			info: function() {
-				CustomApplicationLog.info.apply(CustomApplicationLog, this.__toArray(arguments));
-			},
+				// debug
+				debug: function() {
+					CustomApplicationLog.debug.apply(CustomApplicationLog, this.__toArray(arguments));
+				},
 
-			// error
-			error: function() {
-				CustomApplicationLog.error.apply(CustomApplicationLog, this.__toArray(arguments));
-			},
+				// info
+				info: function() {
+					CustomApplicationLog.info.apply(CustomApplicationLog, this.__toArray(arguments));
+				},
+
+				// error
+				error: function() {
+					CustomApplicationLog.error.apply(CustomApplicationLog, this.__toArray(arguments));
+				},	
+			};
+
 		},
 
 
@@ -120,12 +112,15 @@ var CustomApplication = (function(){
 
 			// data arrays
 			this.__subscriptions = {};
+			this.__storage = {};
+			this.__contextCounter = 0;
+			this.__currentContextIndex = false;
 
 			// initialize context
 			this.__contexts = [];
 
-			// set id
-			this.log.__logId = this.id;
+			// initialize log
+			this.__log();
 
 			// global specific
 			this.is = CustomApplicationHelpers.is();
@@ -359,12 +354,31 @@ var CustomApplication = (function(){
 
 	    		this.log.info("Executing lifecycle", {lifecycle:cycle});
 
+	    		// process internals for this life cycle
+	    		switch(cycle) {
+
+	    			case this.FOCUSED: 
+
+	    				// feed initial value before focus 
+	    				$.each(this.__subscriptions, function(id, params) {
+
+	    					// call with current value
+							this.__notify(id, CustomApplicationDataHandler.get(id), true);
+
+						}.bind(this));
+
+	    				break;
+
+	    		}
+
+	    		// hand over
 	    		if(this.is.fn(this[cycle])) {
 	    			this[cycle]();
 	    		}
+	    		
 
 	    	} catch(e) {
-
+	    		console.error(e);
 	    		this.log.error("Error while executing lifecycle event", {lifecycle:cycle, error: e.message});
 
 	    	}
@@ -560,9 +574,6 @@ var CustomApplication = (function(){
 						type: type || this.CHANGED,
 						callback: callback
 					});
-
-					// call first time regardless
-					this.__notify(id, CustomApplicationDataHandler.get(id), true);
 
 					// all set
 					return true;

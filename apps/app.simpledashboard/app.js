@@ -367,7 +367,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
     showSection: function(sectionIndex) {
 
         // just in case, let's do some sanity check
-        if(sectionIndex < 0 || sectionIndex >= this.sections.length) return false;
+        if(!this.sections || sectionIndex < 0 || sectionIndex >= this.sections.length) return false;
 
         // let's store the current section in a local variable
         var section = this.sections[sectionIndex],

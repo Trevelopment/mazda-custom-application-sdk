@@ -28,6 +28,8 @@
  * (Global Handler)
  */
 
+/*
+
 window.onerror = function(message, url, linenumber) {
 
 	var div = document.createElement("div");
@@ -43,6 +45,8 @@ window.onerror = function(message, url, linenumber) {
 	document.body.appendChild(div);
 
 };
+*/
+
 
 /**
  * (CustomApplicationLog)
