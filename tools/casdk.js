@@ -40,10 +40,5 @@ program
 	.version('0.0.1')
 	.arguments('<file>')
 	.option('create [applicationName]', 'Creates a new application with the associated name')
-  .parse(process.argv);
-	.action(function(file) {
-		console.log('user: %s pass: %s file: %s',
-		program.username, program.password, file);
-	})
-	.parse(process.argv);
+  	.parse(process.argv);
 
