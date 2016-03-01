@@ -145,7 +145,8 @@
 		 */
 
 		reload: function() {
-			document.location.reload(true);
+			this.refresh();
+			//document.location.reload(true);
 		},
 
 		/**
@@ -209,7 +210,7 @@
 					this.runtimeWatcher = new Watcher(runtimeLocation, "runtime", function() {
 
 						// reload entire window
-						this.reload();
+						this.refresh();
 
 					}.bind(this));
 
@@ -279,7 +280,7 @@
 				this.appsWatcher = new Watcher(appsLocation, "applications", function() {
 
 					// reload
-					this.this.reload();
+					this.loadApplications();
 
 				}.bind(this));
 
@@ -340,15 +341,18 @@
 			// create items
             this.applications.forEach(function(item, index) {
 
+            	// get title and id
+            	var id = item.appData ? item.appData.appId : item.id,
+            		title = item.appData ? item.title : item.getTitle();
 
             	this.menu.append($("<a/>").attr({
-            		appId: item.appData.appId,
+            		appId: id,
             		menuIndex: index,
             	}).on({
 
             		click: function() {
 
-            			this.invokeApplication(item.appData.appId);
+            			this.invokeApplication(id);
 
             		}.bind(this),
 
@@ -357,8 +361,8 @@
         			this.menuIndex = index;
         			this.setAppMenuFocus();
 
-        		}.bind(this)).append(item.title));
-	        
+        		}.bind(this)).append(title));
+
             }.bind(this));
 
             // select first
@@ -626,6 +630,10 @@
 			if(CustomApplicationsHandler.applications[id]) {
 				CustomApplicationsHandler.sleep(CustomApplicationsHandler.applications[id]);
 			}
+
+			// unload scripts
+			$("script[src*='" + location + "']").remove();
+			$("link[href*='" + location + "']").remove();
 
 			// reload the current application
 			framework.loadJS("file://" + location + "/app.js", function() {

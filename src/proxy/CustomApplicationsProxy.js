@@ -46,7 +46,6 @@
 		 */
 
 		debug: true,
-		sysdebug: true,
 
 		systemAppId: 'system',
 		systemAppCategory: 'Applications',
@@ -113,34 +112,9 @@
 
 					} catch(e) {
 						// bootstrapping process failed - we just leave it here
-						window.CustomApplicationsProxy.displayError(e.message);
 					}
 				}
 			}
-		},
-
-		/**
-		 * (displayError)
-		 */
-
-		displayError: function(message) {
-
-			if(!this.sysdebug) return;
-
-			if(!this.errorDiv) {
-				this.errorDiv = document.createElement("div");
-				this.errorDiv.style.fontSize = "15px";
-				this.errorDiv.style.backgroundColor = "red";
-				this.errorDiv.style.color = "white";
-				this.errorDiv.style.zIndex = 999999999999;
-				this.errorDiv.style.position = "absolute";
-				this.errorDiv.style.top = "0px";
-				this.errorDiv.style.left = "0px";
-		
-				document.body.appendChild(this.errorDiv);
-			}
-
-			this.errorDiv.innerHTML = message;
 		},
 
 
@@ -172,7 +146,6 @@
 
 			} catch(e) {
 				// do nothing
-				window.CustomApplicationsProxy.displayError(e.message);
 			}
 
 			// pass to original handler
@@ -253,7 +226,6 @@
 
 			} catch(e) {
 				// do nothing
-				window.CustomApplicationsProxy.displayError(e.message);
 			}
 
 			this.overwriteRouteMmmuiMsg(jsObject);
@@ -356,7 +328,6 @@
 		        }
 		    } catch(e) {
 		    	// failed to register applications
-		    	window.CustomApplicationsProxy.displayError(e.message);
 		    }
 		},
 
