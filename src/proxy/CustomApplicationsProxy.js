@@ -45,7 +45,7 @@
 		 * (locals)
 		 */
 
-		debug: true,
+		debug: false,
 
 		systemAppId: 'system',
 		systemAppCategory: 'Applications',
@@ -72,7 +72,8 @@
 			if(typeof framework === 'object' && framework._currentAppUiaId === this.systemAppId) {
 
 				// retrieve system app
-				var systemApp = framework.getAppInstance(this.systemAppId);
+				var systemApp = framework.getAppInstance(this.systemAppId),
+					result = true;
 
 				// verify bootstrapping - yeah long name
 				if(!window.CustomApplicationsProxyBootstrapped) {
@@ -107,12 +108,16 @@
 						// assign template transition
 						framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
 
-						// kick off loader - implemention only for sdcard right now
-						this.prepareCustomApplications();
-
 					} catch(e) {
 						// bootstrapping process failed - we just leave it here
+						result = false;
 					}
+				}
+
+				// process if no error occured
+				if(result) {
+					// kick off loader - implemention only for sdcard right now
+					this.prepareCustomApplications();
 				}
 			}
 		},
@@ -267,14 +272,20 @@
 
 		        if(typeof(CustomApplicationsHandler) == "undefined") {
 
+		        	// clear
+		        	clearTimeout(this.loadTimer);
+
 		            // try to load the script
 		            utility.loadScript("apps/custom/runtime/runtime.js", false, function() {
+
+		            	clearTimeout(this.loadTimer);
 
 		                this.initCustomApplicationsDataList();
 
 		            }.bind(this));
 
-		            setTimeout(function() {
+		            // safety timer
+		            this.loadTimer = setTimeout(function() {
 
 		                if(typeof(CustomApplicationsHandler) == "undefined") {
 
