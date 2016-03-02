@@ -122,7 +122,7 @@ var fs = require("fs");
 		    // initialize storage
 			$(window).on('storage', function (e) {
 
-				//console.log(e.originalEvent.key, e.originalEvent.newValue);
+				console.log(e);
 			});
 		},
 
@@ -482,6 +482,8 @@ var fs = require("fs");
 				// disable app menu
 				this.inAppMenu = false;
 				this.lastApplicationId = appId;
+
+				this.setStorageView(appId);
 			}
 
 			return result;
@@ -614,6 +616,7 @@ var fs = require("fs");
 
 		},
 
+
 		/**
 		 * (registerApplicationWatchers)
 		 */
@@ -728,7 +731,17 @@ var fs = require("fs");
 				});
 			}*/
 
-		}
+		},
+
+
+		/**
+		 * (setStorageView)
+		 */
+
+		setStorageView: function(appId) {
+			
+			
+		},
 	}
 
 	/**

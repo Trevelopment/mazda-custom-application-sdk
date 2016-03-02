@@ -557,6 +557,16 @@ body {
     height: 416px;
 }
 
+.TemplateWithStatusLeft {
+	position:absolute;
+	left:50px;
+    top:64px;
+    width: 800px;
+    height: 416px;
+    z-index:0;
+}
+
+
 /*
 height:416px;
 			width:740px;
