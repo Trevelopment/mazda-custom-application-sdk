@@ -60,6 +60,19 @@ if [ ! -f /jci/opera/opera_home/opera.ini.casdk ]; then
 	sed -i 's/Console Error Log=$OPERA_HOME\/error.log/Console Error Log=\/tmp\/root\/casdk-error.log/g' /jci/opera/opera_home/opera.ini
 fi
 
+# modify opera storage and move to persistant data
+if [ ! -e /tmp/mnt/data_persist/storage ]; then
+	mkdir -p /tmp/mnt/data_persist/storage
+fi
+
+if [ ! -f /jci/opera/opera_home/pstorage/psindex.dat.casdk ]; then
+	# make a copy
+	cp -a /jci/opera/opera_home/pstorage/psindex.dat /jci/opera/opera_home/pstorage/psindex.dat.casdk
+
+	# modify
+	sed -i 's/pstorage\/00/\/tmp\/mnt\/data_persist\/storage\/pstorage\/00/g' /jci/opera/opera_home/pstorage/psindex.dat
+fi
+
 # disable fps counter - it's really annoying! So I am doing you a favor here.
 if [ -f /jci/opera/opera_dir/userjs/fps.js ]; then
 	mv -a /jci/opera/opera_dir/userjs/fps.js /jci/opera/opera_dir/userjs/fps.js.casdk

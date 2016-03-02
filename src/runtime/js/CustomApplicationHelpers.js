@@ -88,12 +88,12 @@ var CustomApplicationHelpers = {
 
 			/** (defined) */
 			defined: function() {
-				return typeof(arguments[0]) != Is.undefined;
+				return typeof(arguments[0]) != this.undefined;
 			},
 
 			/** (element) */
 			element: function() {
-				return typeof(HTMLElement) !== Is.undefined ? (arguments[0] instanceof HTMLElement) : (arguments[0] && arguments[0].nodeType === 1);
+				return typeof(HTMLElement) !== this.undefined ? (arguments[0] instanceof HTMLElement) : (arguments[0] && arguments[0].nodeType === 1);
 			},
 
 			/** (empty) */
