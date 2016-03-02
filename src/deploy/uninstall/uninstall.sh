@@ -49,7 +49,7 @@ fi
 echo "Removing watch processes"
 pkill -f watch
 
-# install data reader files
+# remove data reader files
 if [ -e /jci/casdk ]; then
  echo "Removing data script folder /jci/casdk"
  rm /jci/casdk/*
@@ -57,30 +57,25 @@ if [ -e /jci/casdk ]; then
 fi
 
 
-# copy initialization file
+# remove initialization file
 if [ -f /jci/scripts/stage_wifi.sh.casdk ]; then
 	echo "Removing staging script"
 	cp -a /jci/scripts/stage_wifi.sh.casdk /jci/scripts/stage_wifi.sh
 	rm /jci/scripts/stage_wifi.sh.casdk
 fi
 
-# remove sym links
-if [ -e /jci/gui/apps/system/applications ]; then
-	echo "Removing symlink for applications"
-	rm /jci/gui/apps/system/applications
+# remove proxy
+if [ -f /jci/opera/opera_dir/userjs/CustomApplicationsProxy.js ]; then
+	echo "Removing proxy"
+	rm /jci/opera/opera_dir/userjs/CustomApplicationsProxy.js
 fi
 
-if [ -e /jci/gui/apps/system/data ]; then
-	echo "Removing symlink for data"
-	rm /jci/gui/apps/system/data
+# delete custom
+if [ -e /jci/gui/apps/custom ]; then
+	echo "Removing custom application"
+	rm -rf /jci/gui/apps/custom
 fi
 
-# patch systemApp
-if [ -f /jci/gui/apps/system/js/systemApp.js.casdk ]; then
-	echo "Recovering systemApp.js"
-	cp /jci/gui/apps/system/js/systemApp.js.casdk /jci/gui/apps/system/js/systemApp.js
-	rm /jci/gui/apps/system/js/systemApp.js.casdk
-fi
 
 echo "Cleanup complete"
 # finalize with message

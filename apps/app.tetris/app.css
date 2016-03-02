@@ -29,6 +29,66 @@
  */
 
 [app="app.tetris"] {
-	background: #0E0F0F;
+	background: url(images/background.jpg) no-repeat center center #101010;
 }
 
+	[app="app.tetris"] span,
+	[app="app.tetris"] label {
+		position:absolute;
+		font-size:17px;
+		letter-spacing:4px;
+		text-transform: uppercase;
+		text-shadow:#000 2px 0 0;
+		width:200px;
+		text-align:center;
+	}
+
+	[app="app.tetris"] label {
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	[app="app.tetris"] span {
+		font-size:40px;
+		background:rgba(0, 0, 0, 0.25);
+	}
+
+		[app="app.tetris"] label.score {
+			right:45px;
+			top:40px;
+		}
+
+		[app="app.tetris"] span.score {
+			position:absolute;
+			right:45px;
+			top:70px;
+		}
+
+	[app="app.tetris"] .gameBoard {
+	    border: 1px solid #ccc;
+	    border-radius: .4em;
+	 	position:absolute;
+	 	top:15px;
+	 	left:50%;
+	 	margin-left:-100px;
+	 	background:rgba(255, 255, 255, 0.05);
+	 	overflow:hidden;
+	 }
+
+		[app="app.tetris"] .gameBoard .tile {
+		    border-radius: 2px;
+		    position: absolute;
+		    width: 19px;
+		    height: 19px;
+		    border: 1px solid #101010;
+		}
+
+		[app="app.tetris"] .gameBoard .type-I { background-color: #FF73FF; }
+		[app="app.tetris"] .gameBoard .type-O { background-color: #FFFF73; }
+		[app="app.tetris"] .gameBoard .type-T { background-color: #B973FF; }
+		[app="app.tetris"] .gameBoard .type-S { background-color: #73FF73; }
+		[app="app.tetris"] .gameBoard .type-Z { background-color: #FF7373; }
+		[app="app.tetris"] .gameBoard .type-J { background-color: #73B9FF; }
+		[app="app.tetris"] .gameBoard .type-L { background-color: #FFA64D; }
+
+		[app="app.tetris"] .gameBoard .frozen {
+		}

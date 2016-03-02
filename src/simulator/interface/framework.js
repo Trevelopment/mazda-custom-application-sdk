@@ -186,8 +186,6 @@ var framework = {
 		// check
 		if(this.current.properties) {
 
-			console.log(this.current.properties);
-
 			switch(true) {
 
 				case this.current.properties.leftButtonVisible:

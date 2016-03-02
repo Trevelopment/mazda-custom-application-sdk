@@ -48,7 +48,7 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
          * (js) defines javascript includes
          */
 
-        js: [],
+        js: ['tetris.js'],
 
         /**
          * (css) defines css includes
@@ -139,7 +139,8 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
 
     created: function() {
 
-        this.createInterface();
+        // init tetris
+        this.initializeGameBoard();
 
     },
 
@@ -149,7 +150,19 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
 
     focused: function() {
 
-        //this.update();
+        this.__score = 0;
+
+        this.gameBoard.data('tetris').start();
+    },
+
+    /**
+     * (lost)
+     */
+
+    lost: function() {
+
+        this.gameBoard.data('tetris').pause();
+
     },
 
     /***
@@ -164,60 +177,8 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
 
     onControllerEvent: function(eventId) {
 
-        var itemHeight = this.canvas.find(".panel div.item").outerHeight(true) * 2;
+        this.gameBoard.data('tetris').handle(eventId);
 
-        switch(eventId) {
-
-            /**
-             * Scroll Down
-             */
-
-            case "cw":
-
-                this.scrollElement(this.canvas.find(".panel"), itemHeight);
-
-                break;
-
-            /**
-             * Scroll Up
-             */
-
-            case "ccw":
-
-                this.scrollElement(this.canvas.find(".panel"), -1 * itemHeight);
-
-                break;
-
-        }
-
-    },
-
-    /**
-     * (event) onContextEvent
-     *
-     * Called when the context of an element was changed
-     */
-
-    onContextEvent: function(eventId, context, element) {
-
-        // remember the scrolling position
-        var active = this.canvas.find(".panel.active");
-        if(active.length) {
-            this.panelScrollPositions[active.attr("index")] = active.scrollTop();
-        }
-
-        // continue
-        this.canvas.find(".panel").removeClass("active").hide();
-
-        var active = this.canvas.find(".panel[name=" + element.attr("name") + "]").addClass("active").show();
-
-        // create items
-        this.createPanel(element.attr("index"));
-
-        // set position
-        if(this.panelScrollPositions[active.attr("index")]) {
-            active.scrollTop(this.panelScrollPositions[active.attr("index")]);
-        }
     },
 
 
@@ -225,13 +186,23 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
      *** Applicaton specific methods
      ***/
 
-    /**
-     * (createInterface)
-     *
-     * This method creates the interface
-     */
+    initializeGameBoard: function() {
 
-    createInterface: function() {
+        this.gameBoard = $("<div/>").addClass("gameBoard").appendTo(this.canvas);
+
+        $("<label/>").addClass("score").append("High Score").appendTo(this.canvas);
+        this.score = $("<span/>").addClass("score").append("0").appendTo(this.canvas);
+
+        this.gameBoard.tetris({
+            tileSize: 20,
+        }).on({
+
+            rowCompleted: function() {
+                this.__score++;
+
+                this.score.html(this.__score);
+            }.bind(this)
+        });
 
     },
 
