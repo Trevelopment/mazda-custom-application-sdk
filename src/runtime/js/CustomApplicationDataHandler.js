@@ -496,7 +496,7 @@ var CustomApplicationDataHandler = {
 
 						// load
 						$.ajax(location, { 
-							timeout: 500,
+							timeout: table.always ? null : 250,
 
 							// success handler
 							success: function(data) {

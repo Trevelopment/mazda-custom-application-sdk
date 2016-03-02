@@ -159,18 +159,15 @@ var CustomApplication = (function(){
 			this.__contextCounter = 0;
 			this.__currentContextIndex = false;
 
-			// get storage
-			this.__getstorage();
-
-			// initialize context
-			this.__contexts = [];
+			// global specific
+			this.is = CustomApplicationHelpers.is();
+			this.sprintr = CustomApplicationHelpers.sprintr;
 
 			// initialize log
 			this.__log();
 
-			// global specific
-			this.is = CustomApplicationHelpers.is();
-			this.sprintr = CustomApplicationHelpers.sprintr;
+			// initialize context
+			this.__contexts = [];
 
 			// application specific
 			this.settings = this.settings ? this.settings : {};
@@ -192,6 +189,9 @@ var CustomApplication = (function(){
 
 				// finalize
 				this.__loaded = true;
+
+				// get storage
+				this.__getstorage();	
 
 				// create surface and set some basic properties
 				this.canvas = $("<div/>").addClass("CustomApplicationCanvas").attr("app", this.id);
@@ -443,7 +443,7 @@ var CustomApplication = (function(){
 
 
 	    	} catch(e) {
-	    		console.error(e);
+	    		alert(e);
 	    		this.log.error("Error while executing lifecycle event", {lifecycle:cycle, error: e.message});
 
 	    	}
@@ -605,6 +605,7 @@ var CustomApplication = (function(){
 			try {
 				this.__storage = JSON.parse(localStorage.getItem(this.getId()));
 			} catch(e) {
+				this.log.error("Could not get storage", {message: e.message});
 			}
 
 		},
@@ -618,10 +619,13 @@ var CustomApplication = (function(){
 		__setstorage: function() {
 
 			try {
+				// get default
+				if(!this.__storage) this.__storage = {};
+				
 				// local storage should work on all mazda systems
 				localStorage.setItem(this.getId(), JSON.stringify(this.__storage));
 			} catch(e) {
-				this.log.info("Could not set storage", {message: e.message});
+				this.log.error("Could not set storage", {message: e.message});
 			}
 		},
 

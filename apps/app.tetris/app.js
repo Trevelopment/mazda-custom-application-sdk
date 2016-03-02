@@ -220,10 +220,15 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
 
                 this.score.html(this.__score);
 
+                if(!this.__highscore) this.__highscore = 0;
+
                 if(this.__score > this.__highscore) {
+                    
                     this.__highscore = this.__score;
-                    this.set("highscore", this.__highscore);
+                   
                     this.highScore.html(this.__highscore);
+
+                    this.set("highscore", this.__highscore);
                 }
 
             }.bind(this),
@@ -238,9 +243,11 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
             }.bind(this),
 
             restartGame: function() {
-
+                this.__score = 0;
+                this.score.html(this.__score);
                 this.gamelabel.fadeOut();
-            }
+
+            }.bind(this)
         });
 
     },

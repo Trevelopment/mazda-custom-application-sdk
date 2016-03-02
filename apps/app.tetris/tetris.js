@@ -109,7 +109,7 @@
             that.currentTile = that.generateTile();
 
             if (!that.isValidLocation(that.currentTile.shape)) {
-                that.$element.trigger('gameOver');
+                this.gameover();
             }
         },
         rowCompleted: function(e, rowStart) {
@@ -401,7 +401,7 @@
             var $element = this.$element;
 
             if (!this.isValidLocation(this.currentTile.shape)) {
-                $element.trigger('gameOver');
+                this.gameover();
             }
 
            /// TODO: improve timer
@@ -420,11 +420,18 @@
         gameover: function() {
             this.isStarted = false;
             this.isGameOver = true;
+            this.$element.trigger('gameOver');
         },
         restartGame: function() {
-            $element.trigger('restartGame');
+            this.$element.empty();
+            this.$element.trigger('restartGame');
             this.isStarted = false;
             this.isGameOver = false;
+
+            this.frozen = {};
+
+            this.start();
+
         }
     };
 })(jQuery);
