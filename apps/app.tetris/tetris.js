@@ -65,27 +65,34 @@
     impl.prototype = {
         handle: function(eventId) {
 
-            console.log(eventId);
+            if(this.isGameOver) {
 
-            switch(eventId) {
+                if(eventId == "selectStart") {
+                    this.restartGame();
+                }
 
-                case "upStart":
-                case "ccw":
-                case "cw":
-                    this.rotate();
-                    break;
+            } else {
 
-                case "leftStart":
-                    this.move(-1);
-                    break;
+                switch(eventId) {
 
-                case "rightStart":
-                    this.move(1);
-                    break;
+                    case "upStart":
+                    case "ccw":
+                    case "cw":
+                        this.rotate();
+                        break;
 
-                case "downStart":
-                    this.down();
-                    break;
+                    case "leftStart":
+                        this.move(-1);
+                        break;
+
+                    case "rightStart":
+                        this.move(1);
+                        break;
+
+                    case "downStart":
+                        this.down();
+                        break;
+                }
             }
         },
         tick: function() {
@@ -389,6 +396,8 @@
             }
         },
         start: function() {
+            if(this.isStarted) return;
+            this.isStarted = true;
             var $element = this.$element;
 
             if (!this.isValidLocation(this.currentTile.shape)) {
@@ -402,10 +411,20 @@
 
         },
         pause: function() {
+            this.isStarted = false;
             if (this.timer) {
                 window.clearInterval(this.timer);
                 this.timer = null;
             }
+        },
+        gameover: function() {
+            this.isStarted = false;
+            this.isGameOver = true;
+        },
+        restartGame: function() {
+            $element.trigger('restartGame');
+            this.isStarted = false;
+            this.isGameOver = false;
         }
     };
 })(jQuery);

@@ -139,9 +139,24 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
 
     created: function() {
 
+        // score for this drive
+        this.__score = 0;
+        this.__highscore = this.get("highscore");
+
         // init tetris
         this.initializeGameBoard();
 
+        // vehicle speed
+        this.subscribe(VehicleData.vehicle.speed, function(value) {
+
+            if(value > 15) {
+                this.gamelabel.html("Driving").fadeIn();
+                this.gameBoard.data('tetris').pause();
+            } else {
+                this.gamelabel.fadeOut();
+                this.gameBoard.data('tetris').start();
+            }
+        }.bind(this));
     },
 
     /**
@@ -149,8 +164,6 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
      */
 
     focused: function() {
-
-        this.__score = 0;
 
         this.gameBoard.data('tetris').start();
     },
@@ -190,8 +203,13 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
 
         this.gameBoard = $("<div/>").addClass("gameBoard").appendTo(this.canvas);
 
-        $("<label/>").addClass("score").append("High Score").appendTo(this.canvas);
+        $("<label/>").addClass("score").append("This Drive").appendTo(this.canvas);
         this.score = $("<span/>").addClass("score").append("0").appendTo(this.canvas);
+
+         $("<label/>").addClass("highScore").append("High Score").appendTo(this.canvas);
+        this.highScore = $("<span/>").addClass("highScore").append(this.__highscore || '0').appendTo(this.canvas);
+
+        this.gamelabel = $("<label/>").addClass("gamelabel").append("GAME OVER").appendTo(this.canvas);
 
         this.gameBoard.tetris({
             tileSize: 20,
@@ -201,7 +219,28 @@ CustomApplicationsHandler.register("app.tetris", new CustomApplication({
                 this.__score++;
 
                 this.score.html(this.__score);
-            }.bind(this)
+
+                if(this.__score > this.__highscore) {
+                    this.__highscore = this.__score;
+                    this.set("highscore", this.__highscore);
+                    this.highScore.html(this.__highscore);
+                }
+
+            }.bind(this),
+
+            gameOver: function() {
+
+                this.gameBoard.data('tetris').pause();
+
+                this.gamelabel.html("Game Over").fadeIn();
+
+
+            }.bind(this),
+
+            restartGame: function() {
+
+                this.gamelabel.fadeOut();
+            }
         });
 
     },

@@ -159,6 +159,9 @@ var CustomApplication = (function(){
 			this.__contextCounter = 0;
 			this.__currentContextIndex = false;
 
+			// get storage
+			this.__getstorage();
+
 			// initialize context
 			this.__contexts = [];
 
@@ -602,7 +605,9 @@ var CustomApplication = (function(){
 			try {
 				this.__storage = JSON.parse(localStorage.getItem(this.getId()));
 			} catch(e) {
+				alert(e);
 			}
+
 		},
 
 		set: function(name, value) {

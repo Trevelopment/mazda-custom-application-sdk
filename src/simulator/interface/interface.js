@@ -118,6 +118,12 @@ var fs = require("fs");
 					this.showFromRecover();
 				}.bind(this));
 		    }.bind(this));
+
+		    // initialize storage
+			$(window).on('storage', function (e) {
+
+				//console.log(e.originalEvent.key, e.originalEvent.newValue);
+			});
 		},
 
 		/**

@@ -58,9 +58,30 @@
 		}
 
 		[app="app.tetris"] span.score {
-			position:absolute;
 			right:45px;
 			top:70px;
+		}
+
+		[app="app.tetris"] label.highScore {
+			right:45px;
+			top:150px;
+		}
+
+		[app="app.tetris"] span.highScore {
+			right:45px;
+			top:180px;
+		}
+
+		[app="app.tetris"] label.gamelabel {
+			right:50%;
+			width:200px;
+			top:50%;
+			margin-top:-5px;
+			margin-right:-100px;
+			text-align:center;
+			text-shadow:#fff 0 0 15px;
+			font-size:20px;
+			display:none;
 		}
 
 	[app="app.tetris"] .gameBoard {
