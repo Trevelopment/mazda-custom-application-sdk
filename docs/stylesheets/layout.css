@@ -129,7 +129,7 @@
 .button {
   display: inline-block;
   cursor: pointer;
-	background: #dfd52e;
+	background: #FF9999;
 	border-radius: 3px;
 	margin-bottom: 20px;
 	color: #000;
@@ -148,7 +148,7 @@
 .button:hover {
 	text-decoration: inherit;
 	color: inherit;
-	background-color: #f5e810;
+	background-color: #FF7373;
 }
 
 /* Hogan footer */
