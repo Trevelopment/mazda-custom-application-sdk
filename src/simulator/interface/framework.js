@@ -186,6 +186,8 @@ var framework = {
 		// check
 		if(this.current.properties) {
 
+			console.log(this.current.properties);
+
 			switch(true) {
 
 				case this.current.properties.leftButtonVisible:
@@ -194,13 +196,14 @@ var framework = {
 					Interface.view.addClass("statusbar leftbutton");
 					break;
 
-				case this.current.properties.showStatusbar:
+				case this.current.properties.statusBarVisible:
 					Interface.statusBar.fadeIn();
 					Interface.leftButton.fadeOut();
 					Interface.view.addClass("statusbar").removeClass("leftbutton");
 					break;
 
 				default:
+					Interface.statusBar.fadeOut();
 					Interface.view.removeClass("statusbar leftbutton");
 					break;
 

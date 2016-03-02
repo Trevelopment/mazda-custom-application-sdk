@@ -34,6 +34,8 @@ var
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     uglify = require('gulp-uglify'),
+    git = require('gulp-git'),
+    jsdoc = require('gulp-jsdoc'),
     concatutil = require('gulp-concat-util'),
     runSequence = require('run-sequence'),
     del = require('del'),
@@ -251,6 +253,81 @@ gulp.task('build-sdcard', function(callback) {
     );
 });
 
+
+/**
+ * Build documentation
+ */
+
+var docsThemePath = "./.docstheme";
+
+// (theme)
+gulp.task('docs-theme', function(callback) {
+
+    // using jaguarjs theme
+    if(!fs.lstatSync(docsThemePath).isDirectory()) {
+        git.clone('https://github.com/davidshimjs/jaguarjs-jsdoc', {
+            quiet: true,
+            args: docsThemePath,
+        }, callback);
+    }
+
+    return callback();
+});
+
+// (generate)
+gulp.task('docs-generate', function() {
+
+    var
+        docInfo = {
+            name: 'casdk-' + package.version,
+        },
+        docOptions = {
+            systemName      : "Something",
+            footer          : "Something",
+            copyright       : "Something",
+            navType         : "vertical",
+            theme           : "journal",
+            linenums        : true,
+            collapseSymbols : false,
+            inverseNav      : false
+        },
+        docTemplate = {
+            path: docsThemePath,
+            cleverLinks: true,
+            monospaceLinks: true,
+            default: {
+                "outputSourceFiles" : true
+            },
+            applicationName: "API Documentation",
+            googleAnalytics: "",
+            openGraph: {
+                "title": "",
+                "type": "website",
+                "image": "",
+                "site_name": "",
+                "url": ""
+            },
+            meta: {
+                "title": "CASDK API Documentation " + package.version,
+                "description": "",
+                "keyword": ""
+            },
+            linenums: false,
+        };
+
+    return gulp.src(["./src/runtime/js/*.js", "README.md"])
+        .pipe(jsdoc.parser(docInfo))
+        .pipe(jsdoc.generator('./docs', docTemplate, docOptions))
+});
+
+// (build)
+gulp.task('build-docs', function(callback) {
+    runSequence(
+        'docs-theme',
+        'docs-generate',
+        callback
+    );
+});
 
 /**
  * Common Commands

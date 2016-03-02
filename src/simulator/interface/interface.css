@@ -68,7 +68,7 @@ body {
 	border:1px solid #0E0F0F;
 }
 
-	#mock #header {
+	#mock #statusbar {
 		position:absolute;
 		top:0;
 		left:0;
@@ -81,7 +81,7 @@ body {
 		z-index: 15;
 	}
 
-		#mock #header #title {
+		#mock #statusbar #title {
 			display:block;
 			position:absolute;
 			top:8px;
@@ -89,7 +89,7 @@ body {
 			font-weight:500;
 		}
 
-		#mock #header #home {
+		#mock #statusbar #home {
 			width:37px;
 			height:37px;
 			cursor:pointer;
@@ -99,7 +99,7 @@ body {
 			left:11px;
 		}
 
-		#mock #header #divider {
+		#mock #statusbar #divider {
 			background:url(../images/divider.png) no-repeat center center;
 			width:1px;
 			height:58px;
@@ -109,7 +109,7 @@ body {
 
 		}
 
-		#mock #header #domain {
+		#mock #statusbar #domain {
 			width:37px;
 			height:37px;
 			cursor:pointer;
@@ -120,7 +120,7 @@ body {
 			display:none;
 		}
 
-		#mock #header #clock {
+		#mock #statusbar #clock {
 			position:absolute;
 			right:11px;
 			top:10px;
@@ -194,18 +194,6 @@ body {
 			border:1px solid red;
 		}
 
-		#mock #view.statusbar {
-			top:64px;
-			left:0px;
-			height:416px;
-		}
-
-		#mock #view.leftbutton {
-			top:64px;
-			left:60px;
-			height:416px;
-			width:740px;
-		}
 
 		#mock #view #surface {
 			width:100%;
@@ -568,3 +556,8 @@ body {
     width: 800px;
     height: 416px;
 }
+
+/*
+height:416px;
+			width:740px;
+*/

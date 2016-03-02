@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CASDK API Documentation 0.0.1</title>
+    
+    
+    
+    
+    
+    <meta property="og:title" content=""/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content=""/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/jaguar.css">
+    
+    
+    <script>
+    var config = {"default":{"outputSourceFiles":true},"monospaceLinks":true,"cleverLinks":true,"applicationName":"API Documentation","googleAnalytics":"","openGraph":{"title":"","type":"website","image":"","site_name":"","url":""},"meta":{"title":"CASDK API Documentation 0.0.1","description":"","keyword":""},"linenums":false};
+    </script>
+    
+
+    
+</head>
+<body>
+<div id="wrap" class="clearfix">
+    
+<div class="navigation">
+    <h3 class="applicationName"><a href="index.html">API Documentation</a></h3>
+
+    <div class="search">
+        <input id="search" type="text" class="form-control input-sm" placeholder="Search Documentations">
+    </div>
+    <ul class="list">
+    
+        <li class="item" data-name="CustomApplication">
+            <span class="title">
+                <a href="CustomApplication.html">CustomApplication</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="CustomApplication#ANY"><a href="CustomApplication.html#ANY">ANY</a></li>
+            
+                <li data-name="CustomApplication#CHANGED"><a href="CustomApplication.html#CHANGED">CHANGED</a></li>
+            
+                <li data-name="CustomApplication#EQUAL"><a href="CustomApplication.html#EQUAL">EQUAL</a></li>
+            
+                <li data-name="CustomApplication#FOCUSED"><a href="CustomApplication.html#FOCUSED">FOCUSED</a></li>
+            
+                <li data-name="CustomApplication#GREATER"><a href="CustomApplication.html#GREATER">GREATER</a></li>
+            
+                <li data-name="CustomApplication#LESSER"><a href="CustomApplication.html#LESSER">LESSER</a></li>
+            
+                <li data-name="CustomApplication#LOST"><a href="CustomApplication.html#LOST">LOST</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="CustomApplication#__handleControllerEvent"><a href="CustomApplication.html#__handleControllerEvent">__handleControllerEvent</a></li>
+            
+                <li data-name="CustomApplication#__initialize"><a href="CustomApplication.html#__initialize">__initialize</a></li>
+            
+                <li data-name="CustomApplication#__lifecycle"><a href="CustomApplication.html#__lifecycle">__lifecycle</a></li>
+            
+                <li data-name="CustomApplication#__load"><a href="CustomApplication.html#__load">__load</a></li>
+            
+                <li data-name="CustomApplication#__log"><a href="CustomApplication.html#__log">__log</a></li>
+            
+                <li data-name="CustomApplication#__measureContext"><a href="CustomApplication.html#__measureContext">__measureContext</a></li>
+            
+                <li data-name="CustomApplication#__notify"><a href="CustomApplication.html#__notify">__notify</a></li>
+            
+                <li data-name="CustomApplication#__processContext"><a href="CustomApplication.html#__processContext">__processContext</a></li>
+            
+                <li data-name="CustomApplication#__setCurrentContext"><a href="CustomApplication.html#__setCurrentContext">__setCurrentContext</a></li>
+            
+                <li data-name="CustomApplication#__sleep"><a href="CustomApplication.html#__sleep">__sleep</a></li>
+            
+                <li data-name="CustomApplication#__terminate"><a href="CustomApplication.html#__terminate">__terminate</a></li>
+            
+                <li data-name="CustomApplication#__wakeup"><a href="CustomApplication.html#__wakeup">__wakeup</a></li>
+            
+                <li data-name="CustomApplication#addContext"><a href="CustomApplication.html#addContext">addContext</a></li>
+            
+                <li data-name="CustomApplication#get"><a href="CustomApplication.html#get">get</a></li>
+            
+                <li data-name="CustomApplication#getSetting"><a href="CustomApplication.html#getSetting">getSetting</a></li>
+            
+                <li data-name="CustomApplication#removeSubscriptions"><a href="CustomApplication.html#removeSubscriptions">removeSubscriptions</a></li>
+            
+                <li data-name="CustomApplication#setRegion"><a href="CustomApplication.html#setRegion">setRegion</a></li>
+            
+                <li data-name="CustomApplication#subscribe"><a href="CustomApplication.html#subscribe">subscribe</a></li>
+            
+                <li data-name="CustomApplication#transformValue"><a href="CustomApplication.html#transformValue">transformValue</a></li>
+            
+                <li data-name="CustomApplication#unsubscribe"><a href="CustomApplication.html#unsubscribe">unsubscribe</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+    </ul>
+</div>
+    <div class="main">
+        <h1 class="page-title" data-filename="CustomApplicationHelpers.js.html">Source: CustomApplicationHelpers.js</h1>
+        
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source "><code>/**
+ * Custom Applications SDK for Mazda Connect Infotainment System
+ * 
+ * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
+ * that includes an easy to use abstraction layer to the JCI system.
+ *
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
+ * Copyright (c) 2016. All rights reserved.
+ * 
+ * WARNING: The installation of this application requires modifications to your Mazda Connect system.
+ * If you don't feel comfortable performing these changes, please do not attempt to install this. You might
+ * be ending up with an unusuable system that requires reset by your Dealer. You were warned!
+ *
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+ * License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program. 
+ * If not, see http://www.gnu.org/licenses/
+ *
+ */
+
+/**
+ * (CustomApplicationHelpers)
+ *
+ * A abstract collection of helpers for the framework
+ */
+
+var CustomApplicationHelpers = {
+
+	/**
+	 * (is) a implemention of the flyandi:is library
+	 */
+
+	is: function() {
+
+		return {
+
+			undefined: 'undefined',
+
+			__toString: function() {
+				return Object.prototype.toString.call(arguments[0]);
+			},
+
+			/** (iterable) */
+			iterable: function() {
+				return this.object(arguments[0]) || this.array(arguments[0]);
+			},
+
+			/** (fn) */
+			fn: function() {
+				return typeof(arguments[0]) == "function";
+			},
+
+			/** (object) */
+			object: function() {
+				return typeof(arguments[0]) == "object";
+			},
+
+			/** (array) */
+			array: function() {
+				return this.__toString(arguments[0]) === '[object Array]';
+			},
+
+			/** (date) */
+			date: function() {
+				return this.__toString(arguments[0])  === '[object Date]';
+			},
+
+			/** (string) */
+			string: function() {
+				return typeof(arguments[0]) == "string";
+			},
+
+			/** (number) */
+			number: function() {
+				return typeof(arguments[0]) == "number";
+			},
+
+			/** (boolean) */
+			boolean: function() {
+				return typeof(arguments[0]) == "boolean";
+			},
+
+			/** (defined) */
+			defined: function() {
+				return typeof(arguments[0]) != Is.undefined;
+			},
+
+			/** (element) */
+			element: function() {
+				return typeof(HTMLElement) !== Is.undefined ? (arguments[0] instanceof HTMLElement) : (arguments[0] &amp;&amp; arguments[0].nodeType === 1);
+			},
+
+			/** (empty) */
+			empty: function(o) {
+				switch(true) {
+					case this.array(o) || this.string(o): 
+						return o.length === 0; 
+
+					case this.object(o): 
+						var s = 0;
+						for(var key in o) 
+							if(o.hasOwnProperty(key)) s++;
+						return s === 0;
+				
+					case this.boolean(o):
+						return o === false;
+
+					default:
+						return !o;
+				}
+			},
+
+			/** (same) */
+			same: function(a, b) {
+				return a == b;
+			},
+		};
+	},
+
+	/**
+	 * (iterate) a iterate that supports arrays and objects
+	 */
+
+	iterate: function(o, item) {
+
+		if(this.is().object(o)) {
+			return Object.keys(o).map(function(key) {
+				return item(key, o[key], true);
+			});
+		} else if (this.is().array(o)) {
+			return o.map(function(value, key) {
+				return item(key, value);
+			});
+		}
+	},
+
+	/**
+	 * (sprintr) (https://gist.github.com/flyandi/395816232c70de327801)
+	 */
+
+	sprintr: function() {
+		var 
+			args = Array.prototype.slice.call(arguments),
+			subject = arguments[0];
+
+		args.shift();
+
+		for(var i = 0; i &lt; args.length; i++) 
+			subject = subject.split("{" + i + "}").join(args[i]);
+
+		return subject;
+	},
+
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+
+        
+
+        <footer>
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Mar 01 2016 19:58:09 GMT-0800 (PST)
+        </footer>
+    </div>
+</div>
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+<script src="scripts/main.js"></script>
+</body>
+</html>

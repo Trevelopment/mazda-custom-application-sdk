@@ -1,4 +1,136 @@
-/*
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>CASDK API Documentation 0.0.1</title>
+    
+    
+    
+    
+    
+    <meta property="og:title" content=""/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content=""/>
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="scripts/jquery.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/jaguar.css">
+    
+    
+    <script>
+    var config = {"default":{"outputSourceFiles":true},"monospaceLinks":true,"cleverLinks":true,"applicationName":"API Documentation","googleAnalytics":"","openGraph":{"title":"","type":"website","image":"","site_name":"","url":""},"meta":{"title":"CASDK API Documentation 0.0.1","description":"","keyword":""},"linenums":false};
+    </script>
+    
+
+    
+</head>
+<body>
+<div id="wrap" class="clearfix">
+    
+<div class="navigation">
+    <h3 class="applicationName"><a href="index.html">API Documentation</a></h3>
+
+    <div class="search">
+        <input id="search" type="text" class="form-control input-sm" placeholder="Search Documentations">
+    </div>
+    <ul class="list">
+    
+        <li class="item" data-name="CustomApplication">
+            <span class="title">
+                <a href="CustomApplication.html">CustomApplication</a>
+                
+            </span>
+            <ul class="members itemMembers">
+            
+            <span class="subtitle">Members</span>
+            
+                <li data-name="CustomApplication#ANY"><a href="CustomApplication.html#ANY">ANY</a></li>
+            
+                <li data-name="CustomApplication#CHANGED"><a href="CustomApplication.html#CHANGED">CHANGED</a></li>
+            
+                <li data-name="CustomApplication#EQUAL"><a href="CustomApplication.html#EQUAL">EQUAL</a></li>
+            
+                <li data-name="CustomApplication#FOCUSED"><a href="CustomApplication.html#FOCUSED">FOCUSED</a></li>
+            
+                <li data-name="CustomApplication#GREATER"><a href="CustomApplication.html#GREATER">GREATER</a></li>
+            
+                <li data-name="CustomApplication#LESSER"><a href="CustomApplication.html#LESSER">LESSER</a></li>
+            
+                <li data-name="CustomApplication#LOST"><a href="CustomApplication.html#LOST">LOST</a></li>
+            
+            </ul>
+            <ul class="typedefs itemMembers">
+            
+            </ul>
+            <ul class="methods itemMembers">
+            
+            <span class="subtitle">Methods</span>
+            
+                <li data-name="CustomApplication#__handleControllerEvent"><a href="CustomApplication.html#__handleControllerEvent">__handleControllerEvent</a></li>
+            
+                <li data-name="CustomApplication#__initialize"><a href="CustomApplication.html#__initialize">__initialize</a></li>
+            
+                <li data-name="CustomApplication#__lifecycle"><a href="CustomApplication.html#__lifecycle">__lifecycle</a></li>
+            
+                <li data-name="CustomApplication#__load"><a href="CustomApplication.html#__load">__load</a></li>
+            
+                <li data-name="CustomApplication#__log"><a href="CustomApplication.html#__log">__log</a></li>
+            
+                <li data-name="CustomApplication#__measureContext"><a href="CustomApplication.html#__measureContext">__measureContext</a></li>
+            
+                <li data-name="CustomApplication#__notify"><a href="CustomApplication.html#__notify">__notify</a></li>
+            
+                <li data-name="CustomApplication#__processContext"><a href="CustomApplication.html#__processContext">__processContext</a></li>
+            
+                <li data-name="CustomApplication#__setCurrentContext"><a href="CustomApplication.html#__setCurrentContext">__setCurrentContext</a></li>
+            
+                <li data-name="CustomApplication#__sleep"><a href="CustomApplication.html#__sleep">__sleep</a></li>
+            
+                <li data-name="CustomApplication#__terminate"><a href="CustomApplication.html#__terminate">__terminate</a></li>
+            
+                <li data-name="CustomApplication#__wakeup"><a href="CustomApplication.html#__wakeup">__wakeup</a></li>
+            
+                <li data-name="CustomApplication#addContext"><a href="CustomApplication.html#addContext">addContext</a></li>
+            
+                <li data-name="CustomApplication#get"><a href="CustomApplication.html#get">get</a></li>
+            
+                <li data-name="CustomApplication#getSetting"><a href="CustomApplication.html#getSetting">getSetting</a></li>
+            
+                <li data-name="CustomApplication#removeSubscriptions"><a href="CustomApplication.html#removeSubscriptions">removeSubscriptions</a></li>
+            
+                <li data-name="CustomApplication#setRegion"><a href="CustomApplication.html#setRegion">setRegion</a></li>
+            
+                <li data-name="CustomApplication#subscribe"><a href="CustomApplication.html#subscribe">subscribe</a></li>
+            
+                <li data-name="CustomApplication#transformValue"><a href="CustomApplication.html#transformValue">transformValue</a></li>
+            
+                <li data-name="CustomApplication#unsubscribe"><a href="CustomApplication.html#unsubscribe">unsubscribe</a></li>
+            
+            </ul>
+            <ul class="events itemMembers">
+            
+            </ul>
+        </li>
+    
+    </ul>
+</div>
+    <div class="main">
+        <h1 class="page-title" data-filename="CustomApplication.js.html">Source: CustomApplication.js</h1>
+        
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source "><code>/*
  * Custom Applications SDK for Mazda Connect Infotainment System
  *
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
@@ -34,9 +166,9 @@ var CustomApplication = (function(){
 	 * This class is initiated during the registration of an custom application and should never be called
 	 * by an custom application directly.
 	 *
-	 * <pre>
+	 * &lt;pre>
 	 *  Custom Applications should never all any method prefixed with __ since these methods are actually called and handled by the micro framework itself.
-	 * </pre>
+	 * &lt;/pre>
 	 *
 	 * @class
 	 * @name  CustomApplication
@@ -191,7 +323,7 @@ var CustomApplication = (function(){
 				this.__loaded = true;
 
 				// create surface and set some basic properties
-				this.canvas = $("<div/>").addClass("CustomApplicationCanvas").attr("app", this.id);
+				this.canvas = $("&lt;div/>").addClass("CustomApplicationCanvas").attr("app", this.id);
 
 				// assign default event for context fields
 				this.canvas.on("click touchend", "[contextIndex]", function() {
@@ -235,17 +367,17 @@ var CustomApplication = (function(){
 
 				var o = o === true || loaded == toload;
 
-				if(o && this.is.fn(next)) {
+				if(o &amp;&amp; this.is.fn(next)) {
 					next();
 				}
 
 			}.bind(this);
 
 			// loader
-			if(this.is.object(this.require) && !this.__loaded) {
+			if(this.is.object(this.require) &amp;&amp; !this.__loaded) {
 
 				// load javascripts
-				if(this.require.js && !this.is.empty(this.require.js)) {
+				if(this.require.js &amp;&amp; !this.is.empty(this.require.js)) {
 					toload++;
 					CustomApplicationResourceLoader.loadJavascript(this.require.js, this.location, function() {
 						loaded++;
@@ -254,7 +386,7 @@ var CustomApplication = (function(){
 				}
 
 				// load css
-				if(this.require.css && !this.is.empty(this.require.css)) {
+				if(this.require.css &amp;&amp; !this.is.empty(this.require.css)) {
 					toload++;
 					CustomApplicationResourceLoader.loadCSS(this.require.css, this.location, function() {
 						loaded++;
@@ -263,7 +395,7 @@ var CustomApplication = (function(){
 				}
 
 				// load images
-				if(this.require.images && !this.is.empty(this.require.images)) {
+				if(this.require.images &amp;&amp; !this.is.empty(this.require.images)) {
 					toload++;
 					CustomApplicationResourceLoader.loadImages(this.require.images, this.location, function(loadedImages) {
 
@@ -461,7 +593,7 @@ var CustomApplication = (function(){
 
 	    	id = id.toLowerCase();
 
-	    	if(this.__subscriptions[id] && payload) {
+	    	if(this.__subscriptions[id] &amp;&amp; payload) {
 
 	    		var subscription = this.__subscriptions[id], notify = false;
 
@@ -479,7 +611,7 @@ var CustomApplication = (function(){
 
 	    			case this.LESSER:
 
-	    				notify = payload.value < payload.previous;
+	    				notify = payload.value &lt; payload.previous;
 	    				break;
 
 	    			case this.EQUAL:
@@ -784,11 +916,11 @@ var CustomApplication = (function(){
 
 	    		$.each(this.__contexts, function(intersectIndex, intersectContext) {
 
-	    			if(intersectIndex != index && intersectContext.boundingBox) {
+	    			if(intersectIndex != index &amp;&amp; intersectContext.boundingBox) {
 
 	    				var ib = intersectContext.boundingBox;
 
-	    				if(bb.left <= ib.right && ib.left <= bb.right && bb.top <= ib.bottom && ib.top <= bb.bottom) {
+	    				if(bb.left &lt;= ib.right &amp;&amp; ib.left &lt;= bb.right &amp;&amp; bb.top &lt;= ib.bottom &amp;&amp; ib.top &lt;= bb.bottom) {
 
 	    					this.__contexts[index].enabled = false;
 
@@ -801,7 +933,7 @@ var CustomApplication = (function(){
 	    	}.bind(this));
 
 	    	// set initial index
-	    	if(this.__currentContextIndex === false && this.__contexts.length) {
+	    	if(this.__currentContextIndex === false &amp;&amp; this.__contexts.length) {
 	    		this.__setCurrentContext(this.__contexts[0].index); // first item
 	    	}
 
@@ -828,7 +960,7 @@ var CustomApplication = (function(){
 	    		ba = current.boundingBox,
 	    		calc = function(i, o, index, r) {
 	    			var d = r ? i - o : o - i;
-	    			if(d >= 0 && (lastDistance === false || d < lastDistance)) {
+	    			if(d >= 0 &amp;&amp; (lastDistance === false || d &lt; lastDistance)) {
 	    				lastDistance = d;
 	    				nextIndex = index;
 	    			}
@@ -841,7 +973,7 @@ var CustomApplication = (function(){
 
 	    			var bb = context.boundingBox;
 
-	    			if(ba && bb) {
+	    			if(ba &amp;&amp; bb) {
 
 			    		// process by eventId and find next item
 				    	switch(eventId) {
@@ -897,7 +1029,7 @@ var CustomApplication = (function(){
 	    		var last = this.__contexts[this.__currentContextIndex],
 	    			target =  this.canvas.find(this.sprintr("[contextIndex={0}]", this.__currentContextIndex));
 
-	    		if(last && target.length) {
+	    		if(last &amp;&amp; target.length) {
 
 	    			var result = false;
 
@@ -908,7 +1040,7 @@ var CustomApplication = (function(){
 		    		}
 
 		    		// notify
-		    		if(!result && hasEventHandler) {
+		    		if(!result &amp;&amp; hasEventHandler) {
 		    			this.onContextEvent(this.LOST, last, target);
 		    		}
 
@@ -927,7 +1059,7 @@ var CustomApplication = (function(){
 
 
 		   	// notify callback
-		   	if(current && target.length) {
+		   	if(current &amp;&amp; target.length) {
 
 		   	  	// set target focus
 		   		target.attr("context", "focused");
@@ -942,7 +1074,7 @@ var CustomApplication = (function(){
 	    		}
 
 	    		// notify
-	    		if(!result && hasEventHandler) {
+	    		if(!result &amp;&amp; hasEventHandler) {
 	    			this.onContextEvent(this.FOCUSED, current, target);
 	    		}
 
@@ -958,4 +1090,24 @@ var CustomApplication = (function(){
 
 	return CustomApplication;
 
-})();
+})();</code></pre>
+        </article>
+    </section>
+
+
+
+
+
+
+        
+
+        <footer>
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue Mar 01 2016 19:58:09 GMT-0800 (PST)
+        </footer>
+    </div>
+</div>
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+<script src="scripts/main.js"></script>
+</body>
+</html>
