@@ -443,7 +443,6 @@ var CustomApplication = (function(){
 
 
 	    	} catch(e) {
-	    		alert(e);
 	    		this.log.error("Error while executing lifecycle event", {lifecycle:cycle, error: e.message});
 
 	    	}
