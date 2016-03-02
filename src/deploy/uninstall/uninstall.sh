@@ -45,6 +45,18 @@ if [ -f /jci/opera/opera_home/opera.ini.casdk ]; then
 	rm /jci/opera/opera_home/opera.ini.casdk
 fi
 
+# reset storage
+if [ -e /tmp/mnt/data_persist/storage ]; then
+	echo "Removing storage folder"
+	rm -rf /tmp/mnt/data_persist/storage
+fi
+
+if [ -f /jci/opera/opera_home/pstorage/psindex.dat.casdk ]; then
+	echo "Removing local storage settings"
+	cp -a /jci/opera/opera_home/pstorage/psindex.dat.casdk /jci/opera/opera_home/pstorage/psindex.dat
+	rm /jci/opera/opera_home/pstorage/psindex.dat.casdk
+fi
+
 # kill all watch processes
 echo "Removing watch processes"
 pkill -f watch
