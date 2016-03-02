@@ -35,5 +35,6 @@
 var CustomApplications = [
 	"app.speedometer",
 	"app.simpledashboard",
-	"app.vdd"
+	"app.vdd",
+	"app.tetris"
 ];

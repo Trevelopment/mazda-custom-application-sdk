@@ -597,7 +597,7 @@ var CustomApplication = (function(){
 		 */
 
 		get: function(name, _default) {
-			return this.is.defined(this.__storage[name]) ? this.__storage[name] : _default;
+			return this.__storage && this.is.defined(this.__storage[name]) ? this.__storage[name] : _default;
 		},
 
 		__getstorage: function() {
@@ -605,7 +605,6 @@ var CustomApplication = (function(){
 			try {
 				this.__storage = JSON.parse(localStorage.getItem(this.getId()));
 			} catch(e) {
-				alert(e);
 			}
 
 		},
