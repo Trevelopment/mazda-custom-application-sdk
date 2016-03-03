@@ -260,6 +260,7 @@ gulp.task('build-sdcard', function(callback) {
  */
 
 var docsPathTheme = "./.docstheme/",
+    docsPathInput = input + "docs/",
     docsPathOutput = output + "docs/";
 
 // (cleanup)
@@ -324,7 +325,7 @@ gulp.task('docs-generate', function() {
             linenums: false,
         };
 
-    return gulp.src(["./src/runtime/js/*.js", "README.md"])
+    return gulp.src([input + "runtime/js/*.js", docsPathInput + "markup/*.md"])
         .pipe(jsdoc.parser(docInfo))
         .pipe(jsdoc.generator(docsPathOutput, docTemplate, docOptions))
 });
