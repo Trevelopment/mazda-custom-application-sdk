@@ -92,7 +92,7 @@ done
 # install data reader files
 mkdir -p /jci/casdk
 cp -a casdk/scripts/* /jci/casdk
-find /jci/scripts/ -name "vdt*.sh" -exec chmod 755 {} \;
+find /jci/casdk/ -name "vdt*.sh" -exec chmod 755 {} \;
 
 # copy initialization file
 if [ ! -f /jci/scripts/stage_wifi.sh.casdk ]; then
