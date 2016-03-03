@@ -29,16 +29,78 @@
  * (casdk) Command line tool helper
  */
 
+var fs = require("fs"),
+	colors = require('colors');
+
+
+/***
+ * (createCustomApplication)
+ */
+
+var createCustomApplication = function(name, options) {
+
+	var outputDir = (options.ouput || __dirname).replace(/\/$/, ''),
+		outputName = 'app.' + name.replace(/\s|-/g, '_'),
+		outputLocation = outputDir + '/' + outputName;
+
+	try {
+		if(fs.statSync(outputLocation).isDirectory()) {
+			console.log(('The application ' + outputName + ' already exists').red);
+			console.log(outputLocation.gray);
+			return false;
+		}
+	} catch(e) {
+		// continue
+	}
+
+	console.log(('Creating application ' + outputName).green);
+	console.log(outputLocation.gray);
+
+	// create output directory
+	fs.mkdirSync(outputLocation);
+
+	// create app.css
+	
+
+};
+
+
+
+
 /**
- * (locals)
+ * (command processor)
  */
 
 var program = require('commander');
 
-// processing command line arguments
 program
-	.version('0.0.1')
-	.arguments('<file>')
-	.option('create [applicationName]', 'Creates a new application with the associated name')
-  	.parse(process.argv);
+  .version('0.0.1')
+  .description('A command line tool for building custom applications for the Mazda Infotainment System')
+
+program
+  .command('create <name>')
+  .description('Creates a new application')
+  .option("-o, --output [output]", "The directory where to write the application. Default is the current working directory")
+  .action(function(name, options){
+  	createCustomApplication(name, options);
+  });
+
+
+program.parse(process.argv);
+
+if (!program.args.length) program.help();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

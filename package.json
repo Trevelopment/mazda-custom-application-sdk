@@ -9,9 +9,10 @@
     "url": "https://github.com/flyandi/mazda-custom-application-sdk"
   },
   "bin": {
-    "casdk": "./tools/casdk.js"
+    "casdk": "./cli/casdk.js"
   },
   "dependencies": {
+    "colors": "^1.1.2",
     "commander": "^2.9.0"
   },
   "devDependencies": {

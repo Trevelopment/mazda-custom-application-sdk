@@ -296,7 +296,7 @@ gulp.task('docs-generate', function() {
             cleverLinks: true,
             monospaceLinks: true,
             default: {
-                "outputSourceFiles" : true
+                "outputSourceFiles" : false
             },
             applicationName: "API Documentation",
             googleAnalytics: "",

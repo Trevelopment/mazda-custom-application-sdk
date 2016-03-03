@@ -86,16 +86,59 @@ var CustomApplication = (function(){
 		EQUAL: 4,
 
 		/**
-		 * [FOCUSED description]
+		 * The context eventId focused
 		 * @type {String}
 		 */
 		FOCUSED: 'focused',
 
 		/**
-		 * [LOST description]
+		 * The context eventId lost
 		 * @type {String}
 		 */
 		LOST: 'lost',
+
+		/**
+		 * MultiController Event Left
+		 * @type {String}
+		 */
+		LEFT: 'leftStart',
+
+		/**
+		 * MultiController Event Right
+		 * @type {String}
+		 */
+		RIGHT: 'rightStart',
+
+		/**
+		 * MultiController Event Up
+		 * @type {String}
+		 */
+		UP: 'upStart',
+
+		/**
+		 * MultiController Event Down
+		 * @type {String}
+		 */
+		DOWN: 'downStart',
+
+		/**
+		 * MultiController Event Select
+		 * @type {String}
+		 */
+		SELECT: 'selectStart',
+
+		/**
+		 * MultiController Event Wheel turned counterwise
+		 * @type {String}
+		 */
+		CW: 'cw',
+
+		/**
+		 * MultiController Event Wheel turned counterclockwise
+		 * @type {String}
+		 */
+		CCW: 'ccw',
+
 
 		/**
 		 * Creates the custom application's log object. This method is called during the initialization of the
@@ -191,7 +234,7 @@ var CustomApplication = (function(){
 				this.__loaded = true;
 
 				// get storage
-				this.__getstorage();	
+				this.__getstorage();
 
 				// create surface and set some basic properties
 				this.canvas = $("<div/>").addClass("CustomApplicationCanvas").attr("app", this.id);
@@ -294,7 +337,7 @@ var CustomApplication = (function(){
 		 * @param {DOMElement} parent The div container assigned by the surface handler.
 		 * @return {void}
 		 */
-		
+
 		__wakeup: function(parent) {
 
 			if(!this.__initialized) {
@@ -361,6 +404,8 @@ var CustomApplication = (function(){
 		 */
 
 		__terminate: function() {
+
+			this.__lifecycle("terminated");
 
 			this.canvas.remove();
 
@@ -620,7 +665,7 @@ var CustomApplication = (function(){
 			try {
 				// get default
 				if(!this.__storage) this.__storage = {};
-				
+
 				// local storage should work on all mazda systems
 				localStorage.setItem(this.getId(), JSON.stringify(this.__storage));
 			} catch(e) {
@@ -853,19 +898,19 @@ var CustomApplication = (function(){
 			    		// process by eventId and find next item
 				    	switch(eventId) {
 
-				    		case "rightStart":
+				    		case this.RIGHT:
 				    			calc(ba.right, bb.left, index);
 				    			break;
 
-				    		case "leftStart":
+				    		case this.LEFT:
 				    			calc(ba.left, bb.right, index, true);
 				    			break;
 
-				    		case "upStart":
+				    		case this.UP:
 				    			calc(ba.top, bb.bottom, index, true);
 				    			break;
 
-				    		case "downStart":
+				    		case this.DOWN:
 				    			calc(ba.bottom, bb.top, index);
 				    			break;
 
@@ -930,8 +975,6 @@ var CustomApplication = (function(){
 		   	// get new target
 		   	var target = this.canvas.find(this.sprintr("[contextIndex={0}]", index)),
 		   	    current = this.__contexts[index];
-
-
 
 		   	// notify callback
 		   	if(current && target.length) {
