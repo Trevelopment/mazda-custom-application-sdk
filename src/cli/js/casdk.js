@@ -45,14 +45,14 @@ var customApplicationSkeleton = __INCLUSIONS__;
 
 var createCustomApplication = function(name, options) {
 
-	var outputDir = (options.ouput || __dirname).replace(/\/$/, ''),
+	var outputDir = (options.ouput || process.cwd()).replace(/\/$/, ''),
 		outputName = 'app.' + name.replace(/\s|-/g, '_'),
 		outputLocation = outputDir + '/' + outputName;
 
 	try {
 		if(fs.statSync(outputLocation).isDirectory()) {
 			console.log(('The application ' + outputName + ' already exists').red);
-			console.log(outputLocation.gray);
+			console.log((outputLocation).grey);
 			return false;
 		}
 	} catch(e) {
@@ -60,7 +60,7 @@ var createCustomApplication = function(name, options) {
 	}
 
 	console.log(('Creating application ' + outputName).green);
-	console.log(outputLocation.gray);
+	console.log((outputLocation).grey);
 
 	// create output directory
 	fs.mkdirSync(outputLocation);
@@ -69,22 +69,33 @@ var createCustomApplication = function(name, options) {
 	var appValues = {
 		APP_ID: outputName,
 		APP_NAME: name,
-	};
+	}, preventParsing = ['app.png'];
+
 
 	Object.keys(customApplicationSkeleton).forEach(function(key) {
 
 		var appFn = key,
 			appContent = new Buffer(customApplicationSkeleton[key], 'base64');
 
-		Object.keys(appValues).forEach(function(appKey) {
+		if(preventParsing.indexOf(key) == -1) {
 
-			appContent = appContent.replace('/{' + appKey + '}/g', appValues[appKey]);
+			appContent = appContent.toString();
 
-		});
+			Object.keys(appValues).forEach(function(appKey) {
+
+				appContent = appContent.replace(new RegExp("{" + appKey + "}", "g"), appValues[appKey]);
+
+			});
+
+		}
 
 		fs.writeFile(outputLocation + '/' + key, appContent);
 
 	});
+
+	console.log("Application was successfully created".green);
+
+	return true;
 };
 
 

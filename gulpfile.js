@@ -454,7 +454,6 @@ gulp.task('default', function (callback) {
         'build-system',
         'build-install',
         'build-sdcard',
-        'build-cli',
         'build-docs',
         callback
     );
