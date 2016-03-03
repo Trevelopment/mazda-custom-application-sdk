@@ -36,6 +36,7 @@ var
     uglify = require('gulp-uglify'),
     git = require('gulp-git'),
     jsdoc = require('gulp-jsdoc'),
+    replace = require('gulp-replace'),
     concatutil = require('gulp-concat-util'),
     runSequence = require('run-sequence'),
     del = require('del'),
@@ -258,16 +259,24 @@ gulp.task('build-sdcard', function(callback) {
  * Build documentation
  */
 
-var docsThemePath = "./.docstheme";
+var docsPathTheme = "./.docstheme/",
+    docsPathOutput = "./docs/";
+
+// (cleanup)
+gulp.task('docs-cleanup', function () {
+    return del(
+        [docsPathOutput + '**']
+    );
+});
 
 // (theme)
 gulp.task('docs-theme', function(callback) {
 
     // using jaguarjs theme
-    if(!fs.lstatSync(docsThemePath).isDirectory()) {
+    if(!fs.lstatSync(docsPathTheme).isDirectory()) {
         git.clone('https://github.com/davidshimjs/jaguarjs-jsdoc', {
             quiet: true,
-            args: docsThemePath,
+            args: docsPathTheme,
         }, callback);
     }
 
@@ -292,7 +301,7 @@ gulp.task('docs-generate', function() {
             inverseNav      : false
         },
         docTemplate = {
-            path: docsThemePath,
+            path: docsPathTheme,
             cleverLinks: true,
             monospaceLinks: true,
             default: {
@@ -317,17 +326,97 @@ gulp.task('docs-generate', function() {
 
     return gulp.src(["./src/runtime/js/*.js", "README.md"])
         .pipe(jsdoc.parser(docInfo))
-        .pipe(jsdoc.generator('./docs', docTemplate, docOptions))
+        .pipe(jsdoc.generator(docsPathOutput, docTemplate, docOptions))
 });
 
 // (build)
 gulp.task('build-docs', function(callback) {
     runSequence(
+        'docs-cleanup',
         'docs-theme',
         'docs-generate',
         callback
     );
 });
+
+/**
+ * Build CLI Tool
+ */
+
+var cliPathInput = input + "cli/",
+    cliPathOutput = output + "cli/",
+    cliPathSkeleton = cliPathInput + "skeleton/";
+
+// (cleanup)
+gulp.task('cli-cleanup', function () {
+    return del(
+        [cliPathOutput + '**']
+    );
+});
+
+// (git)
+gulp.task('cli-clone', function(callback) {
+
+    git.clone('git@github.com:flyandi/mazda-custom-application-sdk-cli.git', {
+        quiet: true,
+        args: cliPathOutput,
+    }, callback);
+
+});
+
+// (copy)
+gulp.task('cli-build', function() {
+
+    // copy resources
+    gulp.src(cliPathInput + "resources/**/*")
+        .pipe(gulp.dest(cliPathOutput));
+
+    // prepare inclusions
+    var inclusions = {
+        'app.js': false,
+        'app.css': false,
+        'app.png': false
+    }
+
+    // load inclusions
+    Object.keys(inclusions).forEach(function(key) {
+
+        // read file from skeleton and store as base64
+        inclusions[key] = fs.readFileSync(cliPathSkeleton + key).toString('base64');
+
+    });
+
+    // replace inclusions with json
+    return gulp.src(cliPathInput + "js/casdk.js")
+        .pipe(replace(/__INCLUSIONS__/g, JSON.stringify(inclusions)))
+        .pipe(gulp.dest(cliPathOutput));
+
+});
+
+// (commit)
+gulp.task('cli-commit', function(callback) {
+
+    // commit
+    gulp.src(cliPathOutput + "**/*", {cwd: cliPathOutput})
+        .pipe(git.add({args: '-A'}))
+        .pipe(git.commit('AutoBuildCommit'));
+
+    git.push('origin', 'master', callback);
+
+});
+
+
+// (build)
+gulp.task('build-cli', function(callback) {
+    runSequence(
+        'cli-cleanup',
+        'cli-clone',
+        'cli-build',
+        'cli-commit',
+        callback
+    );
+});
+
 
 /**
  * Common Commands
@@ -348,6 +437,8 @@ gulp.task('default', function (callback) {
         'build-system',
         'build-install',
         'build-sdcard',
+        'build-cli',
+        'build-docs',
         callback
     );
 

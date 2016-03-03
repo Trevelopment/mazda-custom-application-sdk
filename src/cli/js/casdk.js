@@ -34,6 +34,12 @@ var fs = require("fs"),
 
 
 /***
+ * (customApplicationSkeleton)
+ */
+
+var customApplicationSkeleton = __INCLUSIONS__;
+
+/***
  * (createCustomApplication)
  */
 
@@ -59,9 +65,26 @@ var createCustomApplication = function(name, options) {
 	// create output directory
 	fs.mkdirSync(outputLocation);
 
-	// create app.css
-	
+	// create app values
+	var appValues = {
+		APP_ID: outputName,
+		APP_NAME: name,
+	};
 
+	Object.keys(customApplicationSkeleton).forEach(function(key) {
+
+		var appFn = key,
+			appContent = customApplicationSkeleton[key];
+
+		Object.keys(appValues).forEach(function(appKey) {
+
+			appContent = appContent.replace('/{' + appKey + '}/g', appValues[appKey]);
+
+		});
+
+		fs.writeFile(outputLocation + '/' + key, appContent);
+
+	});
 };
 
 

@@ -8,13 +8,6 @@
     "type": "git",
     "url": "https://github.com/flyandi/mazda-custom-application-sdk"
   },
-  "bin": {
-    "casdk": "./cli/casdk.js"
-  },
-  "dependencies": {
-    "colors": "^1.1.2",
-    "commander": "^2.9.0"
-  },
   "devDependencies": {
     "del": "~2.2.0",
     "electron": "^0.4.1",
@@ -30,6 +23,7 @@
     "gulp-less": "^3.0.5",
     "gulp-open": "^1.0.0",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
     "gulp-uglify": "^1.5.2",
     "gulp-webserver": "^0.9.1",
     "run-sequence": "^1.1.5"
