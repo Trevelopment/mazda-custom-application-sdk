@@ -260,7 +260,7 @@ gulp.task('build-sdcard', function(callback) {
  */
 
 var docsPathTheme = "./.docstheme/",
-    docsPathOutput = "./docs/";
+    docsPathOutput = output + "docs/";
 
 // (cleanup)
 gulp.task('docs-cleanup', function () {
