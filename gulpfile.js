@@ -397,12 +397,20 @@ gulp.task('cli-build', function() {
 gulp.task('cli-commit', function(callback) {
 
     // commit
-    gulp.src(cliPathOutput + "**/*", {cwd: cliPathOutput})
-        .pipe(git.add({args: '-A'}))
-        .pipe(git.commit('AutoBuildCommit'));
+    process.chdir(cliPathOutput);
 
-    git.push('origin', 'master', callback);
+    gulp.src('./*')
+        .pipe(git.commit(undefined, {
+            disableMessageRequirement: true,
+            args: '-m "AutoBuildCommit" -a',
+            cwd: cliPathOutput
+        }));
 
+    git.push('origin', 'master');
+
+    process.chdir(__dirname);
+
+    return callback;
 });
 
 

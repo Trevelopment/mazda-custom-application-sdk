@@ -74,7 +74,7 @@ var createCustomApplication = function(name, options) {
 	Object.keys(customApplicationSkeleton).forEach(function(key) {
 
 		var appFn = key,
-			appContent = customApplicationSkeleton[key];
+			appContent = new Buffer(customApplicationSkeleton[key], 'base64');
 
 		Object.keys(appValues).forEach(function(appKey) {
 
