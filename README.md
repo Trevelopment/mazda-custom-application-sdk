@@ -1,5 +1,32 @@
 # Custom Applications SDK for Mazda Connect Infotainment System
 
-A mini framework that allows to write custom applications for the Mazda Connect Infotainment System that includes an easy to use abstraction layer to the JCI system.
+A micro framework that allows you to write and deploy custom applications for the Mazda Infotainment System.
 
-This project is under heavy development and is not ready for prime time. More will be announced soon.
+The SDK comes with everything you need to get started including a 1:1 Simulator allowing you to build applications on your local computer without any other dependencies.
+
+High level features include access to the Vehicle Data, Multicontroller support, Persistent storage and Life cycle management.
+
+## Status
+
+This project is under heavy development and we have entered the alpha testing phase.
+
+## Get Started
+
+Read the Get Started Guide
+
+## About this Repo
+
+This is the development source repository for the CASDK containing everything and anything. However you shouldn't ever need to clone this repo if you don't activley participating in the micro framework development.
+
+If you want to develop applications please use the Get Started guide above.
+
+
+## License
+
+This program is free software: you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public
+License for more details.
