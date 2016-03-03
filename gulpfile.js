@@ -402,23 +402,23 @@ gulp.task('cli-build', function() {
 // (commit)
 gulp.task('cli-commit', function(callback) {
 
-    // commit
-//    process.chdir(cliPathOutput);
-
-    gulp.src('./*')
+    return gulp.src('./*')
         .pipe(git.commit(undefined, {
             disableMessageRequirement: true,
             args: '-m "AutoBuildCommit" -a',
             quiet: false,
-        }));
+            cwd: cliPathOutput,
+        }))
+});
+
+gulp.task('cli-push', function(callback) {
 
     git.push('origin', 'master', {
         quiet: false,
-        cwd: cliPathOutput,
-        emitData: true
+        emitData: true,
+        cwd: cliPathOutput
     }, callback);
 
-//    process.chdir(__dirname);
 });
 
 
@@ -429,6 +429,7 @@ gulp.task('build-cli', function(callback) {
         'cli-clone',
         'cli-build',
         'cli-commit',
+        'cli-push',
         callback
     );
 });
