@@ -400,21 +400,25 @@ gulp.task('cli-build', function() {
 });
 
 // (commit)
-gulp.task('cli-commit', function() {
+gulp.task('cli-commit', function(callback) {
 
     // commit
-    process.chdir(cliPathOutput);
+//    process.chdir(cliPathOutput);
 
     gulp.src('./*')
         .pipe(git.commit(undefined, {
             disableMessageRequirement: true,
             args: '-m "AutoBuildCommit" -a',
-            cwd: cliPathOutput
+            quiet: false,
         }));
 
-    git.push('origin', 'master');
+    git.push('origin', 'master', {
+        quiet: false,
+        cwd: cliPathOutput,
+        emitData: true
+    }, callback);
 
-    process.chdir(__dirname);
+//    process.chdir(__dirname);
 });
 
 
