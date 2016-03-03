@@ -2,7 +2,6 @@
   "builder" : {
     "osx" : {
       "title": "Mazda Infotainment Simulator",
-      "background": "installer.png",
       "icon": "mount.icns",
       "icon-size": 80,
       "contents": [

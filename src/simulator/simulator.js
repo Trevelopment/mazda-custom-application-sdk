@@ -61,6 +61,7 @@ app.on('window-all-closed', function() {
 // Get ready for action
 app.on('ready', function() {
 
+
   // Create the main window
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -101,11 +102,18 @@ var BuildAppMenu = function() {
       submenu: [
         {
           label: 'About ' + appName,
-          role: 'about'
+          role: 'about',
+          click: function() {
+            Dialog.showMessageBox({
+              type: 'info',
+              title: 'About',
+              message: 'Simulator for Custom Application SDK\n\nThis is an alpha release.\n\n(c) 2016 flyandi'
+            })
+          }
         },
-        {
+        /*{
           label: 'Check for Updates',
-        },
+        },*/
         {
           type: 'separator'
         },
