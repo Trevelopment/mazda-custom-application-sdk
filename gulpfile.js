@@ -367,10 +367,6 @@ gulp.task('cli-clone', function(callback) {
 // (copy)
 gulp.task('cli-build', function() {
 
-    // copy resources
-    gulp.src(cliPathInput + "resources/**/*")
-        .pipe(gulp.dest(cliPathOutput));
-
     // prepare inclusions
     var inclusions = {
         'app.js': false,
@@ -387,14 +383,24 @@ gulp.task('cli-build', function() {
     });
 
     // replace inclusions with json
-    return gulp.src(cliPathInput + "js/casdk.js")
+    gulp.src(cliPathInput + "js/casdk.js")
         .pipe(replace(/__INCLUSIONS__/g, JSON.stringify(inclusions)))
         .pipe(gulp.dest(cliPathOutput));
+
+    // replace build time
+    gulp.src(cliPathInput + "resources/package.json")
+        .pipe(replace(/__BUILDTIME__/g, Date.now()))
+        .pipe(gulp.dest(cliPathOutput, {overwrite: true}));
+
+    // copy resources
+    gulp.src(cliPathInput + "resources/README.md")
+        .pipe(gulp.dest(cliPathOutput));
+
 
 });
 
 // (commit)
-gulp.task('cli-commit', function(callback) {
+gulp.task('cli-commit', function() {
 
     // commit
     process.chdir(cliPathOutput);
@@ -409,8 +415,6 @@ gulp.task('cli-commit', function(callback) {
     git.push('origin', 'master');
 
     process.chdir(__dirname);
-
-    return callback;
 });
 
 

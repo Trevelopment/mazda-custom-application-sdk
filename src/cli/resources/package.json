@@ -2,6 +2,7 @@
   "name": "casdk",
   "description": "Write and deploy applications for the Mazda Infotainment System",
   "version": "0.0.1",
+  "build-time": "__BUILDTIME__",
   "homepage": "http://flyandi.github.io/mazda-custom-application-sdk/",
   "author": "flyandi <flyandi@yahoo.com>",
   "repository": {
