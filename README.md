@@ -12,7 +12,7 @@ This project is under heavy development and we have entered the alpha testing ph
 
 ## Get Started
 
-There is not a whole documentation available yet but you can access some basic articles from the projects homepage.
+There is not a whole documentation available yet but you can access some basic articles from the projects WIKI.
 
 ## About this Repo
 
