@@ -10,6 +10,13 @@ High level features include access to the Vehicle Data, Multicontroller support,
 
 This project is under heavy development and we have entered the alpha testing phase.
 
+## Discussion
+
+The official discussion thread is on Mazda3Revolution:
+
+http://mazda3revolution.com/forums/2014-2016-mazda-3-skyactiv-audio-electronics/123882-custom-applications-sdk-write-deploy-your-own-applications.html#post1598946
+
+
 ## Get Started
 
 There is not a whole documentation available yet but you can access some basic articles from the projects WIKI.

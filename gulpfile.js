@@ -231,7 +231,7 @@ var uninstallDeployPathInput =  input + 'deploy/uninstall/',
 // (cleanup)
 gulp.task('uninstall-cleanup', function () {
     return del(
-        [installDeployPathOutput + '**/*']
+        [uninstallDeployPathOutput + '**/*']
     );
 });
 
