@@ -219,6 +219,42 @@ gulp.task('build-install', function(callback) {
 
 
 /**
+ * (build) uninstall deploy image
+ *
+ * These task builds the uninstall image
+ */
+
+
+var uninstallDeployPathInput =  input + 'deploy/uninstall/',
+    uninstallDeployPathOutput = output + 'deploy/uninstall/';
+
+// (cleanup)
+gulp.task('uninstall-cleanup', function () {
+    return del(
+        [installDeployPathOutput + '**/*']
+    );
+});
+
+// (copy)
+gulp.task('uninstall-copy', function() {
+
+    return gulp.src(uninstallDeployPathInput + "**/*", {base: uninstallDeployPathInput})
+        .pipe(gulp.dest(uninstallDeployPathOutput));
+});
+
+
+// (build)
+gulp.task('build-uninstall', function(callback) {
+    runSequence(
+        'uninstall-cleanup',
+        'uninstall-copy',
+        callback
+    );
+});
+
+
+
+/**
  * (build) builds the actual sd card content
  *
  */
@@ -454,6 +490,7 @@ gulp.task('default', function (callback) {
         'clean',
         'build-system',
         'build-install',
+        'build-uninstall',
         'build-sdcard',
         'build-docs',
         callback
