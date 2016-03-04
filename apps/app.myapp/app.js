@@ -60,7 +60,7 @@ CustomApplicationsHandler.register("app.myapp", new CustomApplication({
 		 * (title) The title of the application in the Application menu
 		 */
 
-		title: 'Hello World',
+		title: 'myapp',
 
 		/**
 		 * (statusbar) Defines if the statusbar should be shown
@@ -130,8 +130,6 @@ CustomApplicationsHandler.register("app.myapp", new CustomApplication({
 	 */
 
 	created: function() {
-
-		this.label = $("<label/>").html("Hello World").appendTo(this.canvas);
 
 	},
 
@@ -295,9 +293,6 @@ CustomApplicationsHandler.register("app.myapp", new CustomApplication({
 			 * MultiController's center was pushed down
 			 */
 			case this.SELECT:
-
-            this.label.css("color", ['red', 'green', 'blue', 'yellow'][(Math.floor(Math.random() * 4))]);
-
 
 				break;
 

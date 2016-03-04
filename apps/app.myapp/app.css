@@ -15,10 +15,3 @@
 [app="app.myapp"] {
 	background-color: #000000;
 }
-
-  [app="app.myapp"] label {
-    position: absolute;
-    top:100px;
-    left:100px;
-    color: red;
-  }
