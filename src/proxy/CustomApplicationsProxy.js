@@ -131,23 +131,25 @@
 
 			try {
 
-		       	var proxy = CustomApplicationsProxy;
+		    var proxy = CustomApplicationsProxy;
 
 			 	if(appData.mmuiEvent == "SelectCustomApplication") {
 
-			 		// exit if handler is not available
-			        if(typeof(CustomApplicationsHandler) == "undefined") return false;
+					// exit if handler is not available
+					if(typeof(CustomApplicationsHandler) != "undefined") {
 
-			        // exit if application is not registered
-			        if(!CustomApplicationsHandler.launch(appData)) return false;
+						// launch app
+						if(CustomApplicationsHandler.launch(appData)) {
 
-			        // clone app data
-			        appData = JSON.parse(JSON.stringify(appData));
+							// clone app data
+							appData = JSON.parse(JSON.stringify(appData));
 
-			        // set app data
-			        appData.appName = proxy.proxyAppName;
-			        appData.mmuiEvent = proxy.proxyMmuiEvent;
-			    }
+							// set app data
+							appData.appName = proxy.proxyAppName;
+							appData.mmuiEvent = proxy.proxyMmuiEvent;
+			  	 	}
+			  	}
+			  }
 
 			} catch(e) {
 				// do nothing

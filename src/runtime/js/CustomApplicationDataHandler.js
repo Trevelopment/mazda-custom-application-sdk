@@ -1,6 +1,6 @@
 /**
  * Custom Applications SDK for Mazda Connect Infotainment System
- * 
+ *
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
@@ -329,7 +329,7 @@ var CustomApplicationDataHandler = {
 
 	setValue: function(id, value) {
 
-		//CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});	
+		//CustomApplicationLog.debug(this.__name, "Setting new value", {id: id, available: this.data[id] ? true : false, value: value});
 
 		if(this.data[id]) {
 
@@ -496,13 +496,13 @@ var CustomApplicationDataHandler = {
 						//CustomApplicationLog.debug(this.__name, "Loading table data from file", {table: table.table, location: location});
 
 						// load
-						$.ajax(location, { 
+						$.ajax(location, {
 							timeout: table.always ? null : 250,
 
 							// success handler
 							success: function(data) {
 
-								//CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});	
+								//CustomApplicationLog.debug(this.__name, "Table data loaded", {table: table.table, loaded: loaded, toload: toload});
 
 								// execute parser
 								this.__parseFileData(table, data);
@@ -510,7 +510,7 @@ var CustomApplicationDataHandler = {
 								// completed
 								this.tables[tableIndex].__last = new Date();
 
-							}.bind(this), 
+							}.bind(this),
 
 							// all done handler - timeouts will be handled here as well
 							complete: function() {
@@ -520,15 +520,15 @@ var CustomApplicationDataHandler = {
 								finish();
 
 							}.bind(this),
-							
+
 						});
 
-	
+
 						break;
 
 					default:
 
-						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});	
+						CustomApplicationLog.error(this.__name, "Unsupported table type" , {table: table.table});
 
 						// just finish
 						loaded++;
