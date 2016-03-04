@@ -34,6 +34,7 @@ var VehicleDataBrand = {
 };
 
 var VehicleDataVehicleType = {
+	18: 'MX-5',
 	109: '3 Sport',
 	110: '3 Touring',
 	111: '3 Grand Touring',
