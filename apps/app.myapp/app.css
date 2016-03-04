@@ -1,0 +1,24 @@
+/**
+ * [myapp]
+ *
+ * @version: 0.0.1
+ * @author: [author]
+ * @description [description]
+ *
+ * [license]
+ */
+
+/**
+ * NOTICE: It's important that you target your application with the [app] attribute
+ */
+
+[app="app.myapp"] {
+	background-color: #000000;
+}
+
+  [app="app.myapp"] label {
+    position: absolute;
+    top:100px;
+    left:100px;
+    color: red;
+  }
