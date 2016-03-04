@@ -350,7 +350,7 @@ var CustomApplicationDataHandler = {
 				value = CustomApplicationDataProcessors[id](value);
 			}
 
-			// assign
+			// assign`
 			this.data[id].changed = this.data[id].value != value;
 			this.data[id].previous = this.data[id].value;
 			this.data[id].value = value;
