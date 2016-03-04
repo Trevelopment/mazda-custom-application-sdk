@@ -1,4 +1,4 @@
-# Initial s
+# Setup your system
 
 ## What you need
 
@@ -19,5 +19,12 @@ Get the latest version of the Simulator below:
 
 - For Windows please download the latest version here.
 
+## Install the Runtime
 
+Get the latest runtime from the release page and extract it to an easy to access folder.
 
+## Setup the Simulator
+
+Start the Simulator and choose the two options ```Choose Runtime Location``` and ```Choose Application Location```. 
+
+Select the paths where you have stored the runtime and applications respectivily.
