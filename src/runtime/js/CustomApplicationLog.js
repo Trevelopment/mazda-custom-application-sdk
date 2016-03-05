@@ -131,14 +131,12 @@ var CustomApplicationLog = {
 			}
 
 			try {
-				if(this.enabledConsole) {
-					 console.log(
-						CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
-						CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")),
-						"color:black",
-						CustomApplicationHelpers.sprintr("color:{0}", color)
-					);
-				}
+				console.log(
+					CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
+					CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")),
+					"color:black",
+					CustomApplicationHelpers.sprintr("color:{0}", color)
+				);
 			} catch(e) {
 				// do nothing
 			}

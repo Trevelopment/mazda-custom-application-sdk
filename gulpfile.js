@@ -492,7 +492,7 @@ gulp.task('default', function (callback) {
         'build-install',
         'build-uninstall',
         'build-sdcard',
-        'build-docs',
+        //'build-docs',
         callback
     );
 

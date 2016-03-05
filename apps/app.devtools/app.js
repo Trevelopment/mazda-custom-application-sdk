@@ -197,8 +197,6 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
         var itemHeight = this.canvas.find(".panel.active div").outerHeight(true) * 2;
 
-        console.log(itemHeight);
-
         switch(eventId) {
 
             /**
