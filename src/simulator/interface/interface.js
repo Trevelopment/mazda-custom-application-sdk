@@ -110,14 +110,14 @@ var fs = require("fs");
 				this.loadRuntime(function() {
 					this.showFromRecover();
 				}.bind(this));
-		    }.bind(this));
+		  }.bind(this));
 
 		    ipc.on('appsLocation', function(location) {
 				localStorage.setItem("appsLocation", location);
 				this.loadApplications(function() {
 					this.showFromRecover();
 				}.bind(this));
-		    }.bind(this));
+		  }.bind(this));
 
 		    // initialize storage
 			$(window).on('storage', function (e) {

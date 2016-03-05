@@ -142,11 +142,15 @@
 						if(CustomApplicationsHandler.launch(appData)) {
 
 							// clone app data
-							appData = JSON.parse(JSON.stringify(appData));
+							try {
+								appData = JSON.parse(JSON.stringify(appData));
 
-							// set app data
-							appData.appName = proxy.proxyAppName;
-							appData.mmuiEvent = proxy.proxyMmuiEvent;
+								// set app data
+								appData.appName = proxy.proxyAppName;
+								appData.mmuiEvent = proxy.proxyMmuiEvent;
+							} catch(e) {
+								// do nothing
+							}
 			  	 	}
 			  	}
 			  }

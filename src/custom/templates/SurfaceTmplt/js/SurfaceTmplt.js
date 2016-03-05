@@ -104,32 +104,22 @@ function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
     // wakeup
     this.application.__wakeup(this.divElt);
 
-    // finish application creation
-    setTimeout(function() {
+    // set framework specifics
+    if(this.properties.statusBarVisible) {
 
-        // there is no really work around for this. The templates context is never changed and
-        // so none of the standard template callbacks are called. Anything else would require
-        // to change the GUIFramework which would be awful :-)
+        // execute statusbar handler
+        framework.common.statusBar.setAppName(this.application.getStatusbarTitle());
 
-        // set framework specifics
-        if(this.properties.statusBarVisible) {
+        // execute custom icon
+        var icon = this.application.getStatusbarIcon();
 
-            // execute statusbar handler
-            framework.common.statusBar.setAppName(this.application.getStatusbarTitle());
+        if(icon) framework.common.statusBar.setDomainIcon(icon);
 
-            // execute custom icon
-            var icon = this.application.getStatusbarIcon();
+        // adjust home button
+        framework.common.statusBar.showHomeBtn(this.application.getStatusbarHomeButton());
 
-            if(icon) framework.common.statusBar.setDomainIcon(icon);
-
-            // adjust home button
-            framework.common.statusBar.showHomeBtn(this.application.getStatusbarHomeButton());
-
-        }
-
-    }.bind(this), 50);
+    }
 }
-
 
 
 /**

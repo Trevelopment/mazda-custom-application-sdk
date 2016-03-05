@@ -434,20 +434,5 @@ CustomApplicationsHandler.register("app.vdd", new CustomApplication({
 
     },
 
-    /**
-     * (scrollElement)
-     */
-
-    scrollElement: function(element, distance, animated, callback) {
-
-        var distance = element.scrollTop() + distance;
-
-        element.scrollTop(distance);
-
-        callback(element.scrollTop());
-
-    },
-
-
 
 }));

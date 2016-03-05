@@ -970,7 +970,7 @@ var CustomApplication = (function(){
 		    }
 
 		    // process new context
-			this.canvas.find("[context]").attr("context", "lost");
+				this.canvas.find("[context]").attr("context", "lost");
 
 		   	// get new target
 		   	var target = this.canvas.find(this.sprintr("[contextIndex={0}]", index)),
@@ -1002,6 +1002,21 @@ var CustomApplication = (function(){
 
 	    	// set current context
 	    	this.__currentContextIndex = index;
+	    },
+
+
+	    /**
+	     * (scrollElement)
+	     */
+
+	    scrollElement: function(element, distance, animated, callback) {
+
+	        var distance = element.scrollTop() + distance;
+
+	        element.scrollTop(distance);
+
+	        callback(element.scrollTop());
+
 	    },
 
 	};

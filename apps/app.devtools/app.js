@@ -140,7 +140,11 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
     created: function() {
 
         // create log buffer
-        this.localLogBuffer = [];
+        this.localLogBuffer = {
+            INFO: [],
+            DEBUG: [],
+            ERROR: []
+        };
 
         // set local ref
         var that = this;
@@ -162,10 +166,6 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
                 DevLogger.log('DEBUG', id ? id : DevLogger.defaultId, message);
             },
 
-            watch: function(message, id) {
-                DevLogger.log('WATCH', id ? id : DevLogger.defaultId, message);
-            },
-
             log: function(level, id, message, color) {
                 that.receiveLog(level, id, message, color);
             }
@@ -182,7 +182,7 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
         this.createInterface();
     },
 
-  
+
     /***
      *** Events
      ***/
@@ -195,6 +195,9 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
     onControllerEvent: function(eventId) {
 
+        var itemHeight = this.canvas.find(".panel.active div").outerHeight(true) * 2;
+
+        console.log(itemHeight);
 
         switch(eventId) {
 
@@ -204,7 +207,7 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
             case "cw":
 
-                //this.scrollElement(this.canvas.find(".panel.active"), itemHeight);
+                this.scrollElement(this.canvas.find(".panel.active"), itemHeight);
 
                 break;
 
@@ -214,19 +217,7 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
             case "ccw":
 
-                //this.scrollElement(this.canvas.find(".panel.active"), -1 * itemHeight);
-
-                break;
-
-            /**
-             * Middle Press
-             */
-
-            case "selectStart":
-
-                this.buffer = [];
-
-                this.update();
+                this.scrollElement(this.canvas.find(".panel.active"), -1 * itemHeight);
 
                 break;
 
@@ -234,7 +225,32 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
     },
 
-   
+    /**
+     * (event) onContextEvent
+     *
+     * Called when the context of an element was changed
+     */
+
+    onContextEvent: function(eventId, context, element) {
+
+        // remember the scrolling position
+        var active = this.canvas.find(".panel.active");
+        if(active.length) {
+            this.panelScrollPositions[active.attr("index")] = active.scrollTop();
+        }
+
+        // show new panel
+        var active = this.showPanel(element.attr("index"));
+
+        // set position
+        var scrollTop = active.get(0).scrollHeight;
+        if(this.panelScrollPositions[element.attr("index")]) {
+            scrollTop = this.panelScrollPositions[element.attr("index")];
+        }
+        active.scrollTop(scrollTop);
+    },
+
+
 
     /***
      *** Applicaton specific methods
@@ -251,12 +267,15 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
         this.menu = $("<div/>").addClass("tabs").appendTo(this.canvas);
 
         // create tabs
+        this.panelScrollPositions = [];
         this.panelData = [
-            {name: 'Local', panel: this.showPanelConsole},
-            {name: 'System', panel: this.showPanelSystemConsole},
-            {name: 'Storages', panel: this.showPanelStorages},
+            {name: 'Info', target: 'output', level: 'INFO'},
+            {name: 'Error', target: 'output', level: 'ERROR'},
+            {name: 'Debug', target: 'output', level: 'DEBUG'},
+            {name: 'Storages', storage: true},
 
-        ];
+        ],
+        this.panels = [];
 
         this.panelData.forEach(function(panel, index) {
 
@@ -265,6 +284,16 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
             // add divider
             this.menu.append($("<span/>").addClass("divider"));
+
+            // add positions
+            this.panelScrollPositions.push(0);
+
+            // create panel
+            this.panels.push($("<div/>").addClass("panel").addClass(panel.target).attr({
+                index: index,
+                level: panel.level,
+            }).appendTo(this.canvas));
+
 
         }.bind(this));
 
@@ -275,46 +304,19 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
 
         // remove last divider
         this.menu.find("span.divider:last").remove();
-
-        // show always first tab
-        this.showPanelConsole();
     },
 
     /**
-     * (clearPanel)
+     * (show/clear Panel)
      */
 
-    clearPanel: function() {
+    showPanel: function(index) {
 
-        this.activePanel = false;
+        this.canvas.find(".panel").removeClass("active").hide();
 
-        this.canvas.find(".panel").remove();
+        return this.canvas.find(".panel[index=" + index + "]").addClass("active").show();
     },
 
-    /**
-     * (showPanelConsole)
-     */
-
-    showPanelConsole: function() {
-
-        this.clearPanel();
-        this.activePanel = 0;
-
-        // create output panel
-        this.output = $("<div/>").addClass("panel output").appendTo(this.canvas);
-
-        this.updatePanelConsole();
-
-
-    },
-
-    updatePanelConsole: function() {
-
-        if(this.activePanel !== 0) return;
-
-        this.output.empty().append(this.localLogBuffer);
-
-    },
 
     /**
      * (receiveLog)
@@ -330,32 +332,34 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
         // go ahead
         var item = $("<div/>").attr("level", level);
 
-        var d = new Date(), 
+        var d = new Date(),
             h = Math.abs(d.getHours()),
             m = Math.abs(d.getMinutes()),
             s = Math.abs(d.getSeconds());
 
         item.append($("<span/>").append(
             (h > 9 ? "" : "0") + h,
+            ':',
             (m > 9 ? "" : "0") + m,
+            ':',
             (s > 9 ? "" : "0") + s
         ));
         item.append($("<span/>").addClass(level).append(level));
         item.append($("<span/>").append(id));
-        item.append($("<span/>").addClass(level).append(message));
+        item.append($("<span/>").append(message));
 
         // add to output
-        this.localLogBuffer.push(item);
+        this.localLogBuffer[level].push(item);
 
-        if(this.localLogBuffer.length > 50) {
-            while(this.localLogBuffer.length > 50) this.localLogBuffer.shift();
+        if(this.localLogBuffer[level].length > 50) {
+            while(this.localLogBuffer[level].length > 50) this.localLogBuffer[level].shift();
         }
 
         // update
-        this.updatePanelConsole();
+        this.canvas.find(".panel[level=" + level + "]").empty().append(this.localLogBuffer[level]);
 
     },
 
-   
+
 
 }));

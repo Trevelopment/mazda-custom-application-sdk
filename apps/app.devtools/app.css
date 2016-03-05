@@ -76,6 +76,7 @@
 		bottom:0;
 		right:0;
 		overflow:hidden;
+		display:none;
 	}
 
 		[app="app.devtools"] .panel .output {
@@ -93,25 +94,28 @@
 
 
 			[app="app.devtools"] .output div {
-				padding:3px;
+				border-bottom:1px solid #151515;
+				padding-bottom:4px;
+				word-wrap:break-word;
 			}
 
 				[app="app.devtools"] .output div span {
 					margin-right:5px;
 					display:inline-block;
+					font-size:14px;
+					word-wrap:break-word;
 				}
 
 				[app="app.devtools"] .output div span:nth-child(1) {
-					width:50px;
-					font-size:10px;
+					width:55px;
+					padding-left:3px;
 				}
 
 				[app="app.devtools"] .output div span:nth-child(2) {
 					background:#616469;
-					width:40px;
+					width:50px;
 					text-align:center;
 					padding:2px;
-					font-size:13px;
 					border-radius:2px;
 				}
 
@@ -138,8 +142,7 @@
 				[app="app.devtools"] .output div span:nth-child(3) {
 					background:#515151;
 					color:#fff;
-					padding:2px;
-					font-size:13px;
+					padding:2px 5px;
 					border-radius:2px;
 				}
 
