@@ -90,7 +90,7 @@ var CustomApplicationLog = {
 
 	__message: function(level, color, values) {
 
-		if(this.enabledLogger || this.enabledConsole) {
+		if(this.enabledLogger || this.enabledConsole || typeof(DevLogger) != "undefined") {
 
 			var msg = [];
 			if(values.length > 1) {
@@ -131,12 +131,14 @@ var CustomApplicationLog = {
 			}
 
 			try {
-				console.log(
-					CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
-					CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")),
-					"color:black",
-					CustomApplicationHelpers.sprintr("color:{0}", color)
-				);
+				if(this,enabledConsole) {
+					console.log(
+						CustomApplicationHelpers.sprintr("%c[{0}] [{1}] ", (new Date()).toDateString(), values[0]) +
+						CustomApplicationHelpers.sprintr("%c{0}", msg.join(" ")),
+						"color:black",
+						CustomApplicationHelpers.sprintr("color:{0}", color)
+					);
+				}
 			} catch(e) {
 				// do nothing
 			}
