@@ -77,11 +77,12 @@ window.CustomApplicationsProxy = {
 			// verify bootstrapping - yeah long name
 			if(systemApp) {
 
-				// set to strap - if everything fails - no harm is done :-)
-				this.bootstrapped = true;
 
 				// let's boostrap
 				try {
+
+					// set to strap - if everything fails - no harm is done :-)
+					this.bootstrapped = true;
 
 					// overwrite list2 handler
 					systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(systemApp);
@@ -107,12 +108,11 @@ window.CustomApplicationsProxy = {
 					// assign template transition
 					framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
 
-					// kick off loader - implemention only for sdcard right now
+					// kick off loader
 					this.prepareCustomApplications();
 
 				} catch(e) {
 					// bootstrapping process failed - we just leave it here
-					result = false;
 				}
 			}
 		}
@@ -127,8 +127,6 @@ window.CustomApplicationsProxy = {
 
 		try {
 
-	    var proxy = CustomApplicationsProxy;
-
 		 	if(appData.mmuiEvent == "SelectCustomApplication") {
 
 				// exit if handler is not available
@@ -142,14 +140,14 @@ window.CustomApplicationsProxy = {
 							appData = JSON.parse(JSON.stringify(appData));
 
 							// set app data
-							appData.appName = proxy.proxyAppName;
-							appData.mmuiEvent = proxy.proxyMmuiEvent;
+							appData.appName = CustomApplicationsProxy.proxyAppName;
+							appData.mmuiEvent = CustomApplicationsProxy.proxyMmuiEvent;
 						} catch(e) {
 							// do nothing
 						}
-		  	 	}
+		  	 		}
+		  		}
 		  	}
-		  }
 
 		} catch(e) {
 			// do nothing
@@ -190,26 +188,25 @@ window.CustomApplicationsProxy = {
 		
 			try {
 
-				var proxy = CustomApplicationsProxy,
-					jsObjectModified = jsObject;
+				var proxy = CustomApplicationsProxy;
 
 				// validate routing message
-				switch(jsObjectModified.msgType) {
+				switch(jsObject.msgType) {
 
 					// magic switch
 					case 'ctxtChg':
-						if(jsObjectModified.uiaId == proxy.proxyAppName) {
-							jsObjectModified.uiaId = proxy.targetAppName;
-							jsObjectModified.ctxtId = proxy.targetAppContext;
+						if(jsObject.uiaId == proxy.proxyAppName) {
+							jsObject.uiaId = proxy.targetAppName;
+							jsObject.ctxtId = proxy.targetAppContext;
 						}
 						break;
 
 					// check if our proxy app is in the focus stack
 					case 'focusStack':
 
-						if(jsObjectModified.appIdList && jsObjectModified.appIdList.length) {
-							for(var i = 0; i < jsObjectModified.appIdList.length; i++) {
-								var appId = jsObjectModified.appIdList[i];
+						if(jsObject.appIdList && jsObject.appIdList.length) {
+							for(var i = 0; i < jsObject.appIdList.length; i++) {
+								var appId = jsObject.appIdList[i];
 								if(appId.id == proxy.proxyAppName) {
 									appId.id = proxy.targetAppName;
 								}
@@ -219,8 +216,8 @@ window.CustomApplicationsProxy = {
 					case 'msg':
 					case 'alert':
 
-						if(jsObjectModified.uiaId == proxy.proxyAppName) {
-							jsObjectModified.uiaId = proxy.targetAppName;
+						if(jsObject.uiaId == proxy.proxyAppName) {
+							jsObject.uiaId = proxy.targetAppName;
 						}
 
 						break;
@@ -228,9 +225,6 @@ window.CustomApplicationsProxy = {
 						// do nothing
 						break;
 				}
-
-				// assign to original jsObject
-				jsObject = jsObjectModified;
 
 			} catch(e) {
 				// do nothing
