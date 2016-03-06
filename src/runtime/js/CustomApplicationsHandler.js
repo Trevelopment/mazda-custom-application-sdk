@@ -220,6 +220,8 @@ var CustomApplicationsHandler = {
 
 			if(this.applications[applicationId]) {
 
+				this.currentApplicationId = applicationId;
+
 				return this.applications[applicationId];
 			}
 
