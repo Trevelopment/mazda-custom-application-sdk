@@ -200,6 +200,7 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
 
     },
 
+
     /***
      *** Events
      ***/

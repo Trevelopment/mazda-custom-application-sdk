@@ -182,6 +182,11 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
         this.createInterface();
     },
 
+    focused: function() {
+        
+        console.log(JSON.stringify(framework._sharedDataAttributes));
+    },
+
 
     /***
      *** Events
