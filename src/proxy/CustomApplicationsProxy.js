@@ -24,173 +24,170 @@
  *
  */
 
+
+/**
+ * (GlobalError)
+ */
+
+window.onerror = function() {
+	console.error(arguments);
+}
+
+
 /**
  * (CustomApplicationsProxy)
  *
  * Registers itself between the JCI system and CustomApplication runtime.
  */
 
+window.CustomApplicationsProxy = {
 
-(function() {
+	/**
+	 * (locals)
+	 */
 
-	// global value, indicating the bootstrapping status - avoid infinite loop
-	if(typeof(window.CustomApplicationsProxyBootstrapped) == "undefined") {
-		window.CustomApplicationsProxyBootstrapped = false;
-	};
+	debug: false,
+	bootstrapped: false,
 
-	// Proxy class
-	window.CustomApplicationsProxy = {
+	systemAppId: 'system',
+	systemAppCategory: 'Applications',
 
-		/**
-		 * (locals)
-		 */
+	proxyAppName: 'vdt',
+	proxyAppContext: 'DriveChartDetails',
+	proxyMmuiEvent: 'SelectDriveRecord',
 
-		debug: false,
-
-		systemAppId: 'system',
-		systemAppCategory: 'Applications',
-
-		proxyAppName: 'vdt',
-		proxyAppContext: 'DriveChartDetails',
-		proxyMmuiEvent: 'SelectDriveRecord',
-
-		targetAppName: 'custom',
-		targetAppContext: 'Surface',
-
-		isBootstrapped: false,
+	targetAppName: 'custom',
+	targetAppContext: 'Surface',
 
 
-		/**
-		 * (bootstrap)
-		 *
-		 * Bootstraps the JCI system
-		 */
+	/**
+	 * (bootstrap)
+	 *
+	 * Bootstraps the JCI system
+	 */
 
-		 bootstrap: function() {
+	 bootstrap: function() {
 
-			// verify that core objects are available
-			if(typeof framework === 'object' && framework._currentAppUiaId === this.systemAppId) {
+		// verify that core objects are available
+		if(typeof framework === 'object' && framework._currentAppUiaId === this.systemAppId && this.bootstrapped === false) {
 
-				// retrieve system app
-				var systemApp = framework.getAppInstance(this.systemAppId),
-					result = true;
+			// retrieve system app
+			var systemApp = framework.getAppInstance(this.systemAppId);
 
-				// verify bootstrapping - yeah long name
-				if(!window.CustomApplicationsProxyBootstrapped) {
+			// verify bootstrapping - yeah long name
+			if(systemApp) {
 
-					// set to strap - if everything fails - no harm is done :-)
-					window.CustomApplicationsProxyBootstrapped = true;
+				// set to strap - if everything fails - no harm is done :-)
+				this.bootstrapped = true;
 
-					// let's boostrap
-					try {
+				// let's boostrap
+				try {
 
-						// overwrite list2 handler
-						systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(systemApp);
+					// overwrite list2 handler
+					systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(systemApp);
 
-						// for usb changes
-						if(typeof(systemApp.overwriteStatusMenuUSBAudioMsgHandler) == "undefined") {
-							systemApp.overwriteStatusMenuUSBAudioMsgHandler = systemApp._StatusMenuUSBAudioMsgHandler;
-							systemApp._StatusMenuUSBAudioMsgHandler = this.StatusMenuUSBAudioMsgHandler.bind(systemApp);
-						}
-
-						// overwrite framework route handler
-						if(typeof(framework.overwriteRouteMmmuiMsg) == "undefined") {
-							framework.overwriteRouteMmmuiMsg = framework.routeMmuiMsg;
-							framework.routeMmuiMsg = this.routeMmuiMsg.bind(framework);
-						}
-
-						// ovewrite framework MMUI sender
-						if(typeof(framework.overwriteSendEventToMmui) == "undefined") {
-							framework.overwriteSendEventToMmui = framework.sendEventToMmui;
-							framework.sendEventToMmui = this.sendEventToMmui.bind(framework);
-						}
-
-						// assign template transition
-						framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
-
-					} catch(e) {
-						// bootstrapping process failed - we just leave it here
-						result = false;
+					// for usb changes
+					if(typeof(systemApp.overwriteStatusMenuUSBAudioMsgHandler) == "undefined") {
+						systemApp.overwriteStatusMenuUSBAudioMsgHandler = systemApp._StatusMenuUSBAudioMsgHandler;
+						systemApp._StatusMenuUSBAudioMsgHandler = this.StatusMenuUSBAudioMsgHandler.bind(systemApp);
 					}
-				}
 
-				// process if no error occured
-				if(result) {
+					// overwrite framework route handler
+					if(typeof(framework.overwriteRouteMmmuiMsg) == "undefined") {
+						framework.overwriteRouteMmmuiMsg = framework.routeMmuiMsg;
+						framework.routeMmuiMsg = this.routeMmuiMsg.bind(framework);
+					}
+
+					// ovewrite framework MMUI sender
+					if(typeof(framework.overwriteSendEventToMmui) == "undefined") {
+						framework.overwriteSendEventToMmui = framework.sendEventToMmui;
+						framework.sendEventToMmui = this.sendEventToMmui.bind(framework);
+					}
+
+					// assign template transition
+					framework.transitionsObj._genObj._TEMPLATE_CATEGORIES_TABLE.SurfaceTmplt = 'Detail with UMP';
+
 					// kick off loader - implemention only for sdcard right now
 					this.prepareCustomApplications();
+
+				} catch(e) {
+					// bootstrapping process failed - we just leave it here
+					result = false;
 				}
 			}
-		},
+		}
+	},
 
 
-		/**
-		 * (Overwrite) menuItemSelectCallback
-		 */
+	/**
+	 * (Overwrite) menuItemSelectCallback
+	 */
 
-		menuItemSelectCallback: function(listCtrlObj, appData, params) {
+	menuItemSelectCallback: function(listCtrlObj, appData, params) {
 
-			try {
+		try {
 
-		    var proxy = CustomApplicationsProxy;
+	    var proxy = CustomApplicationsProxy;
 
-			 	if(appData.mmuiEvent == "SelectCustomApplication") {
+		 	if(appData.mmuiEvent == "SelectCustomApplication") {
 
-					// exit if handler is not available
-					if(typeof(CustomApplicationsHandler) != "undefined") {
+				// exit if handler is not available
+				if(typeof(CustomApplicationsHandler) != "undefined") {
 
-						// launch app
-						if(CustomApplicationsHandler.launch(appData)) {
+					// launch app
+					if(CustomApplicationsHandler.launch(appData)) {
 
-							// clone app data
-							try {
-								appData = JSON.parse(JSON.stringify(appData));
+						// clone app data
+						try {
+							appData = JSON.parse(JSON.stringify(appData));
 
-								// set app data
-								appData.appName = proxy.proxyAppName;
-								appData.mmuiEvent = proxy.proxyMmuiEvent;
-							} catch(e) {
-								// do nothing
-							}
-			  	 	}
-			  	}
-			  }
+							// set app data
+							appData.appName = proxy.proxyAppName;
+							appData.mmuiEvent = proxy.proxyMmuiEvent;
+						} catch(e) {
+							// do nothing
+						}
+		  	 	}
+		  	}
+		  }
 
-			} catch(e) {
-				// do nothing
-			}
+		} catch(e) {
+			// do nothing
+		}
 
-			// pass to original handler
-			this._menuItemSelectCallback(listCtrlObj, appData, params);
-		},
-
-
-		/**
-		 * (Overwrite) sendEventToMmui
-		 */
-
-		sendEventToMmui: function(uiaId, eventId, params, fromVui) {
-
-    		var proxy = CustomApplicationsProxy,
-    			currentUiaId = this.getCurrentApp(),
-    			currentContextId = this.getCurrCtxtId();
-
-    		// proxy overwrites
-		    if(currentUiaId == proxy.targetAppName) {
-		    	currentUiaId = this.proxyAppName;
-		    	currentContextId = this.proxyAppContext;
-		    }
-
-		    // pass to original handler
-		    this.overwriteSendEventToMmui(uiaId, eventId, params, fromVui, currentUiaId, currentContextId);
-		},
+		// pass to original handler
+		this._menuItemSelectCallback(listCtrlObj, appData, params);
+	},
 
 
-		/**
-		 * (Overwrite) routeMmuiMsg
-		 */
+	/**
+	 * (Overwrite) sendEventToMmui
+	 */
 
-		routeMmuiMsg: function(jsObject) {
+	sendEventToMmui: function(uiaId, eventId, params, fromVui) {
 
+		var currentUiaId = this.getCurrentApp(),
+			currentContextId = this.getCurrCtxtId();
+
+		// proxy overwrites
+	    if(typeof(CustomApplicationsHandler) === 'object' && currentUiaId == CustomApplicationsProxy.targetAppName) {
+	    	currentUiaId = CustomApplicationsProxy.proxyAppName;
+	    	currentContextId = CustomApplicationsProxy.proxyAppContext;
+	    }
+
+	    // pass to original handler
+	    framework.overwriteSendEventToMmui(uiaId, eventId, params, fromVui, currentUiaId, currentContextId);
+	},
+
+
+	/**
+	 * (Overwrite) routeMmuiMsg
+	 */
+
+	routeMmuiMsg: function(jsObject) {
+
+		if(typeof(CustomApplicationsHandler) === 'object') {
+		
 			try {
 
 				var proxy = CustomApplicationsProxy,
@@ -238,130 +235,130 @@
 			} catch(e) {
 				// do nothing
 			}
+		}
 
-			this.overwriteRouteMmmuiMsg(jsObject);
-		},
-
-
-		/**
-		 * (Overwrite) StatusMenuUSBAudioMsgHandler
-		 */
-
-		StatusMenuUSBAudioMsgHandler: function(msg) {
-
-			// pass to original handler
-			this.overwriteStatusMenuUSBAudioMsgHandler(msg);
-		},
+		// pass to framework
+		framework.overwriteRouteMmmuiMsg(jsObject);
+	},
 
 
-		/**
-		 * (prepareCustomApplications)
-		 */
+	/**
+	 * (Overwrite) StatusMenuUSBAudioMsgHandler
+	 */
 
-		prepareCustomApplications: function() {
+	StatusMenuUSBAudioMsgHandler: function(msg) {
 
-		    this.loadCount = 0;
-		    setTimeout(function() {
-		        this.loadCustomApplications();
-		    }.bind(this), this.debug ? 500 : 15000); // first attempt wait 5s - the system might be booting still anyway
-
-		},
+		// pass to original handler
+		this.overwriteStatusMenuUSBAudioMsgHandler(msg);
+	},
 
 
-		/**
-		 * (loadCustomApplications)
-		 */
+	/**
+	 * (prepareCustomApplications)
+	 */
 
-		loadCustomApplications: function() {
+	prepareCustomApplications: function() {
 
-		    try {
+	    this.loadCount = 0;
+	    setTimeout(function() {
+	        this.loadCustomApplications();
+	    }.bind(this), this.debug ? 500 : 5000); // first attempt wait 5s - the system might be booting still anyway
 
-		        if(typeof(CustomApplicationsHandler) == "undefined") {
+	},
 
-		        	// clear
-		        	clearTimeout(this.loadTimer);
 
-		            // try to load the script
-		            utility.loadScript("apps/custom/runtime/runtime.js", false, function() {
+	/**
+	 * (loadCustomApplications)
+	 */
 
-		            	clearTimeout(this.loadTimer);
+	loadCustomApplications: function() {
 
-		                this.initCustomApplicationsDataList();
+	    try {
 
-		            }.bind(this));
+	        if(typeof(CustomApplicationsHandler) === 'undefined') {
 
-		            // safety timer
-		            this.loadTimer = setTimeout(function() {
+	        	// clear
+	        	clearTimeout(this.loadTimer);
 
-		                if(typeof(CustomApplicationsHandler) == "undefined") {
+	            // try to load the script
+	            utility.loadScript("apps/custom/runtime/runtime.js", false, function() {
 
-		                    this.loadCount = this.loadCount + 1;
+	            	clearTimeout(this.loadTimer);
 
-		                    // 20 attempts or we forget it - that's almost 3min
-		                    if(this.loadCount < 20) {
+	                this.initCustomApplicationsDataList();
 
-		                        this.loadCustomApplications();
-		                    }
-		                }
+	            }.bind(this));
 
-		            }.bind(this), 10000);
+	            // safety timer
+	            this.loadTimer = setTimeout(function() {
 
-		        }
+	                if(typeof(CustomApplicationsHandler) == "undefined") {
 
-		    } catch(e) {
-		        // if this fails, we won't attempt again because there could be issues with the actual handler
-		        setTimeout(function() {
+	                    this.loadCount = this.loadCount + 1;
 
-		            this.loadCustomApplications();
+	                    // 20 attempts or we forget it - that's almost 3min
+	                    if(this.loadCount < 20) {
 
-		        }.bind(this), 10000);
-		    }
-		},
+	                        this.loadCustomApplications();
+	                    }
+	                }
 
-		/**
-		 * (initCustomApplicationsDataList)
-		 */
+	            }.bind(this), 10000);
 
-		initCustomApplicationsDataList: function() {
-		    // extend with custom applications
-		    try {
-		        if(typeof(CustomApplicationsHandler) != "undefined") {
+	        }
 
-		            CustomApplicationsHandler.retrieve(function(items) {
+	    } catch(e) {
+	        // if this fails, we won't attempt again because there could be issues with the actual handler
+	        setTimeout(function() {
 
-		            	var systemApp = framework.getAppInstance(this.systemAppId);
+	            this.loadCustomApplications();
 
-		                items.forEach(function(item) {
+	        }.bind(this), 10000);
+	    }
+	},
 
-		                    systemApp._masterApplicationDataList.items.push(item);
+	/**
+	 * (initCustomApplicationsDataList)
+	 */
 
-		                    framework.localize._appDicts[this.systemAppId][item.appData.appName.replace(".", "_")] = item.title;
+	initCustomApplicationsDataList: function() {
+	    // extend with custom applications
+	    try {
+	        if(typeof(CustomApplicationsHandler) != "undefined") {
 
-		                    framework.common._contextCategory._contextCategoryTable[item.appData.appName + '.*'] = 'Applications';
+	            CustomApplicationsHandler.retrieve(function(items) {
 
-		                }.bind(this));
+	            	var systemApp = framework.getAppInstance(this.systemAppId);
 
-		            }.bind(this));
-		        }
-		    } catch(e) {
-		    	// failed to register applications
-		    }
-		},
+	                items.forEach(function(item) {
 
-	}
+	                    systemApp._masterApplicationDataList.items.push(item);
 
-}.call(window));
+	                    framework.localize._appDicts[this.systemAppId][item.appData.appName.replace(".", "_")] = item.title;
+
+	                    framework.common._contextCategory._contextCategoryTable[item.appData.appName + '.*'] = 'Applications';
+
+	                }.bind(this));
+
+	            }.bind(this));
+	        }
+	    } catch(e) {
+	    	// failed to register applications
+	    }
+	},
+
+}
+
 
 /**
  * Runtime Caller
  */
 
-(function () {
-	if(window.opera) {
-		window.opera.addEventListener('AfterEvent.load', function (e) {
-			CustomApplicationsProxy.bootstrap();
-		});
-	}
-})();
+if(window.opera) {
+	window.opera.addEventListener('AfterEvent.load', function (e) {
+		CustomApplicationsProxy.bootstrap();
+	});
+}
+
 
 /** EOF **/
