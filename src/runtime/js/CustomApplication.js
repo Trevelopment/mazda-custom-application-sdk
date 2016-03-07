@@ -1019,6 +1019,22 @@ var CustomApplication = (function(){
 
 	    },
 
+	    /**
+	     * Enables WiFi and tries to obtain an internet connection
+	     * 
+	     * @param function callback - A callback that is executed once the internet connection is established
+	     * @return void
+	     */
+
+	    requireInternet: function() {
+	    	/* from netmgmtApp.ks
+	    	SelectNetworkManagement
+	    	
+	    	var params = { payload : { offOn : offOn } };
+                framework.sendEventToMmui(this.uiaId, 'SetWifiConnection', params);
+             */
+	    }
+
 	};
 
 	return CustomApplication;

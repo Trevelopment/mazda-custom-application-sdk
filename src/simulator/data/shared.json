@@ -1,0 +1,29 @@
+{
+  "vehsettingsHudInstalled": {
+    "value": false,
+    "subscribers": [
+      "syssettings",
+      "audiosettings"
+    ]
+  },
+  "syssettingsToolTips": {
+    "value": true,
+    "subscribers": []
+  },
+  "syssettingsVehicleType": {
+    "value": "SETTINGS_VehicleModelType_J71",
+    "subscribers": []
+  },
+  "syssettingsDestinationCode": {
+    "value": "SETTINGS_Destination_NA",
+    "subscribers": []
+  },
+  "vehsettingsIgnitionStatus": {
+    "value": false,
+    "subscribers": []
+  },
+  "vehsettingsCanStatus": {
+    "value": true,
+    "subscribers": []
+  }
+}

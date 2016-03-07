@@ -81,22 +81,31 @@ if [ -e "${INSTALLSH}/install.sh" ]; then
 	fi
 
 	if [ ! -f /jci/opera/opera_home/pstorage/psindex.dat.casdk ]; then
-		# make a copy
-		cp -a /jci/opera/opera_home/pstorage/psindex.dat /jci/opera/opera_home/pstorage/psindex.dat.casdk
 
-		# modify
-		sed -i 's/pstorage\/00/\/tmp\/mnt\/data_persist\/storage\/pstorage\/00/g' /jci/opera/opera_home/pstorage/psindex.dat
+		# check if system file exists
+		if [ -f /jci/opera/opera_home/pstorage/psindex.dat ]; then
+			# make a copy
+			cp -a /jci/opera/opera_home/pstorage/psindex.dat /jci/opera/opera_home/pstorage/psindex.dat.casdk
+		else 
+			# create directory
+			mkdir -p /jci/opera/opera_home/pstorage/
+		fi
+
+		# copy psindex file
+		cp -a storage/psindex.dat /jci/opera/opera_home/pstorage/
 	fi
 
 	# disable fps counter - it's really annoying! So I am doing you a favor here.
 	if [ -f /jci/opera/opera_dir/userjs/fps.js ]; then
-		mv -a /jci/opera/opera_dir/userjs/fps.js /jci/opera/opera_dir/userjs/fps.js.casdk
+		mv /jci/opera/opera_dir/userjs/fps.js /jci/opera/opera_dir/userjs/fps.js.casdk
 	fi
 
 	# install data reader files
-	mkdir -p /jci/casdk
-	cp -a casdk/scripts/* /jci/casdk
-	find /jci/casdk/ -name "vdt*.sh" -exec chmod 755 {} \;
+	if [ ! -e /jci/casdk ]; then
+		mkdir -p /jci/casdk
+		cp -a casdk/scripts/* /jci/casdk
+		find /jci/casdk/ -name "vdt*.sh" -exec chmod 755 {} \;
+	fi
 
 	# copy initialization file
 	if [ ! -f /jci/scripts/stage_wifi.sh.casdk ]; then
@@ -113,15 +122,15 @@ if [ -e "${INSTALLSH}/install.sh" ]; then
 	# create custom folder
 	if [ ! -e /jci/gui/apps/custom ]; then
 		mkdir -p /jci/gui/apps/custom
-	fi
 
-	# create symlinks to various destinations
-	ln -sf /tmp/mnt/sd_nav/system/js /jci/gui/apps/custom/js
-	ln -sf /tmp/mnt/sd_nav/system/css /jci/gui/apps/custom/css
-	ln -sf /tmp/mnt/sd_nav/system/templates /jci/gui/apps/custom/templates
-	ln -sf /tmp/mnt/sd_nav/system/runtime /jci/gui/apps/custom/runtime
-	ln -sf /tmp/mnt/sd_nav/apps /jci/gui/apps/custom/apps
-	ln -sf /tmp/root /jci/gui/apps/custom/data
+		# create symlinks to various destinations
+		ln -sf /tmp/mnt/sd_nav/system/js /jci/gui/apps/custom/js
+		ln -sf /tmp/mnt/sd_nav/system/css /jci/gui/apps/custom/css
+		ln -sf /tmp/mnt/sd_nav/system/templates /jci/gui/apps/custom/templates
+		ln -sf /tmp/mnt/sd_nav/system/runtime /jci/gui/apps/custom/runtime
+		ln -sf /tmp/mnt/sd_nav/apps /jci/gui/apps/custom/apps
+		ln -sf /tmp/root /jci/gui/apps/custom/data
+	fi
 
 
 	# complete installation

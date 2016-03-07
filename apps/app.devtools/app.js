@@ -276,7 +276,6 @@ CustomApplicationsHandler.register("app.devtools", new CustomApplication({
             {name: 'Error', target: 'output', level: 'ERROR'},
             {name: 'Debug', target: 'output', level: 'DEBUG'},
             {name: 'Storages', storage: true},
-
         ],
         this.panels = [];
 
