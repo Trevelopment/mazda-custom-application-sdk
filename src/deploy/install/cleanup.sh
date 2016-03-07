@@ -91,4 +91,3 @@ fi
 
 echo "Cleanup complete"
 # finalize with message
-/jci/tools/jci-dialog --title="Custom Application Runtime" --text="The Custom Application Runtime was successfully removed.\n\nPlease reboot system" --ok-label='OK' --no-cancel &

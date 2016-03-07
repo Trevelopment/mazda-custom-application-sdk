@@ -77,12 +77,11 @@ window.CustomApplicationsProxy = {
 			// verify bootstrapping - yeah long name
 			if(systemApp) {
 
+				// set to strap - if everything fails - no harm is done :-)
+				this.bootstrapped = true;
 
 				// let's boostrap
 				try {
-
-					// set to strap - if everything fails - no harm is done :-)
-					this.bootstrapped = true;
 
 					// overwrite list2 handler
 					systemApp._contextTable[this.systemAppCategory].controlProperties.List2Ctrl.selectCallback = this.menuItemSelectCallback.bind(systemApp);

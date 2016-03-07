@@ -105,20 +105,22 @@ function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
     this.application.__wakeup(this.divElt);
 
     // set framework specifics
-    if(this.properties.statusBarVisible) {
+    setTimeout(function() {
+        if(this.properties.statusBarVisible) {
 
-        // execute statusbar handler
-        framework.common.statusBar.setAppName(this.application.getStatusbarTitle());
+            // execute statusbar handler
+            framework.common.statusBar.setAppName(this.application.getStatusbarTitle());
 
-        // execute custom icon
-        var icon = this.application.getStatusbarIcon();
+            // execute custom icon
+            var icon = this.application.getStatusbarIcon();
 
-        if(icon) framework.common.statusBar.setDomainIcon(icon);
+            if(icon) framework.common.statusBar.setDomainIcon(icon);
 
-        // adjust home button
-        framework.common.statusBar.showHomeBtn(this.application.getStatusbarHomeButton());
+            // adjust home button
+            framework.common.statusBar.showHomeBtn(this.application.getStatusbarHomeButton());
 
-    }
+        }
+    }.bind(this), 85);
 }
 
 
