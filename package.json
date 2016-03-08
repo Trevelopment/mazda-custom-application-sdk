@@ -32,6 +32,7 @@
     "build-runtime": "gulp build-runtime",
     "build-install": "gulp build-install",
     "simulator": "electron ./src/simulator",
+    "market": "electron ./src/market",
     "clean": "rm -rf ./dist/simulator",
     "clean:osx": "rm -rf ./build/simulator/osx",
     "clean:win": "rm -rf ./build/simulator/win",
