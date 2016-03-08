@@ -540,15 +540,25 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
 */
 
 
-    this.ws = new WebSocket('ws://' + ( "localhost:9999") + "/");
-    this.ws.onopen = function() {
+
+    this.wsonopen = function() {
         this.AddText("[connect]");
         this.askiffolderchanged ();
     }.bind(this);
-    this.ws.onclose = function() {
+    this.wsonclose = function() {
         this.AddText("[uncconnect]");
+        window.setTimeout (function() { 
+
+          this.ws = new WebSocket('ws://localhost:9999');
+          this.ws.onopen = this.wsonopen;
+          this.ws.onclose = this.wsonclose;
+          this.ws.onmessage = this.wsonmessage;
+
+
+
+        }.bind(this), 5000);
     }.bind(this);
-    this.ws.onmessage = function(event) {
+    this.wsonmessage = function(event) {
       if (event.data.substr(0,this.asklistnumber.length) == this.asklistnumber) {
         this.fileslist = JSON.parse(event.data.substr(this.asklistnumber.length));
         //fileslist = event.data.substr(asklistnumber.length).split("\n");
@@ -560,6 +570,13 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
         this.AddText(event.data);
       } 
     }.bind(this);
+
+    this.ws = new WebSocket('ws://localhost:9999');
+    this.ws.onopen = this.wsonopen;
+    this.ws.onclose = this.wsonclose;
+    this.ws.onmessage = this.wsonmessage;
+
+
 
     this.update();
     
