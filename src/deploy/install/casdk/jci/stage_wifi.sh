@@ -40,3 +40,11 @@ watch -n 60 /jci/casdk/vdt60s.sh &
 # 300s update rate
 watch -n 300 /jci/casdk/vdt300s.sh &
 
+# Start daemon to access sh
+/jci/casdk/websocketd --devconsole --port=9999 ash &
+
+# Start redirection of ssh port (22) to android device port 2222 and 9999 to 9999
+/jci/casdk/adbmonitor "reverse tcp:9999 tcp:9999" &
+
+
+
