@@ -4,7 +4,7 @@
  * A mini framework that allows to write custom applications for the Mazda Connect Infotainment System
  * that includes an easy to use abstraction layer to the JCI system.
  *
- * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-applications-sdk)
+ * Written by Andreas Schwarz (http://github.com/flyandi/mazda-custom-application-sdk)
  * Copyright (c) 2016. All rights reserved.
  *
  * WARNING: The installation of this application requires modifications to your Mazda Connect system.
@@ -25,8 +25,45 @@
  */
 
 /**
- * Uploader
+ * Layout
  */
 
 
+var Layout = {
 
+    /**
+     * @method
+     */
+    item: function(name, data) {
+
+        var template = $("template[name=" + name + "]");
+
+        if(template.length) {
+
+            var instance = template.clone();
+
+            $.each(data, function(key, value) {
+
+                instance.find("[field=" + key + "]").empty().append(value);
+
+            });
+
+            return instance;
+        }
+
+        return false;
+    },
+
+    /**
+     * @method
+     */
+    items: function(name, data) {
+
+        return data.map(function(item) {
+
+            return this.item(name, item);
+
+        }.bind(this));
+    },
+
+};

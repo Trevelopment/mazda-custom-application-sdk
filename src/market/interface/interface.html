@@ -38,6 +38,8 @@
 	<script src="helpers.js"></script>
 	<script src="watcher.js"></script>
 	<script src="uploader.js"></script>
+	<script src="system.js"></script>
+	<script src="layout.js"></script>
 	<script src="interface.js"></script>
 
 
@@ -48,6 +50,7 @@
 
 	<div id="sidebar">
 		<div class="inner">
+			<div id="menudisabler"></div>
 			<div id="menublocker"></div>
 
 			<section>
@@ -72,7 +75,8 @@
 
 	<div id="main">
 
-		<panel name="myapps" active>
+		<!-- @panel myapps -->
+		<panel name="myapps" on="refreshMyApps">
 			<div class="inner">
 				<div class="title">
 					<span class="icon apps"></span>
@@ -85,12 +89,11 @@
 						<p>You have currently runtime version 0.0.1-alpha installed</p>
 						<div hidden class="warn">A new update is available</div>
 						<div class="check">You have the latest version</div>
-						<button large auto>Update</button>
+						<button action="selectCheckRuntime" large auto>Check</button>
 					</div>
 
 					<div class="apps">
 
-					
 
 					</div>
 
@@ -98,7 +101,35 @@
 			</div>
 		</panel>
 
-		<panel name="setup" active>
+		<!-- @panel searchmyapps -->
+		<panel name="searchmyapps" on="updateSearchMyApps">
+			<div class="inner">
+				<div class="title">
+					<span class="icon apps"></span>
+					<h5>App Drive Setup</h5>
+				</div>
+				<div class="surface">
+
+					<div class="info">
+						<h6>Locate App Drive</h6>
+						<p>Your App Drive could not be found. Insert your App Drive into your Computer and select "Find App Drive".</p>
+
+						<button action="selectFindAppDrive" large auto>Find App Drive</button>
+					</div>
+
+					<div class="info">
+						<h6>Create New App Drive</h6>
+						<p>If you are new to the App Market or lost your App Drive, click the button below to create a new App Drive.</p>
+
+						<button action="selectCreateAppDrive" large auto>Create New App Drive</button>
+					</div>
+
+				</div>
+			</div>
+		</panel>
+
+		<!-- @panel setup -->
+		<panel name="setup">
 			<div class="inner">
 				<div class="title">
 					<span class="icon apps"></span>
@@ -136,7 +167,58 @@
 			</div>
 		</panel>
 
+		<!-- @panel drives -->
+		<panel name="drives" on="updateDriveList">
+			<div class="inner">
+				<div class="title">
+					<span class="icon apps"></span>
+					<h5>Select Destination</h5>
+				</div>
+				<div class="surface">
 
+					<div class="info runtime">
+						<p>Select a drive to continue</p>
+						<div class="check">Make sure the drive has at least 1GB disk space available</div>
+						<button action="selectGoBack" large auto>Cancel</button>
+					</div>
+
+					<div class="drivelist">
+
+					</div>
+				</div>
+			</div>
+		</panel>
+
+		<!-- @panel loading -->
+		<panel name="installAppDrive">
+			<div class="inner">
+				<div class="title">
+					<span class="icon apps"></span>
+					<h5>Installing App Drive</h5>
+				</div>
+
+				<div class="surface">
+
+					<div class="info">
+						<p>Installing the App Drive to the selected device. This may take a moment.</p>
+						<div class="warn">Do not unplug the device</div>
+					</div>
+
+					<div class="info">
+						<div class="progress">
+							<label field="title">Preparing..</label>
+							<div><span></span></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+
+		</panel>
+
+
+		<!-- @panel market -->
 		<panel name="market">
 			<div class="inner">
 				<div id="spotlight">
@@ -147,7 +229,6 @@
 						</div>
 					</div>
 				</div>
-
 				<div id="apps"></div>
 			</div>
 		</panel>
@@ -157,23 +238,27 @@
 </body>
 </html>
 
+<template id="DriveListItem">
+
+	<div>
+		<label field="volumename"></label>
+		<span field="available"></span> <span field="mountpoint"></span>
+	</div>
+
+</template>
 
 <template id="item">
 	<div class="item">
-		<div class="inner">	
+		<div class="inner">
 			<div class="background" style="background-image:url(../cache/tetris.png)"></div>
 			<div class="overlay">
 				<header>
-					<big>{TITLE}</big>
-					<span>{AUTHOR}</span>
-					<button>{BUTTONTEXT}</button>
+					<big field="title"></big>
+					<span field="author"></span>
+					<button field="button"></button>
 				</header>
-				<description>
-					{DESCRIPTION}
-				</description>
-				<info>	
-					{DETAILS}
-				</info>
+				<description field="description"></description>
+				<info field="details"></info>
 			</div>
 		</div>
 	</div>

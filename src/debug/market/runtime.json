@@ -1,0 +1,5 @@
+{
+    "description": "Custom Application Market Runtime Manifest",
+    "version": "0.0.1",
+    "package": "https://github.com/flyandi/mazda-custom-application-sdk/releases/download/0.0.1-alpha/casdk-alpha-0.0.2.zip"
+}
