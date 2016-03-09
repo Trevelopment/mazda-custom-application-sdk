@@ -159,19 +159,49 @@
 				that.notifyMultiController($(this).attr("event"));
 			});
 
+			this.reapeatcw = null;
+			this.reapeatccw = null;
+
 			// initialize keystrokes
-			$(document).keyup(function(e) {
+			$(document).keydown(function(e) {
 
 				switch(e.keyCode) {
 
-					case 49: this.notifyMultiController("cw"); break;
-					case 50: this.notifyMultiController("ccw"); break;
+					case 50: 
+						if (this.reapeatcw === null ) {
+							this.reapeatcw = setInterval(function(){
+	                			this.notifyMultiController("cw");
+	           				}.bind(this), 100);
+	           			}
+	           			break;
+						
+					
+					case 49: 
+						if (this.reapeatccw === null ) {
+							this.reapeatccw = setInterval(function(){
+	                			this.notifyMultiController("ccw");
+	           				}.bind(this), 100); 
+	           			}
+           				break;
+
 					case 38: this.notifyMultiController("upStart"); break;
 					case 40: this.notifyMultiController("downStart"); break;
 					case 37: this.notifyMultiController("leftStart"); break;
 					case 39: this.notifyMultiController("rightStart"); break;
 					case 13: this.notifyMultiController("selectStart"); break;
 					case 8: this.notifyMultiController("home"); break;
+
+
+				}
+
+			}.bind(this));
+
+			$(document).keyup(function(e) {
+
+				switch(e.keyCode) {
+
+					case 50: if (this.reapeatcw !== null) clearInterval(this.reapeatcw);this.reapeatcw = null; break;
+					case 49: if (this.reapeatccw !== null)clearInterval(this.reapeatccw);this.reapeatccw = null; break;
 
 
 				}
