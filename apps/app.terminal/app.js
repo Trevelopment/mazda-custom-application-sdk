@@ -185,6 +185,13 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
   commandstack : [],
   commandstackcounter : -1,
 
+  androidauto: function()
+  {
+      this.ws.send("export LD_LIBRARY_PATH=/sd_nav/apps/apps.terminal/bin/aa:/jci/lib:/jci/opera/3rdpartylibs/freetype:/usr/lib/imx-mm/audio-codec:/usr/lib/imx-mm/parser \n");
+      this.ws.send("cd /sd_nav/apps/apps.terminal/bin/aa \n")
+      this.ws.send("./headunit & \n");
+  }
+
   //
   // Update the screen
   // 
@@ -249,7 +256,6 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
         }
       }
       this.buttonlist[c].color = 'white';
-
     }
 
     var capslist =  this.keyboard.get(0).getElementsByClassName('caps');   
@@ -289,6 +295,10 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
             this.linecount = 0;
             this.command = "";
             this.update();
+            break;
+
+          case "aa":
+            this.androidauto();
             break;
 
           default:
@@ -544,6 +554,7 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
     this.wsonopen = function() {
         this.AddText("[connect]");
         this.askiffolderchanged ();
+        this.ws.send("cd /sd_nav/apps/apps.terminal/bin\n");
     }.bind(this);
     this.wsonclose = function() {
         this.AddText("[uncconnect]");

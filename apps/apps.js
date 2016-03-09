@@ -37,5 +37,8 @@ var CustomApplications = [
 	"app.simpledashboard",
 	"app.vdd",
 	"app.tetris",
+	"app.snake",
+	"app.breakout",
 	"app.devtools",
+	"app.terminal",
 ];

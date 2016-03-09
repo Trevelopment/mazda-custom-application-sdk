@@ -5,3 +5,5 @@ node_modules/
 npm_modules/
 build/
 dist/
+electron-packager/darwin-x64-template
+electron-packager/darwin-x64/Mazda Infotainment Simulator-darwin-x64

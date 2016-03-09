@@ -199,10 +199,10 @@ function breakoutboard(_canvas, _scorechange ) {
     this.handle = function(eventId)
     {
         if (eventId == "ccw" ) {
-            this.paddleX += 7;
+            this.paddleX -= 7;
         }
         else if (eventId == "cw"  ) {
-            this.paddleX -= 7;
+            this.paddleX += 7;
         }
     }
 
