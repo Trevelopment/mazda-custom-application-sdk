@@ -65,7 +65,7 @@ if [ -e "${INSTALLSH}/install.sh" ]; then
 		# enable file ajax
 		count=$(grep -c "Allow File XMLHttpRequest=" /jci/opera/opera_home/opera.ini)
 		if [ "$count" = "0" ]; then
-		    sed -i '/User JavaScript=.#/a Allow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
+		    sed -i '/User JavaScript=./aAllow File XMLHttpRequest=1' /jci/opera/opera_home/opera.ini
 		else
 		    sed -i 's/Allow File XMLHttpRequest=.#/Allow File XMLHttpRequest=1/g' /jci/opera/opera_home/opera.ini
 		fi
