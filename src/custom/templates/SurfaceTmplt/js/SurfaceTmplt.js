@@ -106,6 +106,7 @@ function SurfaceTmplt(uiaId, parentDiv, templateID, controlProperties)
 
     // set framework specifics
     setTimeout(function() {
+
         if(this.properties.statusBarVisible) {
 
             // execute statusbar handler
