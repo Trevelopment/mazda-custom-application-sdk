@@ -83,6 +83,10 @@ var Layout = {
                 element.find("span").width(left);
             },
 
+            setFull: function() {
+                this.setPosition(1, 1);
+            },
+
             setTotal: function(total) {
                 this.__total = total;
             },

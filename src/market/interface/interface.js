@@ -272,8 +272,6 @@
 					// install runtime
 					System.installLatestRuntime(item.mountpoint, function() {
 
-
-
 						this.enableSidebar();
 
 					}.bind(this), progress);

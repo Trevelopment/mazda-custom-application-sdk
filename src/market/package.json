@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "main": "market.js",
   "dependencies": {
+    "delete": "^0.3.0",
     "drivelist": "^2.0.7",
     "nodejs-disks": "git+https://git@github.com/jssuttles/nodejs-disks.git",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "unzip": "^0.1.11"
   }
 }

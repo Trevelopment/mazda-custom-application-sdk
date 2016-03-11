@@ -30,7 +30,8 @@
 var fs = require("fs"),
     drivelist = require('nodejs-disks'),
     request = require("request"),
-    http = require("http");
+    http = require("http"),
+    unzip = require("unzip");
 
 
 /**
@@ -47,6 +48,8 @@ var System = {
     __appsManifest: 'apps.json',
 
     __appsRuntimeInformation: 'http://code/sandbox/mazda-custom-application-sdk/src/debug/market/runtime.json',
+
+    __downloadLocation : __dirname + '/../tmp/',
 
     /**
      * The location
@@ -101,6 +104,8 @@ var System = {
                     } catch(e) {}
                 });
 
+                result = [{volumename:'Test', available: '1 TB', mountpoint: '/tmp/bla'}];
+
                 callback(error, result);
             });
 
@@ -113,46 +118,54 @@ var System = {
 
     load: function(url, options, callback, progress) {
 
-        var downloaded = 0;
+        var loaded = 0;
 
         // get request
-        var req = request($.extend({}, {
+        var req = request({
             url: url,
-        }, options ? options : {}), function(response) {
+            json: options.json,
+        }, function(error, response, body) {
 
-            var loaded = 0, body = "";
-
-            console.log(response);
-
-            if(progress && response.headers['content-length']) {   
-                progress.setTotal(parseInt(response.headers['content-length'], 10));
+            if(progress) {
+                progress.setFull();
             }
 
-            req.on('error', function(error) {
-                if(callback) {
-                    callback(error, false);
-                }
-            });
+            callback(error, body, options);
 
-            req.on('data', function(chunk) {
+        }).on('response', function(data) {
 
-                loaded += chunk.length;
-                body += chunk;
+            if(data.headers['content-length'] && progress) {
+                progress.setTotal(data.headers['content-length']);
+            }
 
-                if(progress) {
-                    progress.setTotal(parseInt(loaded, 10));
-                }
-            });
+        }).on('data', function(chunk) {
 
-            req.on('end', function() {
+            loaded += chunk.length;
 
-                if(callback) {
-                    callback(false, body);
-                }
-            });
-
+            if(progress) {
+                progress.setPosition(parseInt(loaded, 10));
+            }
         });
 
+        if(options.file && options.output) {
+
+            var fn = options.output + "/" + options.file;
+
+            // clean
+            del.sync([options.output + "/*"]);
+
+            // pipe
+            req.pipe(fs.createWriteStream(options.file)).on('finish', function() {
+
+                // decompress
+                if(options.unzip) {
+
+                    fs.createReadStream(fn).pipe(unzip.Extract({path: options.output}));
+
+                }
+
+            });
+        }
     },
 
     /**
@@ -165,10 +178,7 @@ var System = {
 
         this.load(this.__appsRuntimeInformation, {
             json: true
-        }, function(error, result) {
-
-
-        }, progress);
+        }, callback, progress);
     },
 
 
@@ -182,9 +192,27 @@ var System = {
 
         this.getRuntimeInformation(function(error, runtime) {
 
-            if(progress) progress.reset("Loading Runtime");
+            if(!error) {
 
-        }, progress);
+                var runtimeLocation = runtime.package;
+
+               if(progress) progress.reset("Loading Runtime");
+
+               this.load(runtimeLocation, {
+                output: this.__downloadLocation + 'runtime',
+                file: 'latest.archive',
+                unzip: true,
+               }, function() {
+
+                // extract to location
+
+
+               }.bind(this), progress);
+
+
+            }
+
+        }.bind(this), progress);
 
     }
 
