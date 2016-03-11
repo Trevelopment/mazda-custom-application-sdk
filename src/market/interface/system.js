@@ -27,11 +27,11 @@
 /**
  * @includes
  */
-var fs = require("fs"),
+var fs = require("fs-extra"),
     drivelist = require('nodejs-disks'),
     request = require("request"),
     http = require("http"),
-    unzip = require("unzip");
+    tar = require("tar-fs");
 
 
 /**
@@ -118,7 +118,13 @@ var System = {
 
     load: function(url, options, callback, progress) {
 
+
         var loaded = 0;
+
+        // clear files
+        if(options.output) {
+            fs.emptyDirSync(options.output);
+        }
 
         // get request
         var req = request({
@@ -130,7 +136,9 @@ var System = {
                 progress.setFull();
             }
 
-            callback(error, body, options);
+            if(!options.output) {
+                callback(error, body, options);
+            }
 
         }).on('response', function(data) {
 
@@ -147,25 +155,19 @@ var System = {
             }
         });
 
-        if(options.file && options.output) {
-
-            var fn = options.output + "/" + options.file;
-
-            // clean
-            del.sync([options.output + "/*"]);
+        // option
+        if(options.output) {
 
             // pipe
-            req.pipe(fs.createWriteStream(options.file)).on('finish', function() {
+            if(options.untar) {
+                req.pipe(tar.extract(options.output).on("finish", function() {
 
-                // decompress
-                if(options.unzip) {
+                    callback(false, true);
 
-                    fs.createReadStream(fn).pipe(unzip.Extract({path: options.output}));
-
-                }
-
-            });
+                }));
+            }
         }
+
     },
 
     /**
@@ -179,6 +181,84 @@ var System = {
         this.load(this.__appsRuntimeInformation, {
             json: true
         }, callback, progress);
+    },
+
+    /**
+     * @getTarArchive
+     */
+
+    getTarArchive: function(url, output, callback, progress, message) {
+
+        if(progress) progress.reset(message);
+
+        // load archive
+        this.load(url, {
+            output: output,
+            untar: true,
+        }, function(error, result) {
+
+            if(callback) {
+                callback(error, result);
+            }
+
+        }.bind(this), progress);
+    },
+
+    /**
+     * @processDiskOperation
+     */
+
+    processDiskOperation: function(location, operations) {
+
+        // file copy checks
+        if(location.substr(-1) != "/") location = location + "/";
+
+        // continue operation
+        operations.forEach(function(operation) {
+
+            switch(operation.name) {
+
+                /** @prepare */
+                case "prepare":
+
+                    operation.values.forEach(function(path) {
+
+                        path = location + path + '/';
+
+                        // ensure the directory is here
+                        try {
+                            fs.emptyDirSync(path);
+                        } catch(e) {
+
+                        }
+
+    
+
+                    });
+                    break;
+
+
+                /** @copy */
+                case "copy": 
+
+                    operation.values.forEach(function(copy) {
+
+                        path = location + copy.destination + '/';
+
+                        try {
+                            fs.copySync(copy.source, path);
+                        } catch(e) {
+
+                        }
+
+
+                    });
+
+            }
+
+        }.bind(this));
+
+
     },
 
 
@@ -196,20 +276,33 @@ var System = {
 
                 var runtimeLocation = runtime.package;
 
-               if(progress) progress.reset("Loading Runtime");
+                if(runtimeLocation) {
 
-               this.load(runtimeLocation, {
-                output: this.__downloadLocation + 'runtime',
-                file: 'latest.archive',
-                unzip: true,
-               }, function() {
+                    var runtimeDestination = this.__downloadLocation + 'runtime';
 
-                // extract to location
+                    this.getTarArchive(runtimeLocation, runtimeDestination, function(error, result) {
 
+                        if(progress) progress.reset("Generating AppDrive")
 
-               }.bind(this), progress);
+                        // removal operations
+                        this.processDiskOperation(location, [
+                            {name: 'prepare', values: ['apps/', 'system/']},
+                            {name: 'copy', values: [
+                                {source: runtimeDestination, destination: 'system'},
+                            ]}
+                        ]);
 
+                        if(progress) progress.setPosition(1, 2);
 
+                        // done
+                        if(callback) {
+                            callback(false, true);
+                        }
+
+                    }.bind(this), progress, "Loading Runtime")
+                }
+            } else {
+                callback(error, error);
             }
 
         }.bind(this), progress);
