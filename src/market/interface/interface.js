@@ -162,7 +162,7 @@
 		 * showPanel
 		 */
 
-		showPanel: function(nextPanel, methodCallback, panelCallback) {
+		showPanel: function(nextPanel, methodCallback, panelCallback, attributes) {
 
 			var activePanel = Interface.main.find("panel[active]"),
 
@@ -174,6 +174,10 @@
 						next = function() {
 
 							Interface.__panelPath.push(panel.attr("name"));
+
+							if(attributes) {
+								Layout.fillAttributes(panel, attributes);
+							}
 
 							panel.attr("active", "active").animate({
 								left:300,
@@ -235,9 +239,27 @@
 
 		},
 
+		/**
+		 * setNextAction
+		 */
+
+		setNextAction: function(action) {
+			this.selectNextAction = action;
+		},
+
 		/****
 		 **** Select(ors)
 		 ****/
+
+		/**
+		 * selectFindAppDrive
+		 */
+
+	    selectFindAppDrive: function() {
+
+	    	return this.refreshMyApps();
+
+	    },
 
 		/**
 		 * selectGoBack
@@ -270,11 +292,18 @@
 					var progress = Layout.progress(panel.find(".progress"));
 
 					// install runtime
-					System.installLatestRuntime(item.mountpoint, function(error) {
+					System.installLatestRuntime(item.mountpoint, function(error, result) {
 
 						this.enableSidebar();
 
-						this.showPanel(!error ? 'success' : 'failure');
+						this.setNextAction('selectFindAppDrive');
+
+						this.showPanel(!error ? 'success' : 'failure', false, false, {
+							panelAction: 'selectFindAppDrive',
+							message: !error ? 'The AppDrive was successfully created. You can now download and install applications.' : 'The AppDrive could not be installed because of the following issue:',
+							errorMessage: result
+
+						});
 
 					}.bind(this), progress);
 
@@ -283,6 +312,16 @@
 			}.bind(this));
 		},
 
+		/**
+		 * selectNext
+		 */
+		selectNext: function() {
+
+			if(this[this.selectNextAction]) {
+				this[this.selectNextAction]();
+				this.selectNextAction = false;
+			}
+		},
 
 		/**
 		 * updateDriveList
@@ -310,8 +349,7 @@
 				// next
 				next();
 			});
-
-		}
+		},
 	};
 
 

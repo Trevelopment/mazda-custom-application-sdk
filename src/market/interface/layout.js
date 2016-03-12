@@ -34,17 +34,26 @@ var Layout = {
     /**
      * @method
      */
+    fillAttributes: function(instance, data) {
+
+        $.each(data, function(key, value) {
+
+            instance.find("[field=" + key + "]").empty().append(value);
+
+        });
+
+    },
+
+    /**
+     * @method
+     */
     item: function(id, data) {
 
         var instance = $("<fragment/>").append($("template[id=" + id + "]").html());
 
         if(instance) {
 
-            $.each(data, function(key, value) {
-
-                instance.find("[field=" + key + "]").empty().append(value);
-
-            });
+            this.fillAttributes(instance, data);
 
             return instance.data("data", data);
         }

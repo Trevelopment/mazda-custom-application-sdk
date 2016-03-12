@@ -47,7 +47,7 @@ var System = {
 
     __appsManifest: 'apps.json',
 
-    __appsReleaseInformation: 'https://github.com/flyandi/mazda-custom-application-sdk/release.json',
+    __appsReleaseInformation: 'https://raw.githubusercontent.com/flyandi/mazda-custom-application-sdk/master/release.json',
 
     __downloadLocation : __dirname + '/../tmp/',
 
@@ -110,6 +110,23 @@ var System = {
             });
 
         });
+    },
+
+    /**
+     * Trys to locate the app drive
+     * @params callbacl
+     */
+    
+    findAppDrive: function(callback) {
+
+        this.getDrives(function(error, result) {
+
+            if(error) return callback(error, false);
+
+            
+
+        });
+
     },
 
     /**
@@ -232,14 +249,12 @@ var System = {
 
                         }
 
-    
-
                     });
                     break;
 
 
                 /** @copy */
-                case "copy": 
+                case "copy":
 
                     operation.values.forEach(function(copy) {
 
@@ -253,6 +268,16 @@ var System = {
 
 
                     });
+
+                    break;
+
+                /** @json */
+                case "json":
+
+                    if(operation.destination) {
+                        fs.writeFileSync(location + operation.destination, JSON.stringify(operation.values));
+                    }
+                    break;
 
             }
 
@@ -286,10 +311,13 @@ var System = {
 
                         // removal operations
                         this.processDiskOperation(location, [
-                            {name: 'prepare', values: ['apps/', 'system/']},
+                            {name: 'prepare', values: ['appdrive/apps/', 'appdrive/system/']},
                             {name: 'copy', values: [
-                                {source: runtimeDestination, destination: 'system'},
-                            ]}
+                                {source: runtimeDestination, destination: 'appdrive/system'},
+                            ]},
+                            {name: 'json', destination: 'appdrive/appdrive.json', values: $.extend({}, release, {
+                                appdrive: true
+                            })},
                         ]);
 
                         if(progress) progress.setPosition(1, 2);
@@ -302,7 +330,7 @@ var System = {
                     }.bind(this), progress, "Loading Runtime")
                 }
             } else {
-                callback(error, error);
+                callback(true, error);
             }
 
         }.bind(this), progress);

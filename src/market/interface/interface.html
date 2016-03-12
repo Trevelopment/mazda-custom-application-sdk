@@ -221,13 +221,34 @@
 			<div class="inner">
 				<div class="title">
 					<span class="icon apps"></span>
-					<h5>Completed</h5>
+					<h5 action="title">Completed</h5>
 				</div>
 
 				<div class="surface">
 
 					<div class="info">
-						<p>The AppDrive was successfully created. You can now download and install applications.</p>
+						<p field="message"></p>
+						<button action="selectNext" large auto>Continue</button>
+					</div>
+
+				</div>
+
+			</div>
+
+		</panel>
+
+		<!-- @panel failure -->
+		<panel name="failure">
+			<div class="inner">
+				<div class="title">
+					<span class="icon apps"></span>
+					<h5 action="title">Failure</h5>
+				</div>
+
+				<div class="surface">
+					<div class="info">
+						<div field="message" class="warn"></div>
+						<div field="errorMessage" class="error">Error Example</div>
 						<button action="selectNext" large auto>Continue</button>
 					</div>
 
