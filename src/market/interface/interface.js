@@ -226,10 +226,9 @@
 		refreshMyApps: function(next) {
 
 			// ensure we have a good location
-			System.hasLocation(function(error, location) {
+			System.findAppDrive(function(error, location) {
 
 				if(error) {
-					// load panel with device selections
 					return this.showPanel('searchmyapps');
 				}
 

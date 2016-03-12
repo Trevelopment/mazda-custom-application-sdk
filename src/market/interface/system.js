@@ -45,7 +45,9 @@ var System = {
      * @paths
      */
 
-    __appsManifest: 'apps.json',
+    __appsManifest: 'appdrive.json',
+
+    __appsLocation: 'appdrive/',
 
     __appsReleaseInformation: 'https://raw.githubusercontent.com/flyandi/mazda-custom-application-sdk/master/release.json',
 
@@ -56,29 +58,6 @@ var System = {
      * @var string
      */
     __location: false,
-
-    /**
-     * Returns the current location
-     * @param callback
-     */
-    hasLocation: function(callback) {
-
-        // check if file exists
-        var error = !this.__location,
-            path = false;
-
-        if(!error) {
-
-            var _path = this.__location + this.__appsManifest;
-
-            if(fs.lstatSync(_path).isFile()) {
-                path = _path;
-                error = false;
-            }
-        }
-
-        return callback(error, path);
-    },
 
 
     /**
@@ -99,6 +78,11 @@ var System = {
 
                     try {
                         if(fs.lstatSync(item.mountpoint).isDirectory()) {
+
+                            if(item.mountpoint.substr(-1) != "/") {
+                                item.mountpoint += "/";
+                            }
+
                             result.push(item);
                         }
                     } catch(e) {}
@@ -116,18 +100,88 @@ var System = {
      * Trys to locate the app drive
      * @params callbacl
      */
-    
+
     findAppDrive: function(callback) {
+
 
         this.getDrives(function(error, result) {
 
             if(error) return callback(error, false);
 
-            
+            // reset
+            this.__location = false;
+            this.__current = false;
 
-        });
+            error = true;
+
+            result.some(function(drive) {
+
+                var location = drive.mountpoint + this.__appsLocation;
+
+                try{
+
+                    if(fs.lstatSync(location + this.__appsManifest).isFile()) {
+
+                        error = false;
+
+                        this.loadAppDriveManifest(location, function(error, manifest) {
+
+                            if(error) return callback(true, false);
+
+                            this.__location = location;
+                            this.__current = manifest;
+
+                            return callback(false, this.__current, this.__location);
+
+                        }.bind(this));
+
+
+                        return true;
+                    }
+
+                }catch(e) {
+                    error = true;
+                }
+
+
+            }.bind(this));
+
+            // continue
+            if(error) {
+                callback(true, false);
+            }
+
+
+        }.bind(this));
 
     },
+
+    /**
+     * @loadAppDriveManifest
+     */
+
+    loadAppDriveManifest: function(location, callback) {
+
+        // load file
+        var fn = location + this.__appsManifest;
+
+        // check file exists
+        if(fs.lstatSync(fn).isFile()) {
+
+            // read file
+            try {
+                var manifest = JSON.parse(fs.readFileSync(fn));
+
+                if(manifest) return callback(false, manifest);
+
+            } catch(e) {
+
+            }
+        }
+
+        return callback(true, fn);
+    },
+
 
     /**
      * @load
@@ -310,12 +364,12 @@ var System = {
                         if(progress) progress.reset("Generating AppDrive")
 
                         // removal operations
-                        this.processDiskOperation(location, [
-                            {name: 'prepare', values: ['appdrive/apps/', 'appdrive/system/']},
+                        this.processDiskOperation(location + this.__appsLocation, [
+                            {name: 'prepare', values: ['apps/', 'system/']},
                             {name: 'copy', values: [
-                                {source: runtimeDestination, destination: 'appdrive/system'},
+                                {source: runtimeDestination, destination: 'system'},
                             ]},
-                            {name: 'json', destination: 'appdrive/appdrive.json', values: $.extend({}, release, {
+                            {name: 'json', destination: this.__appsManifest, values: $.extend({}, release, {
                                 appdrive: true
                             })},
                         ]);
