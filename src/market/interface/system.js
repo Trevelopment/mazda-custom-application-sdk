@@ -47,7 +47,7 @@ var System = {
 
     __appsManifest: 'apps.json',
 
-    __appsRuntimeInformation: 'http://code/sandbox/mazda-custom-application-sdk/src/debug/market/runtime.json',
+    __appsReleaseInformation: 'https://github.com/flyandi/mazda-custom-application-sdk/release.json',
 
     __downloadLocation : __dirname + '/../tmp/',
 
@@ -171,14 +171,14 @@ var System = {
     },
 
     /**
-     * @getRuntimeInformation
+     * @getReleaseInformation
      */
 
-    getRuntimeInformation: function(callback, progress) {
+    getReleaseInformation: function(callback, progress) {
 
-        if(progress) progress.reset("Loading Manifest");
+        if(progress) progress.reset("Loading release information");
 
-        this.load(this.__appsRuntimeInformation, {
+        this.load(this.__appsReleaseInformation, {
             json: true
         }, callback, progress);
     },
@@ -270,11 +270,11 @@ var System = {
 
         // gather latest runtime information
 
-        this.getRuntimeInformation(function(error, runtime) {
+        this.getReleaseInformation(function(error, release) {
 
-            if(!error) {
+            if(!error && release.packages) {
 
-                var runtimeLocation = runtime.package;
+                var runtimeLocation = release.packages.runtime;
 
                 if(runtimeLocation) {
 

@@ -66,6 +66,45 @@ var dist = "./dist/",
     output = "./build/",
     input = "./src/";
 
+/**
+ * Builds an json version file
+ * @method
+ */
+
+var buildJsonVersion = function(output, destination, name, attributes) {
+
+    // get latest package
+    var package = require("./package.json");
+
+    // prepare json
+    var baseJson = {
+        description: 'Custom Application SDK for Infotainment',
+        name: name,
+        license: 'GPL 3.0',
+        author: 'Andy (flyandi) <flyandi@yahoo.com>',
+        copyright: '(c) 2016',
+        created: (new Date()).toLocaleDateString(),
+        url: 'https://github.com/flyandi/mazda-custom-application-sdk/',
+        version: package.version,
+    };
+
+    // get attributes
+    if(attributes) {
+        var json = attributes(package);
+
+        // combine
+        Object.keys(json).forEach(function(key) {
+
+            baseJson[key] = json[key];
+        });
+    }
+
+    // write output
+    file(output, JSON.stringify(baseJson), {
+        src: true
+    }).pipe(gulp.dest(destination));
+}
+
 
 /**
  * (build) local apps
@@ -169,6 +208,16 @@ gulp.task('system-custom', function() {
         .pipe(gulp.dest(systemPathOutput));
 });
 
+/** @job system-version */
+gulp.task('system-version', function() {
+
+    buildJsonVersion("runtime.json", runtimePathOutput, "runtime-package", function(package) {
+        return {
+            runtime: true,
+        }
+    });
+});
+
 
 // (build system)
 gulp.task('build-system', function(callback) {
@@ -178,6 +227,7 @@ gulp.task('build-system', function(callback) {
         'system-runtime-less',
         'system-runtime-js',
         'system-custom',
+        'system-version',
         callback
     );
 });
@@ -229,6 +279,14 @@ gulp.task('install-proxy', function() {
         .pipe(gulp.dest(installDeployDataPathOutput + "proxy/"));
 });
 
+/** @job install-version */
+gulp.task('install-version', function() {
+    buildJsonVersion("system.json", output + 'deploy/', "system-package", function(package) {
+        return {
+            system: true,
+        }
+    });
+});
 
 
 // (build)
@@ -237,6 +295,7 @@ gulp.task('build-install', function(callback) {
         'install-cleanup',
         'install-copy',
         'install-proxy',
+        'install-version',
         callback
     );
 });
@@ -601,30 +660,14 @@ gulp.task('dist-system', function() {
  */
 gulp.task('dist-release', function() {
 
-    // get latest package
-    var package = require("./package.json");
-
-    // prepare json
-    var json = {
-        description: 'Custom Application SDK for Mazda Infotainment System',
-        license: 'GPL 3.0',
-        author: 'Andy Schwarz <flyandi@yahoo.com>',
-        copyright: '(c) 2016',
-        created: (new Date()).toLocaleDateString(),
-        url: 'https://github.com/flyandi/mazda-custom-application-sdk/',
-        version: package.version,
-        build: 0,
-        packages: {
-            runtime: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/' + package.version + '/' + distRuntimeOutput,
-            system: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/' + package.version + '/' + distSystemOutput,
+    buildJsonVersion("release.json", "./", "release-package", function(package) {
+        return {
+            packages: {
+                runtime: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/download/' + package.version + '/' + distRuntimeOutput,
+                system: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/download/' + package.version + '/' + distSystemOutput,
+            }
         }
-    };
-
-    // write output
-    file("./release.json", JSON.stringify(json), {
-        src: true
-    }).pipe(gulp.dest('./'));
-
+    });
 });
 
 
