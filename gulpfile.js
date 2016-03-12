@@ -110,9 +110,7 @@ gulp.task('build-apps', function(callback) {
 
 
 /**
- * (build) system
- *
- * These task builds the system
+ * tasks to build the runtime
  */
 
 var systemPathOutput = output + "system/",
@@ -533,31 +531,74 @@ gulp.task('default', function(callback) {
 
 
 /**
- * DIST
+ * These build jobs are for distribution
+ * @job dist
+ * @target dist
  */
 
-// (bump)
+/** @job dist-bump-major */
 gulp.task('dist-bump-major', function() {
     return gulp.src('./package.json').pipe(bump({
         type: 'major'
     })).pipe(gulp.dest('./'));
 });
 
+/** @job dist-bump-minor */
 gulp.task('dist-bump-minor', function() {
     return gulp.src('./package.json').pipe(bump({
         type: 'minor'
     })).pipe(gulp.dest('./'));
 });
 
+/** @job dist-bump-revision */
 gulp.task('dist-bump-revision', function() {
     return gulp.src('./package.json').pipe(bump({
         type: 'revision'
     })).pipe(gulp.dest('./'));
 });
 
-// (version)
+/**
+ * builds the runtime for distribution
+ * @job dist-runtime
+ */
+var distRuntimeOutput = false;
+
+gulp.task('dist-runtime', function() {
+
+    // get latest package
+    var package = require("./package.json");
+
+    distRuntimeOutput = 'casdk-runtime-' + package.version + '.package';
+
+    return gulp.src(systemPathOutput + "**/*")
+        .pipe(tar(distRuntimeOutput))
+        .pipe(gulp.dest(dist));
+});
 
 
+/**
+ * builds the deployment system for distribution
+ * @job dist-system
+ */
+
+var distSystemOutput = false;
+
+gulp.task('dist-system', function() {
+
+    // get latest package
+    var package = require("./package.json");
+
+    distSystemOutput = 'casdk-system-' + package.version + '.package';
+
+    return gulp.src(output + "/deploy/**/*")
+        .pipe(tar(distSystemOutput))
+        .pipe(gulp.dest(dist));
+});
+
+/**
+ * creates the release information for the distribution
+ * @job dist-release
+ */
 gulp.task('dist-release', function() {
 
     // get latest package
@@ -574,21 +615,27 @@ gulp.task('dist-release', function() {
         version: package.version,
         build: 0,
         packages: {
-            runtime: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/' + package.version + '/casdk-runtime-' + package.version + '.tar',
-            system: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/' + package.version + '/casdk-deploy-' + package.version + '.tar',
+            runtime: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/' + package.version + '/' + distRuntimeOutput,
+            system: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/' + package.version + '/' + distSystemOutput,
         }
     };
 
     // write output
-    file("./release.json", JSON.stringify(json), {src: true}).pipe(gulp.dest('./'));
+    file("./release.json", JSON.stringify(json), {
+        src: true
+    }).pipe(gulp.dest('./'));
 
 });
 
 
-// (dist)
+/**
+ * task to build the runtime, system and release information
+ * @job build-dist
+ */
 gulp.task('build-dist', function(callback) {
     runSequence(
-        //'dist-runtime',
+        'dist-runtime',
+        'dist-system',
         'dist-release',
         callback
     );
