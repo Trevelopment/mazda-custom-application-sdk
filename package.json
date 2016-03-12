@@ -1,7 +1,7 @@
 {
   "name": "casdk",
   "description": "Write and deploy applications for the Mazda Infotainment System",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "homepage": "http://flyandi.github.io/mazda-custom-application-sdk/",
   "author": "flyandi <flyandi@yahoo.com>",
   "repository": {
@@ -17,14 +17,17 @@
     "electron-rebuild": "^1.1.3",
     "grunt-build-atom-shell": "^2.1.1",
     "gulp": "^3.9.1",
+    "gulp-bump": "^1.0.0",
     "gulp-concat": "^2.6.0",
     "gulp-concat-util": "^0.5.5",
+    "gulp-file": "^0.2.0",
     "gulp-git": "^1.7.0",
     "gulp-jsdoc": "^0.1.5",
     "gulp-less": "^3.0.5",
     "gulp-open": "^1.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-replace": "^0.5.4",
+    "gulp-tar": "^1.8.0",
     "gulp-uglify": "^1.5.2",
     "gulp-webserver": "^0.9.1",
     "run-sequence": "^1.1.5"

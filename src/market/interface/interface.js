@@ -270,9 +270,11 @@
 					var progress = Layout.progress(panel.find(".progress"));
 
 					// install runtime
-					System.installLatestRuntime(item.mountpoint, function() {
+					System.installLatestRuntime(item.mountpoint, function(error) {
 
 						this.enableSidebar();
+
+						this.showPanel(!error ? 'success' : 'failure');
 
 					}.bind(this), progress);
 
