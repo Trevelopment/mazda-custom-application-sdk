@@ -57,11 +57,20 @@
 
 			this.main = $("#main");
 
-			// setup menu items
-			this.setupSideBar();
+			this.disableSidebar();
 
-			// setup buttons
-			this.setupButtons();
+			System.getReleaseInformation(function(error, manifest) {
+
+				// setup menu items
+				this.setupSideBar();
+
+				// setup buttons
+				this.setupButtons();
+
+				// enable sidebar
+				this.enableSidebar();
+
+			}.bind(this));
 		},
 
 		/**
@@ -171,13 +180,15 @@
 					var panel = $("panel[name=" + nextPanel + "]"),
 						on = panel.attr("on") || false,
 
-						next = function() {
+						next = function(nextAttributes) {
 
 							Interface.__panelPath.push(panel.attr("name"));
 
-							if(attributes) {
-								Layout.fillAttributes(panel, attributes);
-							}
+							var data = $.extend({}, attributes ? attributes : {}, nextAttributes ? nextAttributes : {});
+
+							console.log(data);
+
+							Layout.fillAttributes(panel, data);
 
 							panel.attr("active", "active").animate({
 								left:300,
@@ -226,13 +237,15 @@
 		refreshMyApps: function(next) {
 
 			// ensure we have a good location
-			System.findAppDrive(function(error, location) {
+			System.findAppDrive(function(error, current, location) {
 
 				if(error) {
 					return this.showPanel('searchmyapps');
 				}
 
-				return next();
+				return next($.extend({}, current, {
+
+				}));
 
 			}.bind(this));
 
