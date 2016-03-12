@@ -8,7 +8,7 @@
   "version": "0.0.2",
   "build": 0,
   "packages": {
-    "runtime": "https://github.com/flyandi/mazda-custom-application-sdk/releases/0.0.2/casdk-runtime-0.0.2.package",
-    "system": "https://github.com/flyandi/mazda-custom-application-sdk/releases/0.0.2/casdk-system-0.0.2.package"
+    "runtime": "https://github.com/flyandi/mazda-custom-application-sdk/releases/download/0.0.2/casdk-runtime-0.0.2.package",
+    "system": "https://github.com/flyandi/mazda-custom-application-sdk/releases/download/0.0.2/casdk-system-0.0.2.package"
   }
 }
