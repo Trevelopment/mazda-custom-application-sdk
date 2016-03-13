@@ -41,4 +41,5 @@ var CustomApplications = [
 	"app.breakout",
 	"app.devtools",
 	"app.terminal",
+	"app.background",
 ];
