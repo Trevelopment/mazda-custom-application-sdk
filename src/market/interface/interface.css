@@ -88,6 +88,17 @@ body {
 
 	}
 
+	#sidebar #menudisabler {
+		position:absolute;
+		top:0;
+		left:0;
+		bottom:0;
+		right:0;
+		z-index:50;
+		background:rgba(0, 0, 0, 0.85);
+		display:none;
+	}
+
 		#sidebar section {
 			padding-top:30px;
 		}
@@ -206,6 +217,41 @@ body {
 				right:40px;
 				top:45px;
 			}
+
+		#main .surface p {
+
+		}
+
+			#main .surface p img {
+				position:relative;
+				top:3px;
+			}
+
+		#main .progress {
+		}
+
+			#main .progress label { 
+				background:url(../images/load.gif) no-repeat left center;
+				height:18px;
+				line-height:18px;
+				margin-bottom:10px;
+				display:block;
+				padding-left:24px;
+			}
+
+			#main .progress div {
+				border:1px solid rgba(255, 255, 255, 0.5);
+				height:14px;
+				position:relative;
+			}
+
+				#main .progress span {
+					position:absolute;
+					top:0;
+					left:0;
+					bottom:0;
+					background: rgba(255, 255, 255, 0.5);;
+				}
 
 
 	#main #spotlight {
@@ -403,4 +449,34 @@ button[green] {
 	button[green]:hover {
 		background:linear-gradient(to bottom, #68a54b 5%, #74ad5a 100%);
 		background-color:#68a54b;
+	}
+
+/**
+ * DriveList
+ */
+
+.drivelist fragment {
+	display:block;
+	padding:10px 30px;
+	background:rgba(0, 0, 0, 0.5);
+	margin-bottom:15px;
+	cursor:pointer!important;
+}
+
+	.drivelist fragment:hover {
+		background-color:rgba(100, 0, 0, 0.5);
+
+	}
+
+	.drivelist fragment label {
+		display:block;
+		font-size:22px;
+		color:rgba(255, 255, 255, 1);
+	}
+
+	.drivelist fragment span {
+		display:inline-block;
+		font-size:17px;
+		color:rgba(255, 255, 255, 0.5);
+		margin-right:10px;
 	}

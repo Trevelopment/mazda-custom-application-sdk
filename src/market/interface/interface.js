@@ -24,12 +24,6 @@
  *
  */
 
-/**
- * NPM/Node Integration
- */
-var fs = require("fs");
-
-
 
 /**
  * Interface
@@ -47,6 +41,8 @@ var fs = require("fs");
 		 * Privates
 		 */
 
+		__panelPath: [],
+
 
 		/**
 		 * (initialize)
@@ -61,53 +57,312 @@ var fs = require("fs");
 
 			this.main = $("#main");
 
-			// setup menu items
-			this.setupSideBar();
+			this.disableSidebar();
+
+			System.getReleaseInformation(function(error, manifest) {
+
+				// setup menu items
+				this.setupSideBar();
+
+				// setup buttons
+				this.setupButtons();
+
+				// enable sidebar
+				this.enableSidebar();
+
+			}.bind(this));
 		},
 
+		/**
+		 * (setupButtons)
+		 */
+
+		setupButtons: function() {
+
+			$("button[action]").on("click", function() {
+
+				var action = $(this).attr("action");
+
+				if(Interface[action]) {
+					Interface[action]();
+				}
+
+			});
+
+		},
 
 		/**
 		 * (setupSideBar)
 		 * @param void
 		 */
-		
+
 		setupSideBar: function() {
 
 			this.sidebar.on("click", "label", function() {
 
+				// highlight
 				Interface.sidebar.find("[selected]").removeAttr("selected");
 
 				$(this).attr("selected", "selected");
 
-				var nextPanel = $(this).attr("panel"),
-					activePanel = Interface.main.find("panel[active]"),
+				var call = $(this).attr('call') || false,
+					panel = $(this).attr('panel') || false;
 
-					showNextPanel = function() {
+				// process
+				switch(true) {
 
-						$("panel[name=" + nextPanel + "]").attr("active", "active").animate({
-							left:300,
-							opacity:1
-						}, 300);
-					};
+					/**
+					 * call
+					 * @type string
+					 */
+					case call !== false:
 
-				if(activePanel.length) {
+						if(Interface[call]) {
+							return Interface[call]();
+						}
+						break;
 
-					activePanel.removeAttr("active").animate({
-						left: -1 * 300,
-						opacity:0,
-					}, 300, function() {
-						showNextPanel();
-					});
+					/**
+					 * panel
+					 * @type string
+					 */
+					case panel !== false:
 
-				} else {
-					showNextPanel();
+						Interface.__panelPath = [];
+
+						Interface.showPanel(panel);
+						break;
+
+					default:
+
+						console.error("sideBar: no valid item");
+						break;
 				}
 
+
 			});
+		},
 
-		}
-	}
 
+		/**
+		 * disableSidebar
+		 */
+
+		disableSidebar: function() {
+			if(!this.sidebarDisabled) {
+				this.sidebarDisabled = true;
+				$("#menudisabler").fadeIn();
+			}
+		},
+
+		/**
+		 * enableSidebar
+		 */
+
+		enableSidebar: function() {
+			if(this.sidebarDisabled) {
+				this.sidebarDisabled = false;
+				$("#menudisabler").fadeOut();
+			}
+		},
+
+
+		/**
+		 * showPanel
+		 */
+
+		showPanel: function(nextPanel, methodCallback, panelCallback, attributes) {
+
+			var activePanel = Interface.main.find("panel[active]"),
+
+				prepareNextPanel = function() {
+
+					var panel = $("panel[name=" + nextPanel + "]"),
+						on = panel.attr("on") || false,
+
+						next = function(nextAttributes) {
+
+							Interface.__panelPath.push(panel.attr("name"));
+
+							var data = $.extend({}, attributes ? attributes : {}, nextAttributes ? nextAttributes : {});
+
+							console.log(data);
+
+							Layout.fillAttributes(panel, data);
+
+							panel.attr("active", "active").animate({
+								left:300,
+								opacity:1
+							}, 300, function() {
+
+								var at = panel.attr("at") || false;
+
+								if(at !== false && Interface[at]) {
+									Interface[at](panel);
+								}
+
+								if(panelCallback) {
+									panelCallback(panel);
+								}
+
+							});
+						}
+
+					if(on !== false && Interface[on]) {
+						return Interface[on](next, panel, methodCallback);
+					}
+
+					return next();
+				};
+
+			if(activePanel.length) {
+
+				activePanel.removeAttr("active").animate({
+					left: -1 * 300,
+					opacity:0,
+				}, 300, function() {
+					prepareNextPanel();
+				});
+
+			} else {
+				prepareNextPanel();
+			}
+		},
+
+
+		/**
+		 * refreshMyApps
+		 */
+
+		refreshMyApps: function(next) {
+
+			// ensure we have a good location
+			System.findAppDrive(function(error, current, location) {
+
+				if(error) {
+					return this.showPanel('searchmyapps');
+				}
+
+				return next($.extend({}, current, {
+
+				}));
+
+			}.bind(this));
+
+		},
+
+		/**
+		 * setNextAction
+		 */
+
+		setNextAction: function(action) {
+			this.selectNextAction = action;
+		},
+
+		/****
+		 **** Select(ors)
+		 ****/
+
+		/**
+		 * selectFindAppDrive
+		 */
+
+	    selectFindAppDrive: function() {
+
+	    	return this.refreshMyApps();
+
+	    },
+
+		/**
+		 * selectGoBack
+		 */
+		selectGoBack: function() {
+
+			if(this.__panelPath.length > 1) {
+
+				var lastPanel = this.__panelPath[this.__panelPath.length - 2];
+
+				this.__panelPath.pop();
+
+				this.showPanel(lastPanel);
+
+			}
+
+			return false;
+		},
+
+		/**
+		 * selectCreateAppDrive
+		 */
+		selectCreateAppDrive: function() {
+			this.showPanel('drives', function(item) {
+
+				this.disableSidebar();
+
+				this.showPanel('installAppDrive', false, function(panel) {
+
+					var progress = Layout.progress(panel.find(".progress"));
+
+					// install runtime
+					System.installLatestRuntime(item.mountpoint, function(error, result) {
+
+						this.enableSidebar();
+
+						this.setNextAction('selectFindAppDrive');
+
+						this.showPanel(!error ? 'success' : 'failure', false, false, {
+							panelAction: 'selectFindAppDrive',
+							message: !error ? 'The AppDrive was successfully created. You can now download and install applications.' : 'The AppDrive could not be installed because of the following issue:',
+							errorMessage: result
+
+						});
+
+					}.bind(this), progress);
+
+				}.bind(this));
+
+			}.bind(this));
+		},
+
+		/**
+		 * selectNext
+		 */
+		selectNext: function() {
+
+			if(this[this.selectNextAction]) {
+				this[this.selectNextAction]();
+				this.selectNextAction = false;
+			}
+		},
+
+		/**
+		 * updateDriveList
+		 */
+		updateDriveList: function(next, target, callback) {
+
+			var drivelist = target.find(".drivelist");
+
+			System.getDrives(function(error, drives) {
+
+				var list = Layout.items("DriveListItem", drives);
+
+				// build list
+				drivelist.empty().append(list);
+
+				// build handler
+				drivelist.on("click", "fragment", function() {
+
+					if(callback) {
+						callback($(this).data("data"));
+					}
+
+				});
+
+				// next
+				next();
+			});
+		},
+	};
 
 
 	/**
