@@ -29,7 +29,8 @@
  */
 
 [app="app.breakout"] {
-	background: url(images/background.jpg) no-repeat center center #101010;
+	background:rgba(0, 0, 0, 0.25);
+	/*background: url(images/background.jpg) no-repeat center center #101010; */
 }
 
 	[app="app.breakout"] span,

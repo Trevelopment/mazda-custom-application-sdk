@@ -179,6 +179,8 @@ CustomApplicationsHandler.register("app.simpledashboard", new CustomApplication(
 
     created: function() {
 
+        this.distUnit = framework.localize.getDistanceUnit(); // "Miles" or "Kilometers"
+
         // let's build our interface
 
         // 1) create a value label that shows the current value of the selected section
