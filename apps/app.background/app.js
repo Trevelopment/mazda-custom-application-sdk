@@ -29,7 +29,7 @@ CustomApplicationsHandler.register("app.background", new CustomApplication({
 		 * (js) defines javascript includes
 		 */
 
-		js: [],
+		js: ["background/list.js"],
 
 		/**
 		 * (css) defines css includes
@@ -143,17 +143,22 @@ CustomApplicationsHandler.register("app.background", new CustomApplication({
 
 		this.table = [];
 
-		$.getJSON(this.location + "background/list.json", function(json) {
-			for (var i = 0; i < json.length ; i++) {
-				var elem = $("<image src='" + this.location + json[i] + "' width='225' height='135' />");
-				this.image_slider.append(elem);
-				this.table.push({elem:elem,link:this.location + json[i]});
-			}
-			this.max = json.length;
-			this.updatepos();
-    	}.bind(this));
+
+		for (var i = 0; i < backgroundlist.length ; i++) {
+			var elem = $("<image src='" + this.location + iconlist[i] + "' width='225' height='135' />");
+			this.image_slider.append(elem);
+			this.table.push({elem:elem,link:this.location + backgroundlist[i]});
+		}
+		this.max = backgroundlist.length;
+		this.updatepos();
 
     	this.line = 135;
+
+    	if(window.opera && window.opera.addEventListener ) {
+			window.opera.addEventListener('AfterEvent.load', function (e) {
+				document.getElementById('CommonBgImg1').style.background = "url('" + this.table[this.select].link  + "')";
+			}.bind(this));
+		}
 
 
 
@@ -323,14 +328,18 @@ CustomApplicationsHandler.register("app.background", new CustomApplication({
 			 * MultiController was moved up
 			 */
 			case this.UP:
-
+				if  (this.select >= 3) this.select-=3;
+				this.updatepos();
 				break;
 
 			/*
 			 * MultiController was moved down
 			 */
 			case this.DOWN:
-
+				var line = Math.floor(this.select/3);
+				var mline = Math.floor((this.max-1)/3);
+				if  (line<mline) this.select += 3;
+				this.updatepos();
 				break;
 
 			/*
@@ -354,6 +363,9 @@ CustomApplicationsHandler.register("app.background", new CustomApplication({
 			 */
 			case this.SELECT:
 				document.getElementById('CommonBgImg1').style.background = "url('" + this.table[this.select].link  + "')";
+				//framework.sendEventToMmui("common", "Global.IntentHome");
+				framework.sendEventToMmui("common", "Global.GoBack");
+				//framework.sendEventToMmui(this.uiaId, 'SubmitKeyboardInput', {payload : { input:extraParams.input, type:type, isValid:isValid }});
 				break;
 
 			/*
@@ -367,4 +379,9 @@ CustomApplicationsHandler.register("app.background", new CustomApplication({
 	},
 
 
-})); /** EOF **/
+})); 
+
+
+
+/** EOF **/
+
