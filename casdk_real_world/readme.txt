@@ -8,5 +8,11 @@ Instruction :
 4) execute start.sh
 5) to quit, execute quit.sh
 
+key
+
+m, n = cw and ccw
+arrow = joystick
+del   = back
+enter = select
 
 

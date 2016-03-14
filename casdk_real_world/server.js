@@ -30,7 +30,7 @@ var fakeCtxtChgMsgs = function(ws, uiaId, ctxtId, params, contextSeq)
     ws.send(transitionFalse);
     console.log('guiifm send: %s', transitionFalse);
 
-    if ( uiaId === "system" || uiaId ===  "vdt") {
+    if ( uiaId === "system" || uiaId ===  "vdt" || uiaId === "syssettings") {
         goBackStack.push({uiaId:uiaId, ctxtId:ctxtId, params:params, contextSeq:contextSeq });
     }
 }
@@ -123,6 +123,12 @@ var MmuiCallback = function(ws,uiaId, eventId, params)
             fakeCtxtChgMsgs(ws,"vehsettings","UnlockMode");
         case "GoDoorLockMode":
             fakeCtxtChgMsgs(ws,"vehsettings","DoorLockMode");
+
+
+        default:
+            if (eventId.substr(0,6) === "Select" ) {
+                fakeCtxtChgMsgs(ws,uiaId,eventId.substr(6));
+            }
 
     }
     return true;
