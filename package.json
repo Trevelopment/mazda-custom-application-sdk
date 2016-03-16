@@ -1,7 +1,7 @@
 {
   "name": "casdk",
   "description": "Write and deploy applications for the Mazda Infotainment System",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "homepage": "http://flyandi.github.io/mazda-custom-application-sdk/",
   "author": "Andy (flyandi) <flyandi@yahoo.com>",
   "repository": {
@@ -10,12 +10,6 @@
   },
   "devDependencies": {
     "del": "~2.2.0",
-    "electron": "^0.4.1",
-    "electron-builder": "^2.7.2",
-    "electron-packager": "^5.2.1",
-    "electron-prebuilt": "^0.36.7",
-    "electron-rebuild": "^1.1.3",
-    "grunt-build-atom-shell": "^2.1.1",
     "gulp": "^3.9.1",
     "gulp-bump": "^1.0.0",
     "gulp-concat": "^2.6.0",
@@ -34,18 +28,7 @@
   },
   "scripts": {
     "build-runtime": "gulp build-runtime",
-    "build-install": "gulp build-install",
-    "simulator": "electron ./src/simulator",
-    "market": "electron ./src/market",
-    "clean": "rm -rf ./dist/simulator",
-    "clean:osx": "rm -rf ./build/simulator/osx",
-    "clean:win": "rm -rf ./build/simulator/win",
-    "pack": "npm run clean && npm run pack:osx && npm run pack:win",
-    "pack:osx": "npm run clean:osx && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --asar=true --out=build/simulator/osx --platform=darwin --arch=x64 --version=0.36.8 --icon=src/assets/osx/simulator.icns",
-    "pack:win": "npm run clean:win && electron-packager ./src/simulator \"Mazda Infotainment Simulator\" --asar=true --out=build/simulator/win --platform=win32 --arch=ia32 --version=0.36.8 --icon=src/assets/win/simulator.ico",
-    "build": "npm run build:osx && npm run build:win",
-    "build:osx": "npm run pack:osx && electron-builder \"build/simulator/osx/Mazda Infotainment Simulator.app\" --platform=osx --out=\"dist/simulator/osx\" --config=builder.json",
-    "build:win": "npm run pack:win && electron-builder \"build/simulator/win/Mazda Infotainment Simulator\" --platform=win --out=\"dist/simulator/win\" --config=builder.json"
+    "build-install": "gulp build-install"
   },
   "license": "GPL-3.0"
 }

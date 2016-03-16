@@ -465,129 +465,6 @@ gulp.task('build-docs', function(callback) {
     );
 });
 
-/**
- * Build CLI Tool
- */
-
-var cliPathInput = input + "cli/",
-    cliPathOutput = output + "cli/",
-    cliPathSkeleton = cliPathInput + "skeleton/";
-
-// (cleanup)
-gulp.task('cli-cleanup', function() {
-    return del(
-        [cliPathOutput + '**']
-    );
-});
-
-// (git)
-gulp.task('cli-clone', function(callback) {
-
-    git.clone('git@github.com:flyandi/mazda-custom-application-sdk-cli.git', {
-        quiet: true,
-        args: cliPathOutput,
-    }, callback);
-
-});
-
-// (copy)
-gulp.task('cli-build', function() {
-
-    // prepare inclusions
-    var inclusions = {
-        'app.js': false,
-        'app.css': false,
-        'app.png': false
-    }
-
-    // load inclusions
-    Object.keys(inclusions).forEach(function(key) {
-
-        // read file from skeleton and store as base64
-        inclusions[key] = fs.readFileSync(cliPathSkeleton + key).toString('base64');
-
-    });
-
-    // replace inclusions with json
-    gulp.src(cliPathInput + "js/casdk.js")
-        .pipe(replace(/__INCLUSIONS__/g, JSON.stringify(inclusions)))
-        .pipe(gulp.dest(cliPathOutput));
-
-    // replace build time
-    gulp.src(cliPathInput + "resources/package.json")
-        .pipe(replace(/__BUILDTIME__/g, Date.now()))
-        .pipe(gulp.dest(cliPathOutput, {
-            overwrite: true
-        }));
-
-    // copy resources
-    gulp.src(cliPathInput + "resources/README.md")
-        .pipe(gulp.dest(cliPathOutput));
-
-
-});
-
-// (commit)
-gulp.task('cli-commit', function(callback) {
-
-    return gulp.src('./*')
-        .pipe(git.commit(undefined, {
-            disableMessageRequirement: true,
-            args: '-m "AutoBuildCommit" -a',
-            quiet: false,
-            cwd: cliPathOutput,
-        }))
-});
-
-gulp.task('cli-push', function(callback) {
-
-    git.push('origin', 'master', {
-        quiet: false,
-        emitData: true,
-        cwd: cliPathOutput
-    }, callback);
-
-});
-
-
-// (build)
-gulp.task('build-cli', function(callback) {
-    runSequence(
-        'cli-cleanup',
-        'cli-clone',
-        'cli-build',
-        'cli-commit',
-        'cli-push',
-        callback
-    );
-});
-
-/**
- * Common Commands
- */
-
-// clean
-gulp.task('clean', function() {
-    return del(
-        [output + '**/*']
-    );
-});
-
-
-// Default Task
-gulp.task('default', function(callback) {
-    runSequence(
-        'clean',
-        'build-system',
-        'build-install',
-        'build-uninstall',
-        'build-sdcard',
-        //'build-docs',
-        callback
-    );
-
-});
-
 
 /**
  * These build jobs are for distribution
@@ -620,6 +497,9 @@ gulp.task('dist-bump-revision', function() {
  * builds the runtime for distribution
  * @job dist-runtime
  */
+
+var distLatestOutput = dist + "latest/";
+
 var distRuntimeOutput = false;
 
 gulp.task('dist-runtime', function() {
@@ -627,11 +507,11 @@ gulp.task('dist-runtime', function() {
     // get latest package
     var package = require("./package.json");
 
-    distRuntimeOutput = 'casdk-runtime-' + package.version + '.package';
+    distRuntimeOutput = 'runtime-' + package.version + '.package';
 
     return gulp.src(systemPathOutput + "**/*")
         .pipe(tar(distRuntimeOutput))
-        .pipe(gulp.dest(dist));
+        .pipe(gulp.dest(distLatestOutput));
 });
 
 
@@ -647,27 +527,20 @@ gulp.task('dist-system', function() {
     // get latest package
     var package = require("./package.json");
 
-    distSystemOutput = 'casdk-system-' + package.version + '.package';
+    distSystemOutput = 'system-' + package.version + '.package';
 
     return gulp.src(output + "/deploy/**/*")
         .pipe(tar(distSystemOutput))
-        .pipe(gulp.dest(dist));
+        .pipe(gulp.dest(distLatestOutput));
 });
 
 /**
  * creates the release information for the distribution
  * @job dist-release
  */
-gulp.task('dist-release', function() {
+gulp.task('dist-latest', function() {
 
-    buildJsonVersion("release.json", "./", "release-package", function(package) {
-        return {
-            packages: {
-                runtime: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/download/' + package.version + '/' + distRuntimeOutput,
-                system: 'https://github.com/flyandi/mazda-custom-application-sdk/releases/download/' + package.version + '/' + distSystemOutput,
-            }
-        }
-    });
+    buildJsonVersion("latest.json", distLatestOutput, "latest-release-package");
 });
 
 
@@ -679,7 +552,7 @@ gulp.task('build-dist', function(callback) {
     runSequence(
         'dist-runtime',
         'dist-system',
-        'dist-release',
+        'dist-latest',
         callback
     );
 });
@@ -704,6 +577,31 @@ gulp.task('dist-major', function(callback) {
     runSequence(
         'dist-bump-major',
         'build-dist',
+        callback
+    );
+});
+
+/**
+ * Common Commands
+ */
+
+// clean
+gulp.task('clean', function() {
+    return del(
+        [output + '**/*']
+    );
+});
+
+
+// Default Task
+gulp.task('default', function(callback) {
+    runSequence(
+        'clean',
+        'build-system',
+        'build-install',
+        'build-uninstall',
+        'build-sdcard',
+        //'build-docs',
         callback
     );
 });

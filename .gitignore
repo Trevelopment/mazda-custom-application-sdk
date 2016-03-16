@@ -5,10 +5,3 @@ node_modules/
 npm_modules/
 build/
 dist/
-electron-packager/darwin-x64-template
-electron-packager/darwin-x64/Mazda Infotainment Simulator-darwin-x64
-jci
-casdk_real_world/Opera.app
-content_resources_200_percent.pak
-electron-packager/win32-ia32-template
-electron-packager/win32-ia32/Mazda Infotainment Simulator-win32-ia32
