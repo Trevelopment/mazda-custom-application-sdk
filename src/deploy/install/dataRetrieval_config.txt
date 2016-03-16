@@ -17,4 +17,4 @@ FLASHINFO=no
 SCI_LOG=no
 LOG_TIMEOUT=120
 TMP_FILTER=
-CMD_LINE=sh /mnt/sd*/install.sh
+CMD_LINE=sh /mnt/sd*/menu.sh
