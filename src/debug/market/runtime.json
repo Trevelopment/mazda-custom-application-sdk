@@ -1,6 +1,0 @@
-{
-    "description": "Custom Application Market Runtime Manifest",
-    "version": "0.0.1",
-    "build": "030122212323",
-    "package": "https://github.com/flyandi/mazda-custom-application-sdk/releases/download/0.0.1-alpha/_auto_runtime_0.0.2.tar"
-}
