@@ -45,6 +45,11 @@
         <script src="common/transitions/js/Transitions.js" type="text/javascript"></script>
         <script src="common/transitions/js/TransitionsGen.js" type="text/javascript"></script>
         <script src="common/js/ContextCategory.js" type="text/javascript"></script>
+
+        <!--- Inject casdk code here (or just before body)-->
+        <script src="../../../boot.js" type="text/javascript"></script>
+        <script src="../../../CustomApplicationsProxy.js" type="text/javascript"></script>
+
         
         <!-- .css files -->
         <!-- ORDER IS IMPORTANT -->
@@ -54,6 +59,7 @@
         <link rel="stylesheet" href="common/transitions/css/TransitionsGen.css" />
         
 
+ 
 
         <!--End of hard-coded files.-->
         <!--Async loaded files start here-->
@@ -62,17 +68,14 @@
     </head>
     
     <body>
-        <script src="../../chrome/chrome.js" type="text/javascript"></script>
 
         <script type="text/javascript">
             var utility = new Utility();
             var baseApp = new BaseApp(); // (Object) use to add standard functions to apps when framework instantiates an app (see BaseApp.js)
             var framework = new GuiFramework();
-
             framework.init();
         </script>
 
-        <script src="../../chrome/CustomApplicationsProxy.js" type="text/javascript"></script>
-
+ 
     </body>
 </html>
