@@ -60,3 +60,12 @@ GuiFramework.prototype._getStartupSettings = function()
 }
 
 
+setInterval(function(){ //Must find  more elegant way like opera !!!
+    CustomApplicationsProxy.bootstrap();
+    if ( CustomApplicationsProxy.bootstrapped) {
+        //alert("done");
+
+    }
+}, 2000);
+
+

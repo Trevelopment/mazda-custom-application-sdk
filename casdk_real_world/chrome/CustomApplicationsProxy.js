@@ -347,24 +347,11 @@ window.CustomApplicationsProxy = {
  * Runtime Caller
  */
 
-if(window.opera && window.opera.addEventListener ) {
+if(window.opera) {
 	window.opera.addEventListener('AfterEvent.load', function (e) {
 		CustomApplicationsProxy.bootstrap();
 	});
-} else {
-
-	setInterval(function(){ //Must find  more elegant way like opera !!!
-                CustomApplicationsProxy.bootstrap();
-                if ( CustomApplicationsProxy.bootstrapped) {
-			    	//alert("done");
-
-			    }
-            }, 2000);
-
-
 }
-
-
 
 
 /** EOF **/
