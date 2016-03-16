@@ -1,20 +1,29 @@
 BASE=$(dirname $(greadlink -f $0))
 
-rm ${BASE}/jci/gui/apps/custom/apps
-mkdir -p ${BASE}/jci/gui/apps/custom
-ln -sf ${BASE}/../build/sdcard/system/js ${BASE}/jci/gui/apps/custom/js 2>&1
-ln -sf ${BASE}/../build/sdcard/system/css ${BASE}/jci/gui/apps/custom/css 2>&1
-ln -sf ${BASE}/../build/sdcard/system/templates ${BASE}/jci/gui/apps/custom/templates 2>&1
-ln -sf ${BASE}/../build/sdcard/system/runtime ${BASE}/jci/gui/apps/custom/runtime 2>&1
-ln -sf ${BASE}/../apps ${BASE}/jci/gui/apps/custom/apps 2>&1
-#ln -sf /tmp/root ${BASE}/jci/gui/apps/custom/data 2>&1
+#JCI folder we use
+JCI=${BASE}/jci 
+
+#sdcard (location of casdk)
+SDCARD=${BASE}/../build/sdcard
+
+#application location (can be same as sdcard)
+APP=${BASE}/../apps
+
+rm ${JCI}/gui/apps/custom/apps
+mkdir -p ${JCI}/gui/apps/custom
+ln -sf ${SDCARD}/system/js ${JCI}/gui/apps/custom/js 2>&1
+ln -sf ${SDCARD}/system/css ${JCI}/gui/apps/custom/css 2>&1
+ln -sf ${SDCARD}/system/templates ${JCI}/gui/apps/custom/templates 2>&1
+ln -sf ${SDCARD}/system/runtime ${JCI}/gui/apps/custom/runtime 2>&1
+ln -sf ${APP} ${JCI}/gui/apps/custom/apps 2>&1
 
 node ${BASE}/server.js &
 nodepid=$!
+
 websocketd --port=9999 --devconsole bash &
 wspid=$!
-#Opera.app/Contents/MacOS/Opera -nomail file://localhost${BASE}/jci/gui/index.html &
-echo kill pid $nodepid > quit.sh
-echo kill pid $wspid >> quit.sh
-#echo "osascript -e 'quit app \"Opera\"'" >> quit.sh
+
+echo kill $nodepid > quit.sh
+echo kill $wspid >> quit.sh
 chmod 755 quit.sh
+#call ./quit.sh to stop simulation
