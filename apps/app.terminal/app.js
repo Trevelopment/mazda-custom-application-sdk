@@ -190,7 +190,13 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
       this.ws.send("export LD_LIBRARY_PATH=/sd_nav/apps/apps.terminal/bin/aa:/jci/lib:/jci/opera/3rdpartylibs/freetype:/usr/lib/imx-mm/audio-codec:/usr/lib/imx-mm/parser \n");
       this.ws.send("cd /sd_nav/apps/apps.terminal/bin/aa \n")
       this.ws.send("./headunit & \n");
-  }
+  },
+
+  castscreen: function()
+  {
+      this.ws.send("cd /sd_nav/apps/apps.terminal/bin/csm \n")
+      this.ws.send("./wait_adb_arm.sh & \n");
+  },
 
   //
   // Update the screen
@@ -299,6 +305,15 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
 
           case "aa":
             this.androidauto();
+            this.command = "";
+            this.update();
+            break;
+
+
+          case "cs":
+            this.castscreen();
+            this.command = "";
+            this.update();
             break;
 
           default:
@@ -552,7 +567,7 @@ CustomApplicationsHandler.register("app.terminal", new CustomApplication({
 
 
     this.wsonopen = function() {
-        this.AddText("[connect]");
+        this.AddText("[connect]\naa=androidauto\ncs=castscreen");
         this.askiffolderchanged ();
         this.ws.send("cd /sd_nav/apps/apps.terminal/bin\n");
     }.bind(this);

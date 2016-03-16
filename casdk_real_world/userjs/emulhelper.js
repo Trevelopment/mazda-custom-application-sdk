@@ -19,11 +19,13 @@ var _getStartupSettingsFast = function()
                 log.warn("SYS_SETTINGS app didn\'t set region, using Region_NorthAmerica");
                 framework.localize.setRegion(framework.localize.REGIONS.NorthAmerica);
             }
-            if (framework.localize.getCurrentLanguage() == null)    //Localization currently initializes this to en_US
-            {
-                log.warn("SYS_SETTINGS app didn\'t set language, using en_US");
-                framework.localize.setLanguage("en_US", true);
-            }
+           // if (framework.localize.getCurrentLanguage() == null)    //Localization currently initializes this to en_US
+           // {
+           //     log.warn("SYS_SETTINGS app didn\'t set language, using en_US");
+               // framework.localize.setLanguage("en_US", true);
+               framework.localize.setLanguage("fr_CN", true);
+               
+           // }
             if (framework.localize.getKeyboardLanguage() == null)
             {
                 log.warn("SYS_SETTINGS app didn\'t set keybaord language, using en_US");
@@ -54,19 +56,31 @@ var _getStartupSettingsFast = function()
     }, 200);
 };
 
-var backc = 1;
+var _tryInitGuiOverwrite = function()
+{
+ /*   if (!framework.initGuiCalled)
+    {
+        if (this._currentLang && 
+            this._currentTimeFormat && 
+            this._currentTmprtureUnit && 
+            this._currentDistanceUnit &&
+            this._currentKeyboardLang &&
+            this._currentRegion &&
+            framework.getSharedData('syssettings', 'VehicleType')
+            )
+        { */
+            framework.initGui();
+       /* }
+    } */
+}
 
 if(window.opera) {
     window.opera.addEventListener('AfterEvent.load', function (e) {
         GuiFramework.prototype._getStartupSettings = _getStartupSettingsFast;
 
-     /*   setInterval( function(){
-            document.getElementById('CommonBgImg1').style.background = "url('file://localhost/Users/alex/Sandbox/mazda/casdk_real_world/background/grandiotk/b" + backc + ".png')";
-            backc ++;
-            if (backc == 15) backc = 1;
-        }, 10000);
-*/
+       // Localization.prototype._tryInitGui = _tryInitGuiOverwrite;
 
+ 
       ///  document.getElementById('CommonBgImg1').style.background = "url('file://localhost/Users/alex/Sandbox/mazda/casdk_real_world/background/one-piece.jpg')";
 
 

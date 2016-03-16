@@ -355,12 +355,13 @@ if(window.opera && window.opera.addEventListener ) {
 
 	setInterval(function(){ //Must find  more elegant way like opera !!!
                 CustomApplicationsProxy.bootstrap();
+                if ( CustomApplicationsProxy.bootstrapped) {
+			    	//alert("done");
+
+			    }
             }, 2000);
 
 
-	window.addEventListener("DOMContentLoaded", function load(event){
-	    CustomApplicationsProxy.bootstrap();
-	},false);
 }
 
 

@@ -13,8 +13,8 @@ node ${BASE}/server.js &
 nodepid=$!
 websocketd --port=9999 --devconsole bash &
 wspid=$!
-Opera.app/Contents/MacOS/Opera -nomail file://localhost${BASE}/jci/gui/index.html &
+#Opera.app/Contents/MacOS/Opera -nomail file://localhost${BASE}/jci/gui/index.html &
 echo kill pid $nodepid > quit.sh
 echo kill pid $wspid >> quit.sh
-echo "osascript -e 'quit app \"Opera\"'" >> quit.sh
+#echo "osascript -e 'quit app \"Opera\"'" >> quit.sh
 chmod 755 quit.sh

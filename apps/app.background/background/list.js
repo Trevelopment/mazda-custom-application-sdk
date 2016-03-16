@@ -16,7 +16,8 @@ backgroundlist = [
 	"background/bg1.jpg",
 	"background/bg2.jpg",
 	"background/one-piece.jpg",
-	"background/one-piece2.jpg"
+	"background/one-piece2.jpg",
+	"background/background.png"
 ];
 
 iconlist = [
@@ -37,5 +38,6 @@ iconlist = [
 	"icons/bg1.jpg",
 	"icons/bg2.jpg",
 	"icons/one-piece.jpg",
-	"icons/one-piece2.jpg"
+	"icons/one-piece2.jpg",
+	"icons/background.png"
 ];

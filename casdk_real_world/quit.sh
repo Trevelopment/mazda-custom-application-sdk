@@ -1,3 +1,3 @@
-kill pid 88811
-kill pid 88812
+kill pid 5824
+kill pid 5825
 osascript -e 'quit app "Opera"'
