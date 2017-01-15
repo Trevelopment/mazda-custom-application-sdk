@@ -1,5 +1,5 @@
 [app="app.simpledashboard"] {
-	background:#000;
+	background:rgba(0, 0, 0, 0.25);
 }
 	
 	[app="app.simpledashboard"] div {

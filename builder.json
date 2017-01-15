@@ -1,0 +1,26 @@
+{
+  "builder" : {
+    "osx" : {
+      "title": "Mazda Infotainment Simulator",
+      "icon": "mount.icns",
+      "icon-size": 80,
+      "contents": [
+        { "x": 438, "y": 344, "type": "link", "path": "/Applications" },
+        { "x": 192, "y": 344, "type": "file" }
+      ]
+    },
+    "win" : {
+      "title" : "Mazda Infotainment Simulator",
+      "icon" : "icon.ico"
+    },
+    "linux" : {
+      "arch" : 64,
+      "target" : "deb",
+      "version" : "0.1.2",
+      "title" : "Mazda Infotainment Simulator",
+      "comment" : "This is a comment",
+      "executable" : "mazda-infotainment-simulator",
+      "maintainer": "flyandi <flyandi@yahoo.com>"
+    }
+  }
+}

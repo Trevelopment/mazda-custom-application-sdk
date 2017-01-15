@@ -105,6 +105,10 @@ if [ -e "${INSTALLSH}/install.sh" ]; then
 		mkdir -p /jci/casdk
 		cp -a casdk/scripts/* /jci/casdk
 		find /jci/casdk/ -name "vdt*.sh" -exec chmod 755 {} \;
+		cp -a casdk/bin/* /jci/casdk 2>&1
+		chmod 755 /jci/casdk/websocketd 2>&1
+		chmod 755 /jci/casdk/adb 2>&1
+		chmod 755 /jci/casdk/adbmonitor 2>&1
 	fi
 
 	# copy initialization file
